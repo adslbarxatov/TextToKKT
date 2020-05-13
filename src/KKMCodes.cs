@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -28,8 +28,13 @@ namespace RD_AAOW
 		public KKMCodes ()
 			{
 			// Получение файла ошибок
+#if !ANDROID
 			byte[] s = Properties.TextToKKMResources.Codes;
 			string buf = Encoding.GetEncoding (1251).GetString (s);
+#else
+			byte[] s = Properties.Resources.Codes;
+			string buf = Encoding.UTF8.GetString (s);
+#endif
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -41,15 +46,20 @@ namespace RD_AAOW
 					{
 					// Чтение имени ККМ
 					line++;
-					names.Add (str);
+#if ANDROID
+					if (str == "——————————")
+						continue;
+#endif
 
 					// Чтение кодов
+					names.Add (str);
 					codes.Add (new List<int> ());
+
 					if (str != "——————————")
 						{
 						for (int i = 0; i < 0x100; i++)
 							{
-							str = SR.ReadLine ();	// Любое недопустимое значение в этой строке вызовет исключение в следующей
+							str = SR.ReadLine ();   // Любое недопустимое значение в этой строке вызовет исключение в следующей
 							codes[codes.Count - 1].Add (int.Parse (str));
 							line++;
 							}
@@ -62,6 +72,7 @@ namespace RD_AAOW
 						descriptions.Add (SR.ReadLine ());
 						line++;
 						}
+#if !ANDROID
 					else
 						{
 						for (int i = 0; i < 0x100; i++)
@@ -72,6 +83,7 @@ namespace RD_AAOW
 						presentations.Add ("D1");
 						descriptions.Add ("—");
 						}
+#endif
 					}
 
 				if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
@@ -127,11 +139,11 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает список названий ККМ 
 		/// </summary>
-		public string[] KKMTypeNames
+		public List<string> KKMTypeNames
 			{
 			get
 				{
-				return names.ToArray ();
+				return names;
 				}
 			}
 
