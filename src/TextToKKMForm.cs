@@ -10,8 +10,8 @@ namespace RD_AAOW
 	public partial class TextToKKMForm:Form
 		{
 		// Переменные
-		private KKMCodes kkmc = null;
-		private KKMErrorsList kkme = null;
+		private KKTCodes kkmc = null;
+		private KKTErrorsList kkme = null;
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -25,14 +25,14 @@ namespace RD_AAOW
 			InitializeComponent ();
 
 			// Загрузка списка кодов и ошибок
-			kkmc = new KKMCodes ();
-			kkme = new KKMErrorsList ();
+			kkmc = new KKTCodes ();
+			kkme = new KKTErrorsList ();
 
 			// Настройка контролов
-			KKTListForCodes.Items.AddRange (kkmc.KKMTypeNames.ToArray ());
+			KKTListForCodes.Items.AddRange (kkmc.KKTTypeNames.ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
 
-			KKTListForErrors.Items.AddRange (kkme.KKMTypeNames.ToArray ());
+			KKTListForErrors.Items.AddRange (kkme.KKTTypeNames.ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 
 			// Настройка контролов
@@ -68,7 +68,7 @@ namespace RD_AAOW
 				string s;
 				byte[] b = Encoding.GetEncoding (1251).GetBytes (text, i, 1);
 
-				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b[0])) == KKMCodes.EmptyCode)
+				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b[0])) == KKTCodes.EmptyCode)
 					{
 					ResultText.Text += "xxx\t";
 					res = false;
@@ -109,7 +109,7 @@ namespace RD_AAOW
 		private void KKTListForErrors_SelectedIndexChanged (object sender, EventArgs e)
 			{
 			// Перезаполнение списка
-			ErrorCodesList.DataSource = kkme.GetErrorCodes ((uint)KKTListForErrors.SelectedIndex);
+			ErrorCodesList.DataSource = kkme.GetErrors ((uint)KKTListForErrors.SelectedIndex);
 			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
 			ErrorCodesList.SelectedIndex = 0;
 			}

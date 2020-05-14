@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="RD_AAOW.TextToKKT" android:installLocation="internalOnly" android:versionCode="25" android:versionName="2.5">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="RD_AAOW.TextToKKT" android:installLocation="internalOnly" android:versionName="3.0" android:versionCode="30">
 	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="24" />
 	<application android:label="Text to KKT" android:icon="@mipmap/icon"></application>
 </manifest>

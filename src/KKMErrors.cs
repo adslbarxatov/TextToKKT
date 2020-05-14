@@ -8,10 +8,10 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс обеспечивает доступ к сообщениям об ошибках ККМ
 	/// </summary>
-	public class KKMErrorsList
+	public class KKTErrorsList
 		{
 		// Переменные
-		private List<List<KKMError>> errors = new List<List<KKMError>> ();
+		private List<List<KKTError>> errors = new List<List<KKTError>> ();
 		private List<string> names = new List<string> ();
 		private char[] splitters = new char[] { ';' };
 
@@ -24,13 +24,13 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу ошибок
 		/// </summary>
-		public KKMErrorsList ()
+		public KKTErrorsList ()
 			{
 			// Получение файла ошибок
 #if !ANDROID
 			byte[] s = Properties.TextToKKMResources.Errors;
 #else
-			byte[] s = Properties.Resources.Codes;
+			byte[] s = Properties.Resources.Errors;
 #endif
 			string buf = Encoding.UTF8.GetString (s);
 			StringReader SR = new StringReader (buf);
@@ -49,12 +49,12 @@ namespace RD_AAOW
 					switch (values.Length)
 						{
 						case 1:
-							errors.Add (new List<KKMError> ());
+							errors.Add (new List<KKTError> ());
 							names.Add (values[0]);
 							break;
 
 						case 2:
-							errors[errors.Count - 1].Add (new KKMError (values[0], values[1]));
+							errors[errors.Count - 1].Add (new KKTError (values[0], values[1]));
 							break;
 
 						default:
@@ -73,35 +73,46 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод возвращает код или сообщение указанной ошибки
+		/// Метод возвращает список ошибок ККТ
 		/// </summary>
-		/// <param name="KKMType">Модель ККТ</param>
-		/// <returns>Возвращает код (сообщение) ошибки или \x7 в случае, если входные параметры некорректны</returns>
-		public List<KKMError> GetErrorCodes (uint KKMType)
+		/// <param name="KKTType">Модель ККТ</param>
+		public List<KKTError> GetErrors (uint KKTType)
 			{
-			return errors[(int)KKMType];
+			return errors[(int)KKTType];
+			}
+
+		/// <summary>
+		/// Метод возвращает список кодов ошибок ККТ
+		/// </summary>
+		/// <param name="KKTType">Модель ККТ</param>
+		public List<string> GetErrorCodesList (uint KKTType)
+			{
+			List<string> res = new List<string> ();
+
+			for (int i = 0; i < errors[(int)KKTType].Count; i++)
+				res.Add (errors[(int)KKTType][i].ErrorCode);
+
+			return res;
 			}
 
 		/// <summary>
 		/// Метод возвращает описание указанной ошибки
 		/// </summary>
-		/// <param name="KKMType">Модель ККТ</param>
+		/// <param name="KKTType">Модель ККТ</param>
 		/// <param name="ErrorNumber">Порядковый номер сообщения</param>
 		/// <returns>Возвращает описание ошибки или \x7 в случае, если входные параметры некорректны</returns>
-		public string GetErrorText (uint KKMType, uint ErrorNumber)
+		public string GetErrorText (uint KKTType, uint ErrorNumber)
 			{
-			if (((int)KKMType < names.Count) && ((int)ErrorNumber < errors[(int)KKMType].Count))
-				return errors[(int)KKMType][(int)ErrorNumber].ErrorText;
+			if (((int)KKTType < names.Count) && ((int)ErrorNumber < errors[(int)KKTType].Count))
+				return errors[(int)KKTType][(int)ErrorNumber].ErrorText;
 			else
 				return EmptyCode;
 			}
 
-		// Методы, возвращающие количество сообщений в группах по ККМ, не требуются
-
 		/// <summary>
-		/// Метод возвращает название ККМ по её типу
+		/// Метод возвращает название ККТ по её типу
 		/// </summary>
-		public List<string> KKMTypeNames
+		public List<string> KKTTypeNames
 			{
 			get
 				{
@@ -111,9 +122,9 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
-	/// Класс описывает отдельную ошибку ККМ
+	/// Класс описывает отдельную ошибку ККТ
 	/// </summary>
-	public class KKMError
+	public class KKTError
 		{
 		/// <summary>
 		/// Код или сообщение ошибки
@@ -144,7 +155,7 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="Code"></param>
 		/// <param name="Text"></param>
-		public KKMError (string Code, string Text)
+		public KKTError (string Code, string Text)
 			{
 			errorCode = ((Code == null) || (Code == "")) ? "—" : Code;
 			errorText = ((Text == null) || (Text == "")) ? "—" : Text;

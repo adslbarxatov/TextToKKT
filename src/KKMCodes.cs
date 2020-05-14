@@ -6,9 +6,9 @@ using System.Text;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс обеспечивает доступ к кодам символов ККМ
+	/// Класс обеспечивает доступ к кодам символов ККТ
 	/// </summary>
-	public class KKMCodes
+	public class KKTCodes
 		{
 		// Переменные
 		private List<string> names = new List<string> ();
@@ -24,7 +24,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Инициализирует таблицы кодов
 		/// </summary>
-		public KKMCodes ()
+		public KKTCodes ()
 			{
 			// Получение файла символов
 #if !ANDROID
@@ -44,44 +44,25 @@ namespace RD_AAOW
 					{
 					// Чтение имени ККМ
 					line++;
-#if ANDROID
-					if (str == "——————————")
-						continue;
-#endif
 
 					// Чтение кодов
 					names.Add (str);
 					codes.Add (new List<int> ());
 
-					if (str != "——————————")
+					for (int i = 0; i < 0x100; i++)
 						{
-						for (int i = 0; i < 0x100; i++)
-							{
-							str = SR.ReadLine ();   // Любое недопустимое значение в этой строке вызовет исключение в следующей
-							codes[codes.Count - 1].Add (int.Parse (str));
-							line++;
-							}
-
-						// Чтение представления
-						presentations.Add (SR.ReadLine ());
-						line++;
-
-						// Чтение примечания
-						descriptions.Add (SR.ReadLine ());
+						str = SR.ReadLine ();   // Любое недопустимое значение в этой строке вызовет исключение в следующей
+						codes[codes.Count - 1].Add (int.Parse (str));
 						line++;
 						}
-#if !ANDROID
-					else
-						{
-						for (int i = 0; i < 0x100; i++)
-							{
-							codes[codes.Count - 1].Add (-1);
-							}
 
-						presentations.Add ("D1");
-						descriptions.Add ("—");
-						}
-#endif
+					// Чтение представления
+					presentations.Add (SR.ReadLine ());
+					line++;
+
+					// Чтение примечания
+					descriptions.Add (SR.ReadLine ());
+					line++;
 					}
 
 				if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
@@ -103,19 +84,19 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод возвращает код указанного символа
 		/// </summary>
-		/// <param name="KKMType">Модель ККМ</param>
+		/// <param name="KKTType">Модель ККТ</param>
 		/// <param name="CodeNumber">Порядковый номер символа в таблице</param>
 		/// <returns>Возвращает код (сообщение) ошибки или \x7 в случае, если входные параметры некорректны</returns>
-		public string GetCode (uint KKMType, byte CodeNumber)
+		public string GetCode (uint KKTType, byte CodeNumber)
 			{
-			if ((int)KKMType < names.Count)
+			if ((int)KKTType < names.Count)
 				{
-				if (codes[(int)KKMType][CodeNumber] < 0)
+				if (codes[(int)KKTType][CodeNumber] < 0)
 					{
 					return EmptyCode;
 					}
 
-				return codes[(int)KKMType][CodeNumber].ToString (presentations[(int)KKMType]);
+				return codes[(int)KKTType][CodeNumber].ToString (presentations[(int)KKTType]);
 				}
 			else
 				{
@@ -126,7 +107,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает список названий ККТ
 		/// </summary>
-		public List<string> KKMTypeNames
+		public List<string> KKTTypeNames
 			{
 			get
 				{
@@ -137,12 +118,12 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод возвращает пояснение к способу ввода текста в ККМ по её типу
 		/// </summary>
-		/// <param name="KKMType">Модель ККМ</param>
+		/// <param name="KKTType">Модель ККТ</param>
 		/// <returns>Возвращает пояснение или \x7 в случае, если входные параметры некорректны</returns>
-		public string GetKKMTypeDescription (uint KKMType)
+		public string GetKKMTypeDescription (uint KKTType)
 			{
-			if ((int)KKMType < names.Count)
-				return descriptions[(int)KKMType];
+			if ((int)KKTType < names.Count)
+				return descriptions[(int)KKTType];
 			else
 				return EmptyCode;
 			}
