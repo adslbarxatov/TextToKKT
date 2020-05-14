@@ -11,6 +11,7 @@ namespace RD_AAOW
 		{
 		// Переменные
 		private KKMCodes kkmc = null;
+		private KKMErrorsList kkme = null;
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -23,12 +24,16 @@ namespace RD_AAOW
 			// Инициализация
 			InitializeComponent ();
 
-			// Загрузка списка ККМ
+			// Загрузка списка кодов и ошибок
 			kkmc = new KKMCodes ();
+			kkme = new KKMErrorsList ();
 
-			// Формирование списка ККМ
-			KKMList.Items.AddRange (kkmc.KKMTypeNames);
-			KKMList.SelectedIndex = 0;
+			// Настройка контролов
+			KKTListForCodes.Items.AddRange (kkmc.KKMTypeNames.ToArray ());
+			KKTListForCodes.SelectedIndex = 0;
+
+			KKTListForErrors.Items.AddRange (kkme.KKMTypeNames.ToArray ());
+			KKTListForErrors.SelectedIndex = 0;
 
 			// Настройка контролов
 			this.Text = ProgramDescription.AssemblyTitle;
@@ -49,7 +54,7 @@ namespace RD_AAOW
 
 			TextLabel.Text = "Текст (" + TextToConvert.Text.Length + "):";
 
-			DescriptionLabel.Text = kkmc.GetKKMTypeDescription ((uint)KKMList.SelectedIndex);
+			DescriptionLabel.Text = kkmc.GetKKMTypeDescription ((uint)KKTListForCodes.SelectedIndex);
 			}
 
 		// Функция трансляции строки в набор кодов
@@ -63,7 +68,7 @@ namespace RD_AAOW
 				string s;
 				byte[] b = Encoding.GetEncoding (1251).GetBytes (text, i, 1);
 
-				if ((s = kkmc.GetCode ((uint)KKMList.SelectedIndex, b[0])) == KKMCodes.EmptyCode)
+				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b[0])) == KKMCodes.EmptyCode)
 					{
 					ResultText.Text += "xxx\t";
 					res = false;
@@ -79,21 +84,9 @@ namespace RD_AAOW
 			}
 
 		// Выбор ККМ
-		private void KKMList_SelectedIndexChanged (object sender, EventArgs e)
+		private void KKTListForCodes_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			// Обработка делимитера
-			if (KKMList.Text == "——————————")
-				{
-				if (KKMList.SelectedIndex == KKMList.Items.Count - 1)
-					KKMList.SelectedIndex = 0;
-				else
-					KKMList.SelectedIndex++;
-
-				return;
-				}
-
-			// Обработка текста
-			TextToConvert_TextChanged (sender, e);
+			TextToConvert_TextChanged (null, null);
 			}
 
 		// Отображение справки
@@ -104,6 +97,21 @@ namespace RD_AAOW
 
 			// Отображение
 			ProgramDescription.ShowAbout ();
+			}
+
+		// Выбор ошибки
+		private void ErrorCodesList_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			ErrorText.Text = kkme.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)ErrorCodesList.SelectedIndex);
+			}
+
+		// Выбор модели аппарата
+		private void KKTListForErrors_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			// Перезаполнение списка
+			ErrorCodesList.DataSource = kkme.GetErrorCodes ((uint)KKTListForErrors.SelectedIndex);
+			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
+			ErrorCodesList.SelectedIndex = 0;
 			}
 		}
 	}

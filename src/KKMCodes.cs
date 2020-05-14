@@ -17,8 +17,7 @@ namespace RD_AAOW
 		private List<string> descriptions = new List<string> ();
 
 		/// <summary>
-		/// Код, возвращаемый при указании некорректных параметров в методах GetErrorCode
-		/// и GetErrorText
+		/// Код, возвращаемый при указании некорректных параметров
 		/// </summary>
 		public const string EmptyCode = "\x7";
 
@@ -27,14 +26,13 @@ namespace RD_AAOW
 		/// </summary>
 		public KKMCodes ()
 			{
-			// Получение файла ошибок
+			// Получение файла символов
 #if !ANDROID
 			byte[] s = Properties.TextToKKMResources.Codes;
-			string buf = Encoding.GetEncoding (1251).GetString (s);
 #else
 			byte[] s = Properties.Resources.Codes;
-			string buf = Encoding.UTF8.GetString (s);
 #endif
+			string buf = Encoding.UTF8.GetString (s);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -126,18 +124,7 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Возвращает количество доступных типов ККМ
-		/// </summary>
-		public uint KKMTypesCount
-			{
-			get
-				{
-				return (uint)names.Count;
-				}
-			}
-
-		/// <summary>
-		/// Возвращает список названий ККМ 
+		/// Возвращает список названий ККТ
 		/// </summary>
 		public List<string> KKMTypeNames
 			{
