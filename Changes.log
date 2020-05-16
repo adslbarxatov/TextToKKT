@@ -3,7 +3,8 @@
 Version 3:
 • Delimiters processing removed;
 • Error codes descriptions added to main interface;
-• Some new error codes added to previously created list
+• Some new error codes added to previously created list;
+• 'About' page added
 
 Version 2.5u:
 • Application namespace, icon and development environment have been unified;
