@@ -2,6 +2,12 @@
 using Android.Content.PM;
 using Android.OS;
 
+#if DEBUG
+[assembly: Application (Debuggable = true)]
+#else
+[assembly: Application (Debuggable = false)]
+#endif
+
 namespace RD_AAOW.Droid
 	{
 	/// <summary>

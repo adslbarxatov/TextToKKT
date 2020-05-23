@@ -1,6 +1,7 @@
-# TextToKKT v 3
+# Text to KKT v 3.0.1h
 
-An utility for encoding text strings to KKT codes and displaying KKT errors descriptions /
+An utility for encoding text strings to KKT codes and displaying KKT errors descriptions
+
 Утилита для преобразования строк текста в коды ККТ и отображения описаний ошибок ККТ (54-ФЗ)
 
 #

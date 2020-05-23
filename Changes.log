@@ -1,5 +1,8 @@
 ﻿Text to KKT changes log
 
+Version 3.0.1h
+• New application info interface implemented
+
 Version 3:
 • Delimiters processing removed;
 • Error codes descriptions added to main interface;

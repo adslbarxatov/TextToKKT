@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -19,8 +20,8 @@ namespace RD_AAOW
 		private ContentPage codesPage, errorsPage, aboutPage;
 
 		// Операторы
-		private KKTCodes kkmc = new KKTCodes ();
-		private KKTErrorsList kkme = new KKTErrorsList ();
+		private readonly KKTCodes kkmc = new KKTCodes ();
+		private readonly KKTErrorsList kkme = new KKTErrorsList ();
 		private int currentCodesKKT = 0, currentErrorsKKT = 0;
 
 		// Переменные страниц
@@ -36,7 +37,7 @@ namespace RD_AAOW
 		private Label aboutLabel;
 		private Button appButton, updateButton, communityButton;
 
-		private Color codesMasterBackColor = Color.FromRgb (255, 255, 240),
+		private readonly Color codesMasterBackColor = Color.FromRgb (255, 255, 240),
 			codesFieldBackColor = Color.FromRgb (255, 255, 210),
 
 			errorsMasterBackColor = Color.FromRgb (255, 240, 240),
@@ -802,19 +803,19 @@ namespace RD_AAOW
 		// Страница обновлений
 		private void UpdateButton_Clicked (object sender, EventArgs e)
 			{
-			Device.OpenUri (new Uri ("https://github.com/adslbarxatov/TextToKKT/releases"));
+			Launcher.OpenAsync ("https://github.com/adslbarxatov/TextToKKT/releases");
 			}
 
 		// Страница проекта
 		private void AppButton_Clicked (object sender, EventArgs e)
 			{
-			Device.OpenUri (new Uri ("https://github.com/adslbarxatov/TextToKKT"));
+			Launcher.OpenAsync ("https://github.com/adslbarxatov/TextToKKT");
 			}
 
 		// Страница лаборатории
 		private void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			Device.OpenUri (new Uri ("https://vk.com/rdaaow_fupl"));
+			Launcher.OpenAsync ("https://vk.com/rdaaow_fupl");
 			}
 
 		/// <summary>
