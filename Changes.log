@@ -1,5 +1,11 @@
 ﻿Text to KKT changes log
 
+Version 3.1
+• Added descriptions for FS's (ФН) and CCT's (ККТ) serial numbers;
+• Added descriptions for FDO (ОФД) TPIDs (ИНН);
+• Added ability to request access to FNReader application and all needed info;
+• Added ability to open other projects' page
+
 Version 3.0.1h
 • New application info interface implemented
 

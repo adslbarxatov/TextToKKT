@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
@@ -90,13 +92,23 @@ namespace RD_AAOW
 			}
 
 		// Отображение справки
-		private void MainForm_HelpButtonClicked (object sender, System.ComponentModel.CancelEventArgs e)
+		private void MainForm_HelpButtonClicked (object sender, CancelEventArgs e)
 			{
 			// Отмена обработки события вызова справки
 			e.Cancel = true;
 
 			// Отображение
-			ProgramDescription.ShowAbout ();
+			AboutForm af = new AboutForm (SupportedLanguages.ru_ru,
+				"https://github.com/adslbarxatov/TextToKKT",
+				"https://github.com/adslbarxatov/TextToKKT/releases",
+				"",
+
+				"Инструмент позволяет:\r\n" +
+				"• вручную (без использования клавиатуры) программировать текстовые данные " +
+				"в контрольно-кассовой технике (ККТ, 54-ФЗ), имеющей только цифровую клавиатуру;\r\n" +
+				"• просматривать расшифровки кодов ошибок ККТ;\r\n" +
+				"• определять модели ККТ и фискальных накопителей (ФН) по их заводским номерам;\r\n" +
+				"• определять наименование оператора фискальных данных (ОФД) по его ИНН");
 			}
 
 		// Выбор ошибки
@@ -112,6 +124,82 @@ namespace RD_AAOW
 			ErrorCodesList.DataSource = kkme.GetErrors ((uint)KKTListForErrors.SelectedIndex);
 			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
 			ErrorCodesList.SelectedIndex = 0;
+			}
+
+		// Запрос названия ОФД
+		private void OFDINN_TextChanged (object sender, EventArgs e)
+			{
+			if (OFDINN.Text != "")
+				OFDResult.Text = KKTSupport.GetOFDName (OFDINN.Text);
+			else
+				OFDResult.Text = "(введите ИНН ОФД)";
+			}
+
+		// Запрос модели ФН
+		private void FNSerial_TextChanged (object sender, EventArgs e)
+			{
+			if (FNSerial.Text != "")
+				FNResult.Text = KKTSupport.GetFNName (FNSerial.Text);
+			else
+				FNResult.Text = "(введите ЗН ФН)";
+			}
+
+		// Запрос модели ККТ
+		private void KKTSerial_TextChanged (object sender, EventArgs e)
+			{
+			if (KKTSerial.Text != "")
+				{
+				KKTResult.Text = KKTSupport.GetKKTModel (KKTSerial.Text);
+				}
+			else
+				{
+				KKTResult.Text = "(введите ЗН ККТ)";
+				}
+			}
+
+		// Дополнительные функции
+		private void GetFNReader_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				Process.Start ("mailto://adslbarxatov@scat-m.ru");
+				}
+			catch
+				{
+				}
+			}
+
+		private void OtherProjects_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				Process.Start ("https://github.com/adslbarxatov/");
+				}
+			catch
+				{
+				}
+			}
+
+		private void AboutFNReader_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				Process.Start ("https://github.com/adslbarxatov/FNReader");
+				}
+			catch
+				{
+				}
+			}
+
+		private void FNReaderUserManual_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				Process.Start ("https://github.com/adslbarxatov/FNReader/blob/master/FNReader.pdf");
+				}
+			catch
+				{
+				}
 			}
 		}
 	}
