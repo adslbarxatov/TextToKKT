@@ -1,5 +1,10 @@
 ﻿Text to KKT changes log
 
+Version 3.2
+• Fully replaced errors list for Mercury KKT;
+• New KKT now can be separated from old models;
+• Errors tab moved to the first position
+
 Version 3.1
 • Added descriptions for FS's (ФН) and CCT's (ККТ) serial numbers;
 • Added descriptions for FDO (ОФД) TPIDs (ИНН);

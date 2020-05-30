@@ -31,11 +31,8 @@ namespace RD_AAOW
 			kkme = new KKTErrorsList ();
 
 			// Настройка контролов
-			KKTListForCodes.Items.AddRange (kkmc.KKTTypeNames.ToArray ());
-			KKTListForCodes.SelectedIndex = 0;
-
-			KKTListForErrors.Items.AddRange (kkme.KKTTypeNames.ToArray ());
-			KKTListForErrors.SelectedIndex = 0;
+			OnlyNewCodes_CheckedChanged (null, null);
+			OnlyNewErrors_CheckedChanged (null, null);
 
 			// Настройка контролов
 			this.Text = ProgramDescription.AssemblyTitle;
@@ -200,6 +197,21 @@ namespace RD_AAOW
 			catch
 				{
 				}
+			}
+
+		// Изменение списка ККТ
+		private void OnlyNewCodes_CheckedChanged (object sender, EventArgs e)
+			{
+			KKTListForCodes.Items.Clear ();
+			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (OnlyNewCodes.Checked).ToArray ());
+			KKTListForCodes.SelectedIndex = 0;
+			}
+
+		private void OnlyNewErrors_CheckedChanged (object sender, EventArgs e)
+			{
+			KKTListForErrors.Items.Clear ();
+			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
+			KKTListForErrors.SelectedIndex = 0;
 			}
 		}
 	}

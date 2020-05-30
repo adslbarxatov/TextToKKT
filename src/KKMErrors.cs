@@ -14,6 +14,7 @@ namespace RD_AAOW
 		private List<List<KKTError>> errors = new List<List<KKTError>> ();
 		private List<string> names = new List<string> ();
 		private char[] splitters = new char[] { ';' };
+		private int newKKTCount;
 
 		// Константы
 		/// <summary>
@@ -41,11 +42,15 @@ namespace RD_AAOW
 
 			try
 				{
+				// Чтение количества новых ККМ
+				newKKTCount = int.Parse (SR.ReadLine ());
+
+				// Чтение кодов
 				while ((str = SR.ReadLine ()) != null)
 					{
 					// Обработка строки
 					line++;
-					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+					string[] values = str.Split (splitters);
 					switch (values.Length)
 						{
 						case 1:
@@ -58,9 +63,15 @@ namespace RD_AAOW
 							break;
 
 						default:
-							throw new Exception ();
+							continue;
 						}
 					}
+
+				// Верификация количества
+				if (newKKTCount < 1)
+					newKKTCount = 1;
+				if (newKKTCount > names.Count)
+					newKKTCount = names.Count;
 				}
 			catch
 				{
@@ -112,12 +123,14 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод возвращает название ККТ по её типу
 		/// </summary>
-		public List<string> KKTTypeNames
+		/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
+		/// только новых моделей ККТ</param>
+		public List<string> GetKKTTypeNames (bool NewOnly)
 			{
-			get
-				{
-				return names;
-				}
+			if (NewOnly)
+				return names.GetRange (0, newKKTCount);
+
+			return names;
 			}
 		}
 

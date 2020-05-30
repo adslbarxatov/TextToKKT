@@ -15,6 +15,7 @@ namespace RD_AAOW
 		private List<List<int>> codes = new List<List<int>> ();
 		private List<string> presentations = new List<string> ();
 		private List<string> descriptions = new List<string> ();
+		private int newKKTCount;
 
 		/// <summary>
 		/// Код, возвращаемый при указании некорректных параметров
@@ -40,6 +41,10 @@ namespace RD_AAOW
 			uint line = 0;
 			try
 				{
+				// Чтение количества новых ККМ
+				newKKTCount = int.Parse (SR.ReadLine ());
+
+				// Чтение кодов
 				while ((str = SR.ReadLine ()) != null)
 					{
 					// Чтение имени ККМ
@@ -70,6 +75,12 @@ namespace RD_AAOW
 					{
 					throw new Exception ();
 					}
+
+				// Верификация количества
+				if (newKKTCount < 1)
+					newKKTCount = 1;
+				if (newKKTCount > names.Count)
+					newKKTCount = names.Count;
 				}
 			catch
 				{
@@ -105,14 +116,16 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Возвращает список названий ККТ
+		/// Метод возвращает список названий ККТ
 		/// </summary>
-		public List<string> KKTTypeNames
+		/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
+		/// только новых моделей ККТ</param>
+		public List<string> GetKKTTypeNames (bool NewOnly)
 			{
-			get
-				{
-				return names;
-				}
+			if (NewOnly)
+				return names.GetRange (0, newKKTCount);
+
+			return names;
 			}
 
 		/// <summary>
