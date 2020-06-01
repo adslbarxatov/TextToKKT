@@ -4,13 +4,13 @@ using Xamarin.Forms.Xaml;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс описывает вторую страницу приложения
+	/// Класс описывает страницу расшифровок ошибок ККТ
 	/// </summary>
 	[XamlCompilation (XamlCompilationOptions.Compile)]
 	public partial class ErrorsPage:ContentPage
 		{
 		/// <summary>
-		/// Конструктор. Запускает вторую страницу приложения
+		/// Конструктор. Запускает страницу
 		/// </summary>
 		public ErrorsPage ()
 			{

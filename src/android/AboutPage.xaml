@@ -10,6 +10,8 @@
             <Button x:Name="AppPage" />
             <Button x:Name="UpdatePage" />
             <Button x:Name="CommunityPage" />
+
+            <Label x:Name="Filler" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

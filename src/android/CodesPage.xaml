@@ -5,9 +5,14 @@
 
     <ScrollView>
         <StackLayout>
-            <Label x:Name="HeaderLabel" />
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                <Label x:Name="SelectionLabel" />
+                <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
+                    <Switch x:Name="OnlyNewCodes" />
+                    <Label x:Name="OnlyNewCodesLabel" />
+                </StackLayout> 
+            </StackLayout>
 
-            <Label x:Name="SelectionLabel" />
             <Button x:Name="KKTButton" />
 
             <Label x:Name="SourceTextLabel" />
@@ -18,6 +23,8 @@
             <Label x:Name="ResultText" />
 
             <Label x:Name="HelpLabel" />
+
+            <Label x:Name="Filler" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

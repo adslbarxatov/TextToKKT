@@ -10,7 +10,7 @@ namespace RD_AAOW
 	public partial class AboutPage:ContentPage
 		{
 		/// <summary>
-		/// Конструктор. Создаёт страницу сведений о программе
+		/// Конструктор. Запускает страницу
 		/// </summary>
 		public AboutPage ()
 			{

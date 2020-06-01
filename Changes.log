@@ -1,5 +1,11 @@
 ﻿Text to KKT changes log
 
+Version 3.2.1 / Android
+• Some errors' descriptions have been reviewed;
+• Correct identity applied to APK;
+• Windows updates from v 3.2 applied to APK;
+• Main interface's initialization code has been completely reviewed
+
 Version 3.2
 • Fully replaced errors list for Mercury KKT;
 • New KKT now can be separated from old models;

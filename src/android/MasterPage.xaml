@@ -5,8 +5,9 @@
              x:Class="RD_AAOW.MasterPage">
 
     <TabbedPage.Children>
-        <mypages:CodesPage x:Name="CodesPage" />
         <mypages:ErrorsPage x:Name="ErrorsPage" />
+        <mypages:CodesPage x:Name="CodesPage" />
+        <mypages:SnPage x:Name="SnPage" />
         <mypages:AboutPage x:Name="AboutPage" />
     </TabbedPage.Children>
 </TabbedPage>

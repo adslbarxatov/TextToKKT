@@ -13,11 +13,10 @@ namespace RD_AAOW
 	public partial class App:Application
 		{
 		// Общие переменные
-		private int masterFontSize = 18,
-			tipsFontSize = 14;
+		private int masterFontSize = 18, tipsFontSize = 14;
 		private Thickness margin = new Thickness (6);
 
-		private ContentPage codesPage, errorsPage, aboutPage;
+		private ContentPage codesPage, errorsPage, aboutPage, snPage;
 
 		// Операторы
 		private readonly KKTCodes kkmc = new KKTCodes ();
@@ -37,17 +36,97 @@ namespace RD_AAOW
 		private Label aboutLabel;
 		private Button appButton, updateButton, communityButton;
 
-		private readonly Color codesMasterBackColor = Color.FromRgb (255, 255, 240),
-			codesFieldBackColor = Color.FromRgb (255, 255, 210),
+		private Switch onlyNewCodes, onlyNewErrors;
+		private Label onlyNewCodesLabel, onlyNewErrorsLabel;
 
-			errorsMasterBackColor = Color.FromRgb (255, 240, 240),
-			errorsFieldBackColor = Color.FromRgb (255, 210, 210),
+		private Label kktSNLabel, kktTypeLabel, fnSNLabel, fnTypeLabel,
+			ofdINNLabel, ofdNameLabel;
+		private Editor kktSN, fnSN, ofdINN;
 
-			aboutMasterBackColor = Color.FromRgb (224, 255, 224),
-			aboutFieldBackColor = Color.FromRgb (210, 255, 210),
+		private readonly Color
+			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
+			codesFieldBackColor = Color.FromHex ("#FFFFD0"),
 
-			masterTextColor = Color.FromRgb (0, 0, 128),
-			masterHeaderColor = Color.FromRgb (0, 0, 0);
+			errorsMasterBackColor = Color.FromHex ("#FFF0F0"),
+			errorsFieldBackColor = Color.FromHex ("#FFD0D0"),
+
+			aboutMasterBackColor = Color.FromHex ("#F0FFF0"),
+			aboutFieldBackColor = Color.FromHex ("#D0FFD0"),
+
+			snMasterBackColor = Color.FromHex ("#E8E8FF"),
+			snFieldBackColor = Color.FromHex ("#D0D0FF"),
+
+			masterTextColor = Color.FromHex ("#000080"),
+			masterHeaderColor = Color.FromHex ("#000000");
+
+		// Вспомогательные методы
+		private void ApplyPageSettings (ref ContentPage Page, string PageName, string PageTitle, Color PageBackColor)
+			{
+			Page = (ContentPage)MainPage.FindByName (PageName);
+			Page.Title = PageTitle;
+			Page.BackgroundColor = PageBackColor;
+			}
+
+		private void ApplyLabelSettings (ContentPage ParentPage, ref Label ChildLabel, string LabelName,
+			string LabelTitle, Color LabelTextColor)
+			{
+			ChildLabel = (Label)ParentPage.FindByName (LabelName);
+
+			ChildLabel.Text = LabelTitle;
+			ChildLabel.HorizontalOptions = LayoutOptions.Start;
+			ChildLabel.FontAttributes = FontAttributes.None;
+			ChildLabel.FontSize = masterFontSize;
+			ChildLabel.TextColor = LabelTextColor;
+			ChildLabel.Margin = margin;
+			}
+
+		private void ApplyButtonSettings (ContentPage ParentPage, ref Button ChildButton, string ButtonName,
+			string ButtonTitle, Color ButtonColor)
+			{
+			ChildButton = (Button)ParentPage.FindByName (ButtonName);
+
+			ChildButton.BackgroundColor = ButtonColor;
+			ChildButton.FontAttributes = FontAttributes.None;
+			ChildButton.FontSize = masterFontSize;
+			ChildButton.TextColor = masterTextColor;
+			ChildButton.Margin = margin;
+			ChildButton.Text = ButtonTitle;
+			}
+
+		private void ApplyTipLabelSettings (ContentPage ParentPage, ref Label ChildLabel, string LabelName,
+			string LabelTitle, Color LabelTextColor)
+			{
+			ChildLabel = (Label)ParentPage.FindByName (LabelName);
+
+			ChildLabel.Text = LabelTitle;
+			ChildLabel.HorizontalOptions = LayoutOptions.Center;
+			ChildLabel.FontAttributes = FontAttributes.Italic;
+			ChildLabel.FontSize = tipsFontSize;
+			ChildLabel.TextColor = LabelTextColor;
+			ChildLabel.HorizontalTextAlignment = TextAlignment.Center;
+			ChildLabel.Margin = margin;
+			}
+
+		private void ApplyEditorSettings (ContentPage ParentPage, ref Editor ChildEditor, string EditorName,
+			Color EditorColor, Keyboard EditorKeyboard, uint MaxLength)
+			{
+			ChildEditor = (Editor)ParentPage.FindByName (EditorName);
+
+			ChildEditor.AutoSize = EditorAutoSizeOption.TextChanges;
+			ChildEditor.BackgroundColor = EditorColor;
+			ChildEditor.FontAttributes = FontAttributes.None;
+			ChildEditor.FontFamily = "Serif";
+			ChildEditor.FontSize = masterFontSize;
+			ChildEditor.HorizontalOptions = LayoutOptions.Fill;
+			ChildEditor.Keyboard = EditorKeyboard;
+			ChildEditor.MaxLength = (int)MaxLength;
+			//ChildEditor.Placeholder = "...";
+			//ChildEditor.PlaceholderColor = Color.FromRgb (255, 255, 0);
+			ChildEditor.TextColor = masterTextColor;
+			ChildEditor.Margin = margin;
+
+			ChildEditor.Text = "";
+			}
 
 		/// <summary>
 		/// Конструктор. Точка входа приложения
@@ -59,191 +138,181 @@ namespace RD_AAOW
 
 			MainPage = new MasterPage ();
 
-			codesPage = (ContentPage)MainPage.FindByName ("CodesPage");
-			codesPage.Title = "Коды символов";
-			codesPage.BackgroundColor = codesMasterBackColor;
-
-			errorsPage = (ContentPage)MainPage.FindByName ("ErrorsPage");
-			errorsPage.Title = "Коды ошибок";
-			errorsPage.BackgroundColor = errorsMasterBackColor;
-
-			aboutPage = (ContentPage)MainPage.FindByName ("AboutPage");
-			aboutPage.Title = "О приложении";
-			aboutPage.BackgroundColor = aboutMasterBackColor;
+			ApplyPageSettings (ref codesPage, "CodesPage", "Коды символов", codesMasterBackColor);
+			ApplyPageSettings (ref errorsPage, "ErrorsPage", "Коды ошибок", errorsMasterBackColor);
+			ApplyPageSettings (ref aboutPage, "AboutPage", "О приложении", aboutMasterBackColor);
+			ApplyPageSettings (ref snPage, "SnPage", "ЗН ФН / ККТ / ИНН ОФД", snMasterBackColor);
 
 			// Получение и настройка контролов
-			codesSelectionLabel = (Label)codesPage.FindByName ("SelectionLabel");
-			errorsSelectionLabel = (Label)errorsPage.FindByName ("SelectionLabel");
-
-			codesSelectionLabel.Text = errorsSelectionLabel.Text = "Модель ККТ:";
-			codesSelectionLabel.HorizontalOptions = errorsSelectionLabel.HorizontalOptions = LayoutOptions.Start;
-			codesSelectionLabel.FontAttributes = errorsSelectionLabel.FontAttributes = FontAttributes.None;
-			codesSelectionLabel.FontSize = errorsSelectionLabel.FontSize = masterFontSize;
-			codesSelectionLabel.TextColor = errorsSelectionLabel.TextColor = masterHeaderColor;
-			codesSelectionLabel.Margin = errorsSelectionLabel.Margin = margin;
+			ApplyLabelSettings (codesPage, ref codesSelectionLabel, "SelectionLabel",
+				"Модель ККТ:", masterHeaderColor);
+			ApplyLabelSettings (errorsPage, ref errorsSelectionLabel, "SelectionLabel",
+				"Модель ККТ:", masterHeaderColor);
 
 			//
-			codesKKTButton = (Button)codesPage.FindByName ("KKTButton");
-			errorsKKTButton = (Button)errorsPage.FindByName ("KKTButton");
+			onlyNewCodes = (Switch)codesPage.FindByName ("OnlyNewCodes");
+			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
+			onlyNewCodes.IsToggled = onlyNewErrors.IsToggled = true;
 
-			codesKKTButton.BackgroundColor = codesFieldBackColor;
-			errorsKKTButton.BackgroundColor = errorsFieldBackColor;
-			codesKKTButton.FontAttributes = errorsKKTButton.FontAttributes = FontAttributes.None;
-			codesKKTButton.FontSize = errorsKKTButton.FontSize = masterFontSize;
-			codesKKTButton.TextColor = errorsKKTButton.TextColor = masterTextColor;
-			codesKKTButton.Margin = errorsKKTButton.Margin = margin;
+			onlyNewCodes.Toggled += OnlyNewCodes_Toggled;
+			onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
 
-			codesKKTButton.Text = kkmc.KKTTypeNames[currentCodesKKT];
+			//
+			ApplyLabelSettings (codesPage, ref onlyNewCodesLabel, "OnlyNewCodesLabel",
+				"Только новые", masterTextColor);
+			ApplyLabelSettings (errorsPage, ref onlyNewErrorsLabel, "OnlyNewErrorsLabel",
+				"Только новые", masterTextColor);
+
+			//
+			ApplyButtonSettings (codesPage, ref codesKKTButton, "KKTButton",
+				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[currentCodesKKT], codesFieldBackColor);
+			ApplyButtonSettings (errorsPage, ref errorsKKTButton, "KKTButton",
+				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT], errorsFieldBackColor);
+
 			codesKKTButton.Clicked += CodesKKTButton_Clicked;
-			errorsKKTButton.Text = kkme.KKTTypeNames[currentErrorsKKT];
 			errorsKKTButton.Clicked += ErrorsKKTButton_Clicked;
 
 			//
-			codesSourceTextLabel = (Label)codesPage.FindByName ("SourceTextLabel");
-			errorsCodeLabel = (Label)errorsPage.FindByName ("ErrorCodeLabel");
-
-			codesSourceTextLabel.Text = "Исходный текст:";
-			errorsCodeLabel.Text = "Код / сообщение:";
-			codesSourceTextLabel.HorizontalOptions = errorsCodeLabel.HorizontalOptions = LayoutOptions.Start;
-			codesSourceTextLabel.FontAttributes = errorsCodeLabel.FontAttributes = FontAttributes.None;
-			codesSourceTextLabel.FontSize = errorsCodeLabel.FontSize = masterFontSize;
-			codesSourceTextLabel.TextColor = errorsCodeLabel.TextColor = masterHeaderColor;
-			codesSourceTextLabel.Margin = errorsCodeLabel.Margin = margin;
+			ApplyLabelSettings (codesPage, ref codesSourceTextLabel, "SourceTextLabel",
+				"Исходный текст:", masterHeaderColor);
+			ApplyLabelSettings (errorsPage, ref errorsCodeLabel, "ErrorCodeLabel",
+				"Код / сообщение:", masterHeaderColor);
 
 			//
-			codesSourceText = (Editor)codesPage.FindByName ("SourceText");
-			codesSourceText.AutoSize = EditorAutoSizeOption.TextChanges;
-			codesSourceText.BackgroundColor = codesFieldBackColor;
-			codesSourceText.FontAttributes = FontAttributes.None;
-			codesSourceText.FontFamily = "Serif";
-			codesSourceText.FontSize = masterFontSize;
-			codesSourceText.HorizontalOptions = LayoutOptions.Fill;
-			codesSourceText.Keyboard = Keyboard.Default;
-			codesSourceText.MaxLength = 72;
-			//sourceText.Placeholder = "...";
-			//sourceText.PlaceholderColor = Color.FromRgb (255, 255, 0);
-			codesSourceText.TextColor = masterTextColor;
-			codesSourceText.Margin = margin;
-
-			codesSourceText.Text = "";
+			ApplyEditorSettings (codesPage, ref codesSourceText, "SourceText",
+				codesFieldBackColor, Keyboard.Default, 72);
 			codesSourceText.TextChanged += SourceText_TextChanged;
 
 			//
-			errorsCodeButton = (Button)errorsPage.FindByName ("ErrorCodeButton");
-
-			errorsCodeButton.BackgroundColor = errorsFieldBackColor;
-			errorsCodeButton.FontAttributes = FontAttributes.None;
-			errorsCodeButton.FontSize = masterFontSize;
-			errorsCodeButton.TextColor = masterTextColor;
-			errorsCodeButton.Margin = margin;
-
-			errorsCodeButton.Text = "- Выберите код ошибки -";
+			ApplyButtonSettings (errorsPage, ref errorsCodeButton, "ErrorCodeButton",
+				"- Выберите код ошибки -", errorsFieldBackColor);
 			errorsCodeButton.Clicked += ErrorsCodeButton_Clicked;
 
 			//
-			codesResultTextLabel = (Label)codesPage.FindByName ("ResultTextLabel");
-
-			codesResultTextLabel.Text = "Коды ККТ:";
-			codesResultTextLabel.HorizontalOptions = LayoutOptions.Start;
-			codesResultTextLabel.FontAttributes = FontAttributes.None;
-			codesResultTextLabel.FontSize = masterFontSize;
-			codesResultTextLabel.TextColor = masterHeaderColor;
-			codesResultTextLabel.Margin = margin;
+			ApplyLabelSettings (codesPage, ref codesResultTextLabel, "ResultTextLabel",
+				"Коды ККТ:", masterHeaderColor);
 
 			//
-			codesErrorLabel = (Label)codesPage.FindByName ("ErrorLabel");
-
-			codesErrorLabel.Text = "Один или несколько введённых символов не поддерживаются данной ККТ";
-			codesErrorLabel.HorizontalOptions = LayoutOptions.Center;
-			codesErrorLabel.FontAttributes = FontAttributes.Italic;
-			codesErrorLabel.FontSize = tipsFontSize;
-			codesErrorLabel.TextColor = Color.FromRgb (255, 0, 0);
-			codesErrorLabel.HorizontalTextAlignment = TextAlignment.Center;
+			ApplyTipLabelSettings (codesPage, ref codesErrorLabel, "ErrorLabel",
+				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
+				Color.FromHex ("#FF0000"));
 			codesErrorLabel.IsVisible = false;
-			codesErrorLabel.Margin = margin;
 
 			//
-			codesResultText = (Label)codesPage.FindByName ("ResultText");
-
+			ApplyLabelSettings (codesPage, ref codesResultText, "ResultText", "", masterTextColor);
 			codesResultText.BackgroundColor = codesFieldBackColor;
-			codesResultText.FontAttributes = FontAttributes.None;
 			codesResultText.FontFamily = "Serif";
-			codesResultText.FontSize = masterFontSize;
 			codesResultText.HorizontalOptions = LayoutOptions.Fill;
-			codesResultText.TextColor = masterTextColor;
-			codesResultText.Text = "";
-			codesResultText.Margin = margin;
 
 			//
-			codesHelpLabel = (Label)codesPage.FindByName ("HelpLabel");
-
-			codesHelpLabel.Text = kkmc.GetKKMTypeDescription ((uint)currentCodesKKT);
-			codesHelpLabel.FontAttributes = FontAttributes.Italic;
-			codesHelpLabel.FontSize = tipsFontSize;
-			codesHelpLabel.HorizontalOptions = LayoutOptions.Center;
-			codesHelpLabel.HorizontalTextAlignment = TextAlignment.Center;
-			codesHelpLabel.TextColor = Color.FromRgb (64, 64, 64);
-			codesHelpLabel.Margin = margin;
+			ApplyTipLabelSettings (codesPage, ref codesHelpLabel, "HelpLabel",
+				kkmc.GetKKMTypeDescription ((uint)currentCodesKKT), Color.FromHex ("#404040"));
 
 			//
-			errorsResultTextLabel = (Label)errorsPage.FindByName ("ResultTextLabel");
-
-			errorsResultTextLabel.Text = "Расшифровка:";
-			errorsResultTextLabel.HorizontalOptions = LayoutOptions.Start;
-			errorsResultTextLabel.FontAttributes = FontAttributes.None;
-			errorsResultTextLabel.FontSize = masterFontSize;
-			errorsResultTextLabel.TextColor = masterHeaderColor;
-			errorsResultTextLabel.Margin = margin;
+			ApplyLabelSettings (errorsPage, ref errorsResultTextLabel, "ResultTextLabel",
+				"Расшифровка:", masterHeaderColor);
 
 			//
-			errorsResultText = (Label)errorsPage.FindByName ("ResultText");
-
+			ApplyLabelSettings (errorsPage, ref errorsResultText, "ResultText", "", masterTextColor);
 			errorsResultText.BackgroundColor = errorsFieldBackColor;
-			errorsResultText.FontAttributes = FontAttributes.None;
 			errorsResultText.FontFamily = "Serif";
-			errorsResultText.FontSize = masterFontSize;
 			errorsResultText.HorizontalOptions = LayoutOptions.Fill;
-			errorsResultText.TextColor = masterTextColor;
-			errorsResultText.Text = "";
-			errorsResultText.Margin = margin;
 
 			//
-			aboutLabel = (Label)aboutPage.FindByName ("AboutLabel");
-
-			aboutLabel.FontAttributes = FontAttributes.Bold | FontAttributes.Italic;
-			aboutLabel.FontSize = masterFontSize;
-			aboutLabel.HorizontalOptions = LayoutOptions.Fill;
-			aboutLabel.HorizontalTextAlignment = TextAlignment.Center;
-			aboutLabel.TextColor = masterHeaderColor;
-			aboutLabel.Text = ProgramDescription.AssemblyTitle + "\n" +
+			ApplyLabelSettings (aboutPage, ref aboutLabel, "AboutLabel",
+				ProgramDescription.AssemblyTitle + "\n" +
 				ProgramDescription.AssemblyDescription + "\n\n" +
 				ProgramDescription.AssemblyCopyright + "\nv " +
 				ProgramDescription.AssemblyVersion +
-				"; " + ProgramDescription.AssemblyLastUpdate;
-			aboutLabel.Margin = margin;
+				"; " + ProgramDescription.AssemblyLastUpdate,
+				Color.FromHex ("#000080"));
+			aboutLabel.FontAttributes = FontAttributes.Bold;
+			aboutLabel.HorizontalOptions = LayoutOptions.Fill;
+			aboutLabel.HorizontalTextAlignment = TextAlignment.Center;
 
 			//
-			appButton = (Button)aboutPage.FindByName ("AppPage");
-			updateButton = (Button)aboutPage.FindByName ("UpdatePage");
-			communityButton = (Button)aboutPage.FindByName ("CommunityPage");
+			ApplyButtonSettings (aboutPage, ref appButton, "AppPage",
+				"Перейти на страницу проекта", aboutFieldBackColor);
+			ApplyButtonSettings (aboutPage, ref updateButton, "UpdatePage",
+				"Перейти на страницу анализатора данных ФН", aboutFieldBackColor);
+			ApplyButtonSettings (aboutPage, ref communityButton, "CommunityPage",
+				"RD AAOW Free utilities production lab", aboutFieldBackColor);
 
-			appButton.BackgroundColor = updateButton.BackgroundColor =
-				communityButton.BackgroundColor = aboutFieldBackColor;
-			appButton.FontAttributes = updateButton.FontAttributes =
-				communityButton.FontAttributes = FontAttributes.None;
-			appButton.FontSize = updateButton.FontSize =
-				communityButton.FontSize = masterFontSize;
-			appButton.TextColor = updateButton.TextColor =
-				communityButton.TextColor = masterTextColor;
-			appButton.Margin = updateButton.Margin =
-				communityButton.Margin = margin;
-
-			appButton.Text = "Перейти на страницу проекта";
 			appButton.Clicked += AppButton_Clicked;
-			updateButton.Text = "Перейти на страницу обновлений";
 			updateButton.Clicked += UpdateButton_Clicked;
-			communityButton.Text = "RD AAOW Free utilities production lab";
 			communityButton.Clicked += CommunityButton_Clicked;
+
+			//
+			ApplyLabelSettings (snPage, ref kktSNLabel, "KKTSNLabel", "Заводской номер ККТ:", masterHeaderColor);
+			ApplyEditorSettings (snPage, ref kktSN, "KKTSN", snFieldBackColor, Keyboard.Numeric, 16);
+			ApplyLabelSettings (snPage, ref kktTypeLabel, "KKTTypeLabel", "- Укажите ЗН ККТ -", masterTextColor);
+
+			kktTypeLabel.BackgroundColor = snFieldBackColor;
+			kktTypeLabel.FontFamily = "Serif";
+			kktTypeLabel.HorizontalOptions = LayoutOptions.Fill;
+			kktTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
+
+			kktSN.TextChanged += KKTSN_TextChanged;
+
+			//
+			ApplyLabelSettings (snPage, ref fnSNLabel, "FNSNLabel", "Заводской номер ФН:", masterHeaderColor);
+			ApplyEditorSettings (snPage, ref fnSN, "FNSN", snFieldBackColor, Keyboard.Numeric, 16);
+			ApplyLabelSettings (snPage, ref fnTypeLabel, "FNTypeLabel", "- Укажите ЗН ФН -", masterTextColor);
+
+			fnTypeLabel.BackgroundColor = snFieldBackColor;
+			fnTypeLabel.FontFamily = "Serif";
+			fnTypeLabel.HorizontalOptions = LayoutOptions.Fill;
+			fnTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
+
+			fnSN.TextChanged += FNSN_TextChanged;
+
+			//
+			ApplyLabelSettings (snPage, ref ofdINNLabel, "OFDINNLabel", "ИНН ОФД:", masterHeaderColor);
+			ApplyEditorSettings (snPage, ref ofdINN, "OFDINN", snFieldBackColor, Keyboard.Numeric, 10);
+			ApplyLabelSettings (snPage, ref ofdNameLabel, "OFDNameLabel", "- Укажите ИНН ОФД -", masterTextColor);
+
+			ofdNameLabel.BackgroundColor = snFieldBackColor;
+			ofdNameLabel.FontFamily = "Serif";
+			ofdNameLabel.HorizontalOptions = LayoutOptions.Fill;
+			ofdNameLabel.HorizontalTextAlignment = TextAlignment.Center;
+
+			ofdINN.TextChanged += OFDINN_TextChanged;
+			}
+
+		// Изменение ИНН ОФД, ЗН ФН и ККТ
+		private void KKTSN_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			if (kktSN.Text != "")
+				kktTypeLabel.Text = KKTSupport.GetKKTModel (kktSN.Text);
+			else
+				kktTypeLabel.Text = "- Укажите ИНН ОФД -";
+			}
+
+		private void FNSN_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			if (fnSN.Text != "")
+				fnTypeLabel.Text = KKTSupport.GetFNName (fnSN.Text);
+			else
+				fnTypeLabel.Text = "- Укажите ЗН ФН -";
+			}
+
+		private void OFDINN_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			if (ofdINN.Text != "")
+				ofdNameLabel.Text = KKTSupport.GetOFDName (ofdINN.Text);
+			else
+				ofdNameLabel.Text = "- Укажите ИНН ОФД -";
+			}
+
+		// Переключение свичей
+		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
+			{
+			onlyNewCodesLabel.TextColor = e.Value ? masterTextColor : Color.FromHex ("#404040");
+			}
+
+		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
+			{
+			onlyNewErrorsLabel.TextColor = e.Value ? masterTextColor : Color.FromHex ("#404040");
 			}
 
 		// Ввод текста
@@ -260,14 +329,14 @@ namespace RD_AAOW
 			{
 			// Запрос модели ККТ
 			string res = await codesPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-				kkmc.KKTTypeNames.ToArray ());
+				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).ToArray ());
 
 			// Установка модели
-			if (kkmc.KKTTypeNames.IndexOf (res) < 0)
+			if (kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res) < 0)
 				return;
 
 			codesKKTButton.Text = res;
-			currentCodesKKT = kkmc.KKTTypeNames.IndexOf (res);
+			currentCodesKKT = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res);
 			codesHelpLabel.Text = kkmc.GetKKMTypeDescription ((uint)currentCodesKKT);
 
 			SourceText_TextChanged (null, null);
@@ -766,14 +835,14 @@ namespace RD_AAOW
 			{
 			// Запрос модели ККТ
 			string res = await errorsPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-				kkme.KKTTypeNames.ToArray ());
+				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).ToArray ());
 
 			// Установка модели
-			if (kkme.KKTTypeNames.IndexOf (res) < 0)
+			if (kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).IndexOf (res) < 0)
 				return;
 
 			errorsKKTButton.Text = res;
-			currentErrorsKKT = kkme.KKTTypeNames.IndexOf (res);
+			currentErrorsKKT = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).IndexOf (res);
 
 			List<string> list = kkme.GetErrorCodesList ((uint)currentErrorsKKT);
 			errorsCodeButton.Text = list[0];
@@ -803,7 +872,7 @@ namespace RD_AAOW
 		// Страница обновлений
 		private void UpdateButton_Clicked (object sender, EventArgs e)
 			{
-			Launcher.OpenAsync ("https://github.com/adslbarxatov/TextToKKT/releases");
+			Launcher.OpenAsync ("https://github.com/adslbarxatov/FNReader");
 			}
 
 		// Страница проекта

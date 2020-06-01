@@ -4,15 +4,15 @@ using Xamarin.Forms.Xaml;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс описывает страницу преобразования текста в коды ККТ
+	/// Класс описывает страницу проверки заводских номеров и ИНН
 	/// </summary>
-	[XamlCompilation (XamlCompilationOptions.Compile)]
-	public partial class CodesPage:ContentPage
+ 	[XamlCompilation (XamlCompilationOptions.Compile)]
+	public partial class SnPage:ContentPage
 		{
 		/// <summary>
 		/// Конструктор. Запускает страницу
 		/// </summary>
-		public CodesPage ()
+		public SnPage ()
 			{
 			InitializeComponent ();
 			}
