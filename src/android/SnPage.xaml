@@ -5,29 +5,15 @@
 
     <ScrollView>
         <StackLayout>
-            <StackLayout Orientation="Horizontal">
-                <Label x:Name="KKTSNLabel" VerticalOptions="Center" />
-                <Editor x:Name="KKTSN" />
-            </StackLayout>
-            <Label x:Name="KKTTypeLabel" />
+            <Label x:Name="HeaderLabel" />
             
-            <Label x:Name="Filler1" />
-
             <StackLayout Orientation="Horizontal">
-                <Label x:Name="FNSNLabel" VerticalOptions="Center" />
-                <Editor x:Name="FNSN" />
+                <Label x:Name="SNLabel" VerticalOptions="Center" />
+                <Editor x:Name="SN" />
             </StackLayout>
-            <Label x:Name="FNTypeLabel" />
-
-            <Label x:Name="Filler2" />
-
-            <StackLayout Orientation="Horizontal">
-                <Label x:Name="OFDINNLabel" VerticalOptions="Center" />
-                <Editor x:Name="OFDINN" />
-            </StackLayout>
-            <Label x:Name="OFDNameLabel" />
-
-            <Label x:Name="Filler3" />
+            <Label x:Name="TypeLabel" />
+            
+            <Label x:Name="Filler" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

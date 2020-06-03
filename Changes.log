@@ -1,5 +1,10 @@
 ﻿Text to KKT changes log
 
+Version 3.3 / Android
+• Application interface has been reviewed: now names of pages will be displayed properly;
+• Serial numbers and INN page splitted into three pages;
+• Intro screen has been implemented
+
 Version 3.2.1 / Android
 • Some errors' descriptions have been reviewed;
 • Correct identity applied to APK;

@@ -1,6 +1,8 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using System.Threading.Tasks;
 
 #if DEBUG
 [assembly: Application (Debuggable = true)]
@@ -11,10 +13,10 @@ using Android.OS;
 namespace RD_AAOW.Droid
 	{
 	/// <summary>
-	/// Класс описывает функционал приложения
+	/// Класс описывает загрузчик приложения
 	/// </summary>
-	[Activity (Label = "Text to KKT", Icon = "@mipmap/icon", Theme = "@style/MainTheme", 
-		MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+	[Activity (Label = "Text to KKT", Icon = "@mipmap/icon", Theme = "@style/MainTheme",
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class MainActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
 		/// <summary>
@@ -29,6 +31,43 @@ namespace RD_AAOW.Droid
 			base.OnCreate (savedInstanceState);
 			global::Xamarin.Forms.Forms.Init (this, savedInstanceState);
 			LoadApplication (new App ());
+			}
+		}
+
+	/// <summary>
+	/// Класс описывает экран-заставку приложения
+	/// </summary>
+	[Activity (Theme = "@style/SplashTheme", MainLauncher = true, NoHistory = true,
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+	public class SplashActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+		{
+		/// <summary>
+		/// Обработчик события создания экземпляра
+		/// </summary>
+		/// <param name="savedInstanceState"></param>
+		protected override void OnCreate (Bundle savedInstanceState)
+			{
+			base.OnCreate (savedInstanceState);
+			}
+
+		/// <summary>
+		/// Prevent the back button from canceling the startup process
+		/// </summary>
+		public override void OnBackPressed ()
+			{
+			}
+
+		/// <summary>
+		/// Launches the startup task
+		/// </summary>
+		protected override void OnResume ()
+			{
+			base.OnResume ();
+			Task startup = new Task (() =>
+				{
+					StartActivity (new Intent (Application.Context, typeof (MainActivity)));
+				});
+			startup.Start ();
 			}
 		}
 	}

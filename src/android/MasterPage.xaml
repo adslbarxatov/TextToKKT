@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+<CarouselPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mypages="clr-namespace:RD_AAOW"
              x:Class="RD_AAOW.MasterPage">
 
-    <TabbedPage.Children>
         <mypages:ErrorsPage x:Name="ErrorsPage" />
+        <mypages:SnPage x:Name="KKTSnPage" />
+        <mypages:SnPage x:Name="FNSnPage" />
+        <mypages:SnPage x:Name="OFDINNPage" />
         <mypages:CodesPage x:Name="CodesPage" />
-        <mypages:SnPage x:Name="SnPage" />
         <mypages:AboutPage x:Name="AboutPage" />
-    </TabbedPage.Children>
-</TabbedPage>
+</CarouselPage>

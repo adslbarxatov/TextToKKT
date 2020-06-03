@@ -7,7 +7,7 @@ namespace RD_AAOW
 	/// Класс описывает главный макет приложения
 	/// </summary>
 	[XamlCompilation (XamlCompilationOptions.Compile)]
-	public partial class MasterPage:TabbedPage
+	public partial class MasterPage:CarouselPage
 		{
 		/// <summary>
 		/// Конструктор. Создаёт макет приложения

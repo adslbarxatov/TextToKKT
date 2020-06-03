@@ -5,6 +5,8 @@
 
     <ScrollView>
         <StackLayout>
+            <Label x:Name="HeaderLabel" />
+
             <Label x:Name="AboutLabel" />
 
             <Button x:Name="AppPage" />
