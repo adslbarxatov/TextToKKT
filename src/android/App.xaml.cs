@@ -16,8 +16,8 @@ namespace RD_AAOW
 		private int masterFontSize = 18, tipsFontSize = 14;
 		private Thickness margin = new Thickness (6);
 
-		private ContentPage codesPage, errorsPage, aboutPage, 
-			kktSnPage, fnSnPage, ofdINNPage;
+		private ContentPage codesPage, errorsPage, aboutPage,
+			kktSnPage, fnSnPage, ofdINNPage, fnLifePage;
 
 		// Операторы
 		private readonly KKTCodes kkmc = new KKTCodes ();
@@ -44,6 +44,14 @@ namespace RD_AAOW
 			ofdINNLabel, ofdNameLabel;
 		private Editor kktSN, fnSN, ofdINN;
 
+		private Label setModelLabel, fnLifeLabel, fnLifeModelLabel, setUserParameters,
+			fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeSeasonLabel, fnLifeAgentsLabel,
+			fnLifeExciseLabel, fnLifeAutonomousLabel, setDate, fnLifeResult;
+		private Editor fnLifeSerial;
+		private Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
+			fnLifeExcise, fnLifeAutonomous;
+		private DatePicker fnLifeStartDate;
+
 		private readonly Color
 			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
 			codesFieldBackColor = Color.FromHex ("#FFFFD0"),
@@ -54,11 +62,17 @@ namespace RD_AAOW
 			aboutMasterBackColor = Color.FromHex ("#F0FFF0"),
 			aboutFieldBackColor = Color.FromHex ("#D0FFD0"),
 
+			fnLifeMasterBackColor = Color.FromHex ("#FFF0E0"),
+			fnLifeFieldBackColor = Color.FromHex ("#FFE0C0"),
+
 			snMasterBackColor = Color.FromHex ("#F4E8FF"),
 			snFieldBackColor = Color.FromHex ("#ECD8FF"),
 
 			masterTextColor = Color.FromHex ("#000080"),
-			masterHeaderColor = Color.FromHex ("#202020");
+			masterHeaderColor = Color.FromHex ("#202020"),
+
+			untoggledSwitchColor = Color.FromHex ("#404040"),
+			errorColor = Color.FromHex ("#FF0000");
 
 		// Вспомогательные методы
 		private void ApplyPageSettings (ref ContentPage Page, string PageName, string PageTitle, Color PageBackColor)
@@ -164,6 +178,7 @@ namespace RD_AAOW
 			ApplyPageSettings (ref ofdINNPage, "OFDINNPage", "Название ОФД по ИНН", snMasterBackColor);
 			ApplyPageSettings (ref errorsPage, "ErrorsPage", "Расшифровка ошибок ККТ", errorsMasterBackColor);
 			ApplyPageSettings (ref aboutPage, "AboutPage", "О приложении", aboutMasterBackColor);
+			ApplyPageSettings (ref fnLifePage, "FNLifePage", "Срок жизни ФН", fnLifeMasterBackColor);
 
 			#region Страница кодов
 			ApplyLabelSettings (codesPage, ref codesSelectionLabel, "SelectionLabel",
@@ -191,7 +206,7 @@ namespace RD_AAOW
 
 			ApplyTipLabelSettings (codesPage, ref codesErrorLabel, "ErrorLabel",
 				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
-				Color.FromHex ("#FF0000"));
+				errorColor);
 			codesErrorLabel.IsVisible = false;
 
 			ApplyLabelSettings (codesPage, ref codesResultText, "ResultText", "", masterTextColor);
@@ -215,7 +230,7 @@ namespace RD_AAOW
 				"Только новые", masterTextColor);
 
 			ApplyButtonSettings (errorsPage, ref errorsKKTButton, "KKTButton",
-				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT], 
+				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
 
 			ApplyLabelSettings (errorsPage, ref errorsCodeLabel, "ErrorCodeLabel",
@@ -285,6 +300,174 @@ namespace RD_AAOW
 			ofdNameLabel.HorizontalOptions = LayoutOptions.Fill;
 			ofdNameLabel.HorizontalTextAlignment = TextAlignment.Center;
 			#endregion
+
+			#region Страница определения срока жизни ФН
+			ApplyLabelSettings (fnLifePage, ref setModelLabel, "SetModelLabel", "Укажите ЗН ФН или его номинал:",
+				masterHeaderColor);
+			ApplyEditorSettings (fnLifePage, ref fnLifeSerial, "FNLifeSerial", fnLifeFieldBackColor,
+				Keyboard.Numeric, 16, FNLifeSerial_TextChanged);
+
+			fnLife13 = (Switch)fnLifePage.FindByName ("FNLife13");
+			fnLife13.Toggled += FnLife13_Toggled;
+			fnLife13.ThumbColor = untoggledSwitchColor;
+			fnLife13.OnColor = fnLifeFieldBackColor;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeLabel, "FNLifeLabel", "", masterHeaderColor);
+
+			//
+			ApplyLabelSettings (fnLifePage, ref fnLifeModelLabel, "FNLifeModelLabel", "", masterTextColor);
+
+			fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
+			fnLifeModelLabel.FontFamily = "Serif";
+			fnLifeModelLabel.HorizontalOptions = LayoutOptions.Fill;
+			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
+
+			//
+			ApplyLabelSettings (fnLifePage, ref setUserParameters, "SetUserParameters", "Укажите значимые параметры:",
+				masterHeaderColor);
+
+			//
+			fnLifeGenericTax = (Switch)fnLifePage.FindByName ("FNLifeGenericTax");
+			fnLifeGenericTax.Toggled += FnLife13_Toggled;
+			fnLifeGenericTax.ThumbColor = untoggledSwitchColor;
+			fnLifeGenericTax.OnColor = fnLifeFieldBackColor;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeGenericTaxLabel, "FNLifeGenericTaxLabel", "", masterHeaderColor);
+
+			//
+			fnLifeGoods = (Switch)fnLifePage.FindByName ("FNLifeGoods");
+			fnLifeGoods.Toggled += FnLife13_Toggled;
+			fnLifeGoods.ThumbColor = untoggledSwitchColor;
+			fnLifeGoods.OnColor = fnLifeFieldBackColor;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeGoodsLabel, "FNLifeGoodsLabel", "", masterHeaderColor);
+
+			//
+			fnLifeSeason = (Switch)fnLifePage.FindByName ("FNLifeSeason");
+			fnLifeSeason.Toggled += FnLife13_Toggled;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeSeasonLabel, "FNLifeSeasonLabel", "Сезонная торговля",
+				masterHeaderColor);
+
+			//
+			fnLifeAgents = (Switch)fnLifePage.FindByName ("FNLifeAgents");
+			fnLifeAgents.Toggled += FnLife13_Toggled;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeAgentsLabel, "FNLifeAgentsLabel", "Платёжный (суб)агент",
+				masterHeaderColor);
+
+			//
+			fnLifeExcise = (Switch)fnLifePage.FindByName ("FNLifeExcise");
+			fnLifeExcise.Toggled += FnLife13_Toggled;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeExciseLabel, "FNLifeExciseLabel", "Подакцизный товар",
+				masterHeaderColor);
+
+			//
+			fnLifeAutonomous = (Switch)fnLifePage.FindByName ("FNLifeAutonomous");
+			fnLifeAutonomous.Toggled += FnLife13_Toggled;
+
+			ApplyLabelSettings (fnLifePage, ref fnLifeAutonomousLabel, "FNLifeAutonomousLabel", "Автономный режим",
+				masterHeaderColor);
+
+			//
+			ApplyLabelSettings (fnLifePage, ref setDate, "SetDate", "Дата фискализации:",
+				masterHeaderColor);
+
+			fnLifeStartDate = (DatePicker)fnLifePage.FindByName ("FNLifeStartDate");
+
+			fnLifeStartDate.BackgroundColor = fnLifeFieldBackColor;
+			fnLifeStartDate.FontSize = masterFontSize;
+			fnLifeStartDate.Format = "dd.MM.yyyy";
+			fnLifeStartDate.MaximumDate = new DateTime (2025, 1, 1);
+			fnLifeStartDate.MinimumDate = new DateTime (2015, 1, 1);
+			fnLifeStartDate.TextColor = masterHeaderColor;
+			fnLifeStartDate.Margin = margin;
+
+			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;
+			fnLifeStartDate.Date = DateTime.Now;
+
+			//
+			ApplyLabelSettings (fnLifePage, ref fnLifeResult, "FNLifeResult", "", masterTextColor);
+
+			fnLifeResult.BackgroundColor = fnLifeFieldBackColor;
+			fnLifeResult.FontFamily = "Serif";
+			fnLifeResult.HorizontalOptions = LayoutOptions.Fill;
+			fnLifeResult.HorizontalTextAlignment = TextAlignment.Center;
+
+			// Применение всех названий
+			FnLife13_Toggled (null, null);
+			#endregion
+			}
+
+		// Ввод ЗН ФН в разделе определения срока жизни
+		private void FNLifeSerial_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			// Получение описания
+			if (fnLifeSerial.Text != "")
+				fnLifeModelLabel.Text = KKTSupport.GetFNName (fnLifeSerial.Text);
+			else
+				fnLifeModelLabel.Text = "(введите ЗН ФН)";
+
+			// Определение длины ключа
+			if (fnLifeModelLabel.Text.Contains ("(13)") || fnLifeModelLabel.Text.Contains ("(15)"))
+				{
+				fnLife13.IsEnabled = false;
+				fnLife13.IsToggled = false;
+				}
+			else if (fnLifeModelLabel.Text.Contains ("(36)"))
+				{
+				fnLife13.IsEnabled = false;
+				fnLife13.IsToggled = true;
+				}
+			else
+				{
+				fnLife13.IsEnabled = true;
+				}
+
+			// Принудительное изменение
+			FnLife13_Toggled (null, null);
+			}
+
+		// Изменение параметров пользователя и даты
+		private void FnLifeStartDate_DateSelected (object sender, DateChangedEventArgs e)
+			{
+			FnLife13_Toggled (null, null);
+			}
+
+		private void FnLife13_Toggled (object sender, ToggledEventArgs e)
+			{
+			// Обновление состояний
+			if (fnLife13.IsToggled)
+				fnLifeLabel.Text = "36 месяцев";
+			else
+				fnLifeLabel.Text = "13/15 месяцев";
+
+			if (fnLifeGenericTax.IsToggled)
+				fnLifeGenericTaxLabel.Text = "УСН / ЕНВД / ЕСХН / ПСН";
+			else
+				fnLifeGenericTaxLabel.Text = "ОСН / совмещение с ОСН";
+
+			if (fnLifeGoods.IsToggled)
+				fnLifeGoodsLabel.Text = "услуги";
+			else
+				fnLifeGoodsLabel.Text = "товары";
+
+			// Расчёт срока
+			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, !fnLife13.IsToggled,
+				fnLifeModelLabel.Text.Contains ("(13)"), !fnLifeGenericTax.IsToggled, !fnLifeGoods.IsToggled,
+				fnLifeSeason.IsToggled || fnLifeAgents.IsToggled, fnLifeExcise.IsToggled, fnLifeAutonomous.IsToggled);
+
+			if (res == "")
+				{
+				fnLifeResult.TextColor = errorColor;
+				fnLifeResult.Text = "Выбранная модель ФН неприменима к указанным параметрам пользователя";
+				}
+			else
+				{
+				fnLifeResult.TextColor = masterTextColor;
+				fnLifeResult.Text = "ФН прекратит работу " + res;
+				}
 			}
 
 		// Изменение ИНН ОФД, ЗН ФН и ККТ
@@ -315,12 +498,12 @@ namespace RD_AAOW
 		// Переключение свичей
 		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
 			{
-			onlyNewCodesLabel.TextColor = e.Value ? masterTextColor : Color.FromHex ("#404040");
+			onlyNewCodesLabel.TextColor = e.Value ? masterTextColor : untoggledSwitchColor;
 			}
 
 		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
 			{
-			onlyNewErrorsLabel.TextColor = e.Value ? masterTextColor : Color.FromHex ("#404040");
+			onlyNewErrorsLabel.TextColor = e.Value ? masterTextColor : untoggledSwitchColor;
 			}
 
 		// Ввод текста
