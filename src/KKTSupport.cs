@@ -1,4 +1,6 @@
-﻿namespace RD_AAOW
+﻿using System;
+
+namespace RD_AAOW
 	{
 	/// <summary>
 	/// Класс описывает вспомогательные методы
@@ -362,6 +364,52 @@
 		private static bool TEST_SN_D (uint position, byte digit)
 			{
 			return kktSerialNumber[(int)position] == digit.ToString ()[0];
+			}
+
+		/// <summary>
+		/// Метод формирует дату истечения срока эксплуатации ФН с указанными параметрами
+		/// </summary>
+		/// <param name="StartDate">Дата фискализации</param>
+		/// <param name="FN15">Флаг указывает на выбор ФН на 15 месяцев вместо 36</param>
+		/// <param name="FNExactly13">Флаг указывает на выбор ФН на 13 месяцев вместо 15</param>
+		/// <param name="GenericTax">Флаг указыввает на применение ОСН</param>
+		/// <param name="Goods">Флаг указывает на режим товаров вместо услуг</param>
+		/// <param name="SeasonOrAgents">Флаг указывает на агентскую схему или сезонный режим работы</param>
+		/// <param name="Excise">Флаг указывает на наличие подакцизных товаров</param>
+		/// <param name="Autonomous">Флаг указывает на работу без передачи данных</param>
+		/// <returns>Возвращает строку с датой или пустую строку, если указанная модель ФН
+		/// не может быть использована с указанными режимами и параметрами</returns>
+		public static string GetFNLifeEndDate (DateTime StartDate, bool FN15, bool FNExactly13,
+			bool GenericTax, bool Goods, bool SeasonOrAgents, bool Excise, bool Autonomous)
+			{
+			// Отсечение недопустимых вариантов
+			if (GenericTax && !FN15 && Goods ||
+				!GenericTax && FN15 && !SeasonOrAgents && !Excise && !Autonomous)
+				{
+				return "";
+				}
+
+			// Определение срока жизни
+			int length = 1110;
+
+			if (Excise)
+				{
+				length = 410;
+				}
+			else if (Autonomous)
+				{
+				if (FN15)
+					length = 410;
+				else
+					length = 560;
+				}
+			else if (FN15)
+				{
+				length = FNExactly13 ? 410 : 470;
+				}
+
+			// Результат
+			return StartDate.AddDays (length).ToString ("dd.MM.yyyy");
 			}
 		}
 	}

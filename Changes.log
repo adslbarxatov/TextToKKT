@@ -1,5 +1,8 @@
 ﻿Text to KKT changes log
 
+Version 3.4 / Android
+• Added ability to evaluate date of life ending for fiscal storages
+
 Version 3.3 / Android
 • Application interface has been reviewed: now names of pages will be displayed properly;
 • Serial numbers and INN page splitted into three pages;

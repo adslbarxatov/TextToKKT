@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
@@ -33,6 +34,7 @@ namespace RD_AAOW
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
 			OnlyNewErrors_CheckedChanged (null, null);
+			FNLifeStartDate.Value = DateTime.Now;
 
 			// Настройка контролов
 			this.Text = ProgramDescription.AssemblyTitle;
@@ -105,7 +107,8 @@ namespace RD_AAOW
 				"в контрольно-кассовой технике (ККТ, 54-ФЗ), имеющей только цифровую клавиатуру;\r\n" +
 				"• просматривать расшифровки кодов ошибок ККТ;\r\n" +
 				"• определять модели ККТ и фискальных накопителей (ФН) по их заводским номерам;\r\n" +
-				"• определять наименование оператора фискальных данных (ОФД) по его ИНН");
+				"• определять наименование оператора фискальных данных (ОФД) по его ИНН;\r\n" +
+				"• определять срок жизни ФН в соответствии со значимыми параметрами пользователя");
 			}
 
 		// Выбор ошибки
@@ -212,6 +215,59 @@ namespace RD_AAOW
 			KKTListForErrors.Items.Clear ();
 			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
+			}
+
+		// Ввод номера ФН в разделе срока жизни
+		private void FNLifeSN_TextChanged (object sender, EventArgs e)
+			{
+			// Получение описания
+			if (FNLifeSN.Text != "")
+				FNLifeName.Text = KKTSupport.GetFNName (FNLifeSN.Text);
+			else
+				FNLifeName.Text = "(введите ЗН ФН)";
+
+			// Определение длины ключа
+			if (FNLifeName.Text.Contains ("(13)") || FNLifeName.Text.Contains ("(15)"))
+				{
+				FNLife36.Enabled = false;
+				FNLife13.Checked = true;
+				}
+			else
+				{
+				FNLife36.Enabled = true;
+				}
+
+			if (FNLifeName.Text.Contains ("(36)"))
+				{
+				FNLife13.Enabled = false;
+				FNLife36.Checked = true;
+				}
+			else
+				{
+				FNLife13.Enabled = true;
+				}
+
+			// Принудительное изменение
+			FNLifeStartDate_ValueChanged (null, null);
+			}
+
+		// Изменение параметров, влияющих на срок жизни ФН
+		private void FNLifeStartDate_ValueChanged (object sender, EventArgs e)
+			{
+			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLife13.Checked,
+				FNLifeName.Text.Contains ("(13)"), GenericTaxFlag.Checked, GoodsFlag.Checked,
+				SeasonFlag.Checked || AgentsFlag.Checked, ExciseFlag.Checked, AutonomousFlag.Checked);
+
+			if (res == "")
+				{
+				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
+				FNLifeResult.Text = "Выбранная модель ФН неприменима к указанным параметрам пользователя";
+				}
+			else
+				{
+				FNLifeResult.ForeColor = Color.FromArgb (0, 0, 0);
+				FNLifeResult.Text = "ФН прекратит работу " + res;
+				}
 			}
 		}
 	}
