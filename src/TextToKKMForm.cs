@@ -108,7 +108,8 @@ namespace RD_AAOW
 				"• просматривать расшифровки кодов ошибок ККТ;\r\n" +
 				"• определять модели ККТ и фискальных накопителей (ФН) по их заводским номерам;\r\n" +
 				"• определять наименование оператора фискальных данных (ОФД) по его ИНН;\r\n" +
-				"• определять срок жизни ФН в соответствии со значимыми параметрами пользователя");
+				"• определять срок жизни ФН в соответствии со значимыми параметрами пользователя;\r\n" +
+				"• определять корректность и генерировать РНМ ККТ");
 			}
 
 		// Выбор ошибки
@@ -268,6 +269,61 @@ namespace RD_AAOW
 				FNLifeResult.ForeColor = Color.FromArgb (0, 0, 0);
 				FNLifeResult.Text = "ФН прекратит работу " + res;
 				}
+			}
+
+		// Ввод номеров в разделе РНМ
+		private void RNMSerial_TextChanged (object sender, EventArgs e)
+			{
+			// Заводской номер ККТ
+			if (RNMSerial.Text != "")
+				RNMSerialResult.Text = KKTSupport.GetKKTModel (RNMSerial.Text);
+			else
+				RNMSerialResult.Text = "(введите ЗН ККТ)";
+
+			// ИНН пользователя
+			if (RNMUserINN.Text.Length < 10)
+				{
+				RNMUserINNResult.ForeColor = Color.FromArgb (0, 0, 0);
+				RNMUserINNResult.Text = "???";
+				}
+			else if (KKTSupport.CheckINN (RNMUserINN.Text))
+				{
+				RNMUserINNResult.ForeColor = Color.FromArgb (0, 128, 0);
+				RNMUserINNResult.Text = "OK";
+				}
+			else
+				{
+				RNMUserINNResult.ForeColor = Color.FromArgb (255, 0, 0);
+				RNMUserINNResult.Text = "XXX";
+				}
+
+			// РНМ
+			if (RNMValue.Text.Length < 10)
+				{
+				RNMValueResult.ForeColor = Color.FromArgb (0, 0, 0);
+				RNMValueResult.Text = "???";
+				}
+			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
+				{
+				RNMValueResult.ForeColor = Color.FromArgb (0, 128, 0);
+				RNMValueResult.Text = "OK";
+				}
+			else
+				{
+				RNMValueResult.ForeColor = Color.FromArgb (255, 0, 0);
+				RNMValueResult.Text = "XXX";
+				}
+			}
+
+		// Генерация регистрационного номера
+		private void RNMGenerate_Click (object sender, EventArgs e)
+			{
+			if (RNMValue.Text.Length < 1)
+				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, "0");
+			else if (RNMValue.Text.Length < 10)
+				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text);
+			else
+				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10));
 			}
 		}
 	}

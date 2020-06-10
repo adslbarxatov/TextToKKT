@@ -1,40 +1,45 @@
-﻿Text to KKT changes log
+﻿Text to KKT: лог изменений
 
-Version 3.4 / Android
-• Added ability to evaluate date of life ending for fiscal storages
+Версия 3.5
+• Добавлена возможность проверки корректности и генерации РНМ ККТ;
+• Внесены некоторые исправления в интерфейс пользователя
 
-Version 3.3 / Android
-• Application interface has been reviewed: now names of pages will be displayed properly;
-• Serial numbers and INN page splitted into three pages;
-• Intro screen has been implemented
+Версия 3.4 / Android
+• Добавлена возможность определения даты окончания жизни для фискальных накопителей;
+• Минимальная требуемая версия Android понижена до 4.2
 
-Version 3.2.1 / Android
-• Some errors' descriptions have been reviewed;
-• Correct identity applied to APK;
-• Windows updates from v 3.2 applied to APK;
-• Main interface's initialization code has been completely reviewed
+Версия 3.3 / Android
+• Переработан интерфейс приложения: теперь названия страниц будут отображаться корректно;
+• Страница заводских номеров и ИНН ОФД разделены на три страницы;
+• Реализован стартовый экран
 
-Version 3.2
-• Fully replaced errors list for Mercury KKT;
-• New KKT now can be separated from old models;
-• Errors tab moved to the first position
+Версия 3.2.1 / Android
+• Некоторые описания ошибок были пересмотрены;
+• Корректная айдентика была применена к APK;
+• Обновления Windows-версии 3.2 применены к APK;
+• Код инициализации основного интерфейса был полностью пересмотрен
 
-Version 3.1
-• Added descriptions for FS's (ФН) and CCT's (ККТ) serial numbers;
-• Added descriptions for FDO (ОФД) TPIDs (ИНН);
-• Added ability to request access to FNReader application and all needed info;
-• Added ability to open other projects' page
+Версия 3.2
+• Полностью заменён список ошибок для ККТ Меркурий Ф;
+• Новые модели теперь можно отделить от старых отдельным переключателем;
+• Вкладка ошибок перемещена на первую позицию
 
-Version 3.0.1h
-• New application info interface implemented
+Версия 3.1
+• Добавлено определение моделей по заводским номерам ФН и ККТ;
+• Добавлено определение названия ОФД по ИНН;
+• Добавлена возможность запрашивать доступ к приложению FNReader и всю необходимую информацию;
+• Добавлена возможность открывать страницу других проектов
 
-Version 3:
-• Delimiters processing removed;
-• Error codes descriptions added to main interface;
-• Some new error codes added to previously created list;
-• 'About' page added
+Версия 3.0.1h
+• Реализован новый интерфейс «О программе»
 
-Version 2.5u:
-• Application namespace, icon and development environment have been unified;
-• Android version of application has been implemented (expected release);
-• Publication on GitHub
+Версия 3:
+• Удалена обработка разделителей;
+• Добавлены описания кодов ошибок в основной интерфейс;
+• Некоторые новые коды ошибок добавлены в ранее созданный список;
+• Добавлена страница «О нас»
+
+Версия 2.5u:
+• Унифицировано пространство имён приложения, айдентика и среда разработки;
+• Реализована версия приложения для Android (ожидаемый выпуск);
+• Публикация на GitHub
