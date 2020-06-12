@@ -511,7 +511,7 @@ namespace RD_AAOW
 			// Контроль
 			if ((Message == null) || (Message == ""))
 				return 0;
-			byte[] msg = Encoding.GetEncoding (866).GetBytes (Message);
+			byte[] msg = Encoding.UTF8.GetBytes (Message);
 
 			// Переменные
 			UInt16 crc16 = 0xFFFF;

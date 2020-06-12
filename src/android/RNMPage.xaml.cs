@@ -4,15 +4,15 @@ using Xamarin.Forms.Xaml;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс описывает страницу проверки заводских номеров и ИНН
+	/// Класс описывает страницу контроля и генерации РНМ
 	/// </summary>
- 	[XamlCompilation (XamlCompilationOptions.Compile)]
-	public partial class SnPage:ContentPage
+	[XamlCompilation (XamlCompilationOptions.Compile)]
+	public partial class RNMPage:ContentPage
 		{
 		/// <summary>
 		/// Конструктор. Запускает страницу
 		/// </summary>
-		public SnPage ()
+		public RNMPage ()
 			{
 			InitializeComponent ();
 			}

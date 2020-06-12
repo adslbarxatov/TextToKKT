@@ -12,46 +12,9 @@ namespace RD_AAOW
 	/// </summary>
 	public partial class App:Application
 		{
-		// Общие переменные
+		// Настройки стилей отображения
 		private int masterFontSize = 18, tipsFontSize = 14;
 		private Thickness margin = new Thickness (6);
-
-		private ContentPage codesPage, errorsPage, aboutPage,
-			kktSnPage, fnSnPage, ofdINNPage, fnLifePage;
-
-		// Операторы
-		private readonly KKTCodes kkmc = new KKTCodes ();
-		private readonly KKTErrorsList kkme = new KKTErrorsList ();
-		private int currentCodesKKT = 0, currentErrorsKKT = 0;
-
-		// Переменные страниц
-		private Label codesSelectionLabel, codesSourceTextLabel,
-			codesResultTextLabel, codesHelpLabel, codesErrorLabel, codesResultText;
-		private Button codesKKTButton;
-		private Editor codesSourceText;
-
-		private Label errorsSelectionLabel, errorsCodeLabel,
-			errorsResultTextLabel, errorsResultText;
-		private Button errorsKKTButton, errorsCodeButton;
-
-		private Label aboutLabel;
-		private Button appButton, updateButton, communityButton;
-
-		private Switch onlyNewCodes, onlyNewErrors;
-		private Label onlyNewCodesLabel, onlyNewErrorsLabel;
-
-		private Label kktSNLabel, kktTypeLabel, fnSNLabel, fnTypeLabel,
-			ofdINNLabel, ofdNameLabel;
-		private Editor kktSN, fnSN, ofdINN;
-
-		private Label setModelLabel, fnLifeLabel, fnLifeModelLabel, setUserParameters,
-			fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeSeasonLabel, fnLifeAgentsLabel,
-			fnLifeExciseLabel, fnLifeAutonomousLabel, setDate, fnLifeResult;
-		private Editor fnLifeSerial;
-		private Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
-			fnLifeExcise, fnLifeAutonomous;
-		private DatePicker fnLifeStartDate;
-
 		private readonly Color
 			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
 			codesFieldBackColor = Color.FromHex ("#FFFFD0"),
@@ -68,83 +31,133 @@ namespace RD_AAOW
 			snMasterBackColor = Color.FromHex ("#F4E8FF"),
 			snFieldBackColor = Color.FromHex ("#ECD8FF"),
 
-			masterTextColor = Color.FromHex ("#000080"),
-			masterHeaderColor = Color.FromHex ("#202020"),
+			headersMasterBackColor = Color.FromHex ("#E8E8E8"),
+			headersFieldBackColor = Color.FromHex ("#E0E0E0"),
 
-			untoggledSwitchColor = Color.FromHex ("#404040"),
-			errorColor = Color.FromHex ("#FF0000");
+			rnmMasterBackColor = Color.FromHex ("#F0FFFF"),
+			rnmFieldBackColor = Color.FromHex ("#C8FFFF"),
+
+			masterTextColor = Color.FromHex ("#000080"),
+			masterHeaderColor = Color.FromHex ("#303030"),
+			untoggledSwitchColor = Color.FromHex ("#505050"),
+			errorColor = Color.FromHex ("#FF0000"),
+			correctColor = Color.FromHex ("#008000");
+
+		// Переменные страниц
+		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
+			kktSnPage, fnSnPage, ofdINNPage, fnLifePage, rnmPage;
+
+		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
+			errorsResultText,
+			aboutLabel,
+			kktTypeLabel, fnTypeLabel, ofdNameLabel,
+			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeResult,
+			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel;
+
+		private Button codesKKTButton,
+			errorsKKTButton, errorsCodeButton;
+
+		private Editor codesSourceText,
+			kktSN, fnSN, ofdINN,
+			fnLifeSerial,
+			rnmKKTSN, rnmINN, rnmRNM;
+
+		private Switch onlyNewCodes, onlyNewErrors,
+			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous;
+
+		private DatePicker fnLifeStartDate;
 
 		// Вспомогательные методы
-		private void ApplyPageSettings (ref ContentPage Page, string PageName, string PageTitle, Color PageBackColor)
+		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
 			{
-			Page = (ContentPage)MainPage.FindByName (PageName);
-			Page.Title = PageTitle;
-			Page.BackgroundColor = PageBackColor;
+			// Инициализация страницы
+			ContentPage page = (ContentPage)MainPage.FindByName (PageName);
+			page.Title = PageTitle;
+			page.BackgroundColor = PageBackColor;
 
-			ApplyHeaderLabelSettings (Page, PageTitle, PageBackColor);
+			ApplyHeaderLabelSettings (page, PageTitle, PageBackColor);
+
+			// Добавление в содержание
+			if (HeaderNumber > 0)
+				{
+				Button b = ApplyButtonSettings (headersPage, "Button" + HeaderNumber.ToString ("D02"), PageTitle,
+					headersFieldBackColor, HeaderButton_Clicked);
+				b.Margin = b.Padding = new Thickness (1);
+				b.CommandParameter = page;
+				}
+
+			return page;
 			}
 
-		private void ApplyLabelSettings (ContentPage ParentPage, ref Label ChildLabel, string LabelName,
+		private Label ApplyLabelSettings (ContentPage ParentPage, string LabelName,
 			string LabelTitle, Color LabelTextColor)
 			{
-			ChildLabel = (Label)ParentPage.FindByName (LabelName);
+			Label childLabel = (Label)ParentPage.FindByName (LabelName);
 
-			ChildLabel.Text = LabelTitle;
-			ChildLabel.HorizontalOptions = LayoutOptions.Start;
-			ChildLabel.FontAttributes = FontAttributes.None;
-			ChildLabel.FontSize = masterFontSize;
-			ChildLabel.TextColor = LabelTextColor;
-			ChildLabel.Margin = margin;
+			childLabel.Text = LabelTitle;
+			childLabel.HorizontalOptions = LayoutOptions.Start;
+			childLabel.FontAttributes = FontAttributes.None;
+			childLabel.FontSize = masterFontSize;
+			childLabel.TextColor = LabelTextColor;
+			childLabel.Margin = margin;
+
+			return childLabel;
 			}
 
-		private void ApplyButtonSettings (ContentPage ParentPage, ref Button ChildButton, string ButtonName,
+		private Button ApplyButtonSettings (ContentPage ParentPage, string ButtonName,
 			string ButtonTitle, Color ButtonColor, EventHandler ButtonMethod)
 			{
-			ChildButton = (Button)ParentPage.FindByName (ButtonName);
+			Button childButton = (Button)ParentPage.FindByName (ButtonName);
 
-			ChildButton.BackgroundColor = ButtonColor;
-			ChildButton.FontAttributes = FontAttributes.None;
-			ChildButton.FontSize = masterFontSize;
-			ChildButton.TextColor = masterTextColor;
-			ChildButton.Margin = margin;
-			ChildButton.Text = ButtonTitle;
-			ChildButton.Clicked += ButtonMethod;
+			childButton.BackgroundColor = ButtonColor;
+			childButton.FontAttributes = FontAttributes.None;
+			childButton.FontSize = masterFontSize;
+			childButton.TextColor = masterTextColor;
+			childButton.Margin = margin;
+			childButton.Text = ButtonTitle;
+			childButton.Clicked += ButtonMethod;
+
+			return childButton;
 			}
 
-		private void ApplyTipLabelSettings (ContentPage ParentPage, ref Label ChildLabel, string LabelName,
+		private Label ApplyTipLabelSettings (ContentPage ParentPage, string LabelName,
 			string LabelTitle, Color LabelTextColor)
 			{
-			ChildLabel = (Label)ParentPage.FindByName (LabelName);
+			Label childLabel = (Label)ParentPage.FindByName (LabelName);
 
-			ChildLabel.Text = LabelTitle;
-			ChildLabel.HorizontalOptions = LayoutOptions.Center;
-			ChildLabel.FontAttributes = FontAttributes.Italic;
-			ChildLabel.FontSize = tipsFontSize;
-			ChildLabel.TextColor = LabelTextColor;
-			ChildLabel.HorizontalTextAlignment = TextAlignment.Center;
-			ChildLabel.Margin = margin;
+			childLabel.Text = LabelTitle;
+			childLabel.HorizontalOptions = LayoutOptions.Center;
+			childLabel.FontAttributes = FontAttributes.Italic;
+			childLabel.FontSize = tipsFontSize;
+			childLabel.TextColor = LabelTextColor;
+			childLabel.HorizontalTextAlignment = TextAlignment.Center;
+			childLabel.Margin = margin;
+
+			return childLabel;
 			}
 
-		private void ApplyEditorSettings (ContentPage ParentPage, ref Editor ChildEditor, string EditorName,
+		private Editor ApplyEditorSettings (ContentPage ParentPage, string EditorName,
 			Color EditorColor, Keyboard EditorKeyboard, uint MaxLength, EventHandler<TextChangedEventArgs> EditMethod)
 			{
-			ChildEditor = (Editor)ParentPage.FindByName (EditorName);
+			Editor childEditor = (Editor)ParentPage.FindByName (EditorName);
 
-			ChildEditor.AutoSize = EditorAutoSizeOption.TextChanges;
-			ChildEditor.BackgroundColor = EditorColor;
-			ChildEditor.FontAttributes = FontAttributes.None;
-			ChildEditor.FontFamily = "Serif";
-			ChildEditor.FontSize = masterFontSize;
-			ChildEditor.HorizontalOptions = LayoutOptions.Fill;
-			ChildEditor.Keyboard = EditorKeyboard;
-			ChildEditor.MaxLength = (int)MaxLength;
-			//ChildEditor.Placeholder = "...";
-			//ChildEditor.PlaceholderColor = Color.FromRgb (255, 255, 0);
-			ChildEditor.TextColor = masterTextColor;
-			ChildEditor.Margin = margin;
+			childEditor.AutoSize = EditorAutoSizeOption.TextChanges;
+			childEditor.BackgroundColor = EditorColor;
+			childEditor.FontAttributes = FontAttributes.None;
+			childEditor.FontFamily = "Serif";
+			childEditor.FontSize = masterFontSize;
+			childEditor.HorizontalOptions = LayoutOptions.Fill;
+			childEditor.Keyboard = EditorKeyboard;
+			childEditor.MaxLength = (int)MaxLength;
+			//childEditor.Placeholder = "...";
+			//childEditor.PlaceholderColor = Color.FromRgb (255, 255, 0);
+			childEditor.TextColor = masterTextColor;
+			childEditor.Margin = margin;
 
-			ChildEditor.Text = "";
-			ChildEditor.TextChanged += EditMethod;
+			childEditor.Text = "";
+			childEditor.TextChanged += EditMethod;
+
+			return childEditor;
 			}
 
 		private void ApplyHeaderLabelSettings (ContentPage ParentPage, string LabelTitle, Color BackColor)
@@ -161,6 +174,24 @@ namespace RD_AAOW
 			childLabel.TextColor = BackColor;
 			}
 
+		private Label ApplyResultLabelSettings (ContentPage ParentPage, string LabelName,
+			string LabelTitle, Color LabelTextColor, Color LabelBackColor)
+			{
+			Label childLabel = (Label)ParentPage.FindByName (LabelName);
+
+			childLabel.BackgroundColor = LabelBackColor;
+			childLabel.Text = LabelTitle;
+			childLabel.FontAttributes = FontAttributes.None;
+			childLabel.FontFamily = "Serif";
+			childLabel.FontSize = masterFontSize;
+			childLabel.HorizontalOptions = LayoutOptions.Fill;
+			childLabel.HorizontalTextAlignment = TextAlignment.Center;
+			childLabel.Margin = margin;
+			childLabel.TextColor = LabelTextColor;
+
+			return childLabel;
+			}
+
 		/// <summary>
 		/// Конструктор. Точка входа приложения
 		/// </summary>
@@ -172,139 +203,130 @@ namespace RD_AAOW
 			// Общая конструкция страниц приложения
 			MainPage = new MasterPage ();
 
-			ApplyPageSettings (ref codesPage, "CodesPage", "Текст в коды символов ККТ", codesMasterBackColor);
-			ApplyPageSettings (ref kktSnPage, "KKTSnPage", "Модель ККТ по зав. номеру", snMasterBackColor);
-			ApplyPageSettings (ref fnSnPage, "FNSnPage", "Модель ФН по зав. номеру", snMasterBackColor);
-			ApplyPageSettings (ref ofdINNPage, "OFDINNPage", "Название ОФД по ИНН", snMasterBackColor);
-			ApplyPageSettings (ref errorsPage, "ErrorsPage", "Расшифровка ошибок ККТ", errorsMasterBackColor);
-			ApplyPageSettings (ref aboutPage, "AboutPage", "О приложении", aboutMasterBackColor);
-			ApplyPageSettings (ref fnLifePage, "FNLifePage", "Срок жизни ФН", fnLifeMasterBackColor);
+			uint headerNumber = 0;
+			headersPage = ApplyPageSettings ("HeadersPage", "Функции приложения",
+				headersMasterBackColor, headerNumber++);
+
+			errorsPage = ApplyPageSettings ("ErrorsPage", "Расшифровать код ошибки ККТ",
+				errorsMasterBackColor, headerNumber++);
+			fnLifePage = ApplyPageSettings ("FNLifePage", "Определить срок жизни ФН",
+				fnLifeMasterBackColor, headerNumber++);
+			rnmPage = ApplyPageSettings ("RNMPage", "Проверить / сгенерировать РНМ",
+				rnmMasterBackColor, headerNumber++);
+			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
+				codesMasterBackColor, headerNumber++);
+			kktSnPage = ApplyPageSettings ("KKTSnPage", "Определить ККТ по зав. номеру",
+				snMasterBackColor, headerNumber++);
+			fnSnPage = ApplyPageSettings ("FNSnPage", "Определить ФН по зав. номеру",
+				snMasterBackColor, headerNumber++);
+			ofdINNPage = ApplyPageSettings ("OFDINNPage", "Определить ОФД по ИНН",
+				snMasterBackColor, headerNumber++);
+
+			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
+				aboutMasterBackColor, headerNumber);
 
 			#region Страница кодов
-			ApplyLabelSettings (codesPage, ref codesSelectionLabel, "SelectionLabel",
-				"Модель ККТ:", masterHeaderColor);
+
+			ApplyLabelSettings (codesPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
 
 			onlyNewCodes = (Switch)codesPage.FindByName ("OnlyNewCodes");
 			onlyNewCodes.IsToggled = true;
-			onlyNewCodes.Toggled += OnlyNewCodes_Toggled;
 
-			ApplyLabelSettings (codesPage, ref onlyNewCodesLabel, "OnlyNewCodesLabel",
-				"Только новые", masterTextColor);
+			ApplyLabelSettings (codesPage, "OnlyNewCodesLabel", "Только новые", masterTextColor);
 
-			ApplyButtonSettings (codesPage, ref codesKKTButton, "KKTButton",
+			codesKKTButton = ApplyButtonSettings (codesPage, "KKTButton",
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[currentCodesKKT],
 				codesFieldBackColor, CodesKKTButton_Clicked);
 
-			ApplyLabelSettings (codesPage, ref codesSourceTextLabel, "SourceTextLabel",
-				"Исходный текст:", masterHeaderColor);
+			codesSourceTextLabel = ApplyLabelSettings (codesPage, "SourceTextLabel", "Исходный текст:", masterHeaderColor);
 
-			ApplyEditorSettings (codesPage, ref codesSourceText, "SourceText",
+			codesSourceText = ApplyEditorSettings (codesPage, "SourceText",
 				codesFieldBackColor, Keyboard.Default, 72, SourceText_TextChanged);
 
-			ApplyLabelSettings (codesPage, ref codesResultTextLabel, "ResultTextLabel",
-				"Коды ККТ:", masterHeaderColor);
+			ApplyLabelSettings (codesPage, "ResultTextLabel", "Коды ККТ:", masterHeaderColor);
 
-			ApplyTipLabelSettings (codesPage, ref codesErrorLabel, "ErrorLabel",
+			codesErrorLabel = ApplyTipLabelSettings (codesPage, "ErrorLabel",
 				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
 				errorColor);
 			codesErrorLabel.IsVisible = false;
 
-			ApplyLabelSettings (codesPage, ref codesResultText, "ResultText", "", masterTextColor);
-			codesResultText.BackgroundColor = codesFieldBackColor;
-			codesResultText.FontFamily = "Serif";
-			codesResultText.HorizontalOptions = LayoutOptions.Fill;
+			codesResultText = ApplyResultLabelSettings (codesPage, "ResultText", "", masterTextColor, codesFieldBackColor);
+			codesResultText.HorizontalTextAlignment = TextAlignment.Start;
 
-			ApplyTipLabelSettings (codesPage, ref codesHelpLabel, "HelpLabel",
-				kkmc.GetKKMTypeDescription ((uint)currentCodesKKT), Color.FromHex ("#404040"));
+			codesHelpLabel = ApplyTipLabelSettings (codesPage, "HelpLabel",
+				kkmc.GetKKMTypeDescription ((uint)currentCodesKKT), untoggledSwitchColor);
+
 			#endregion
 
 			#region Страница ошибок
-			ApplyLabelSettings (errorsPage, ref errorsSelectionLabel, "SelectionLabel",
-				"Модель ККТ:", masterHeaderColor);
+
+			ApplyLabelSettings (errorsPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
 
 			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
 			onlyNewErrors.IsToggled = true;
-			onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
 
-			ApplyLabelSettings (errorsPage, ref onlyNewErrorsLabel, "OnlyNewErrorsLabel",
-				"Только новые", masterTextColor);
+			ApplyLabelSettings (errorsPage, "OnlyNewErrorsLabel", "Только новые", masterTextColor);
 
-			ApplyButtonSettings (errorsPage, ref errorsKKTButton, "KKTButton",
+			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
 				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
 
-			ApplyLabelSettings (errorsPage, ref errorsCodeLabel, "ErrorCodeLabel",
-				"Код / сообщение:", masterHeaderColor);
+			ApplyLabelSettings (errorsPage, "ErrorCodeLabel", "Код / сообщение:", masterHeaderColor);
 
-			ApplyButtonSettings (errorsPage, ref errorsCodeButton, "ErrorCodeButton",
+			errorsCodeButton = ApplyButtonSettings (errorsPage, "ErrorCodeButton",
 				"- Выберите код ошибки -", errorsFieldBackColor, ErrorsCodeButton_Clicked);
 
-			ApplyLabelSettings (errorsPage, ref errorsResultTextLabel, "ResultTextLabel",
-				"Расшифровка:", masterHeaderColor);
+			ApplyLabelSettings (errorsPage, "ResultTextLabel", "Расшифровка:", masterHeaderColor);
 
-			ApplyLabelSettings (errorsPage, ref errorsResultText, "ResultText", "", masterTextColor);
-			errorsResultText.BackgroundColor = errorsFieldBackColor;
-			errorsResultText.FontFamily = "Serif";
-			errorsResultText.HorizontalOptions = LayoutOptions.Fill;
+			errorsResultText = ApplyResultLabelSettings (errorsPage, "ResultText", "", masterTextColor, errorsFieldBackColor);
+			errorsResultText.HorizontalTextAlignment = TextAlignment.Start;
+
 			#endregion
 
 			#region Страница "О программе"
-			ApplyLabelSettings (aboutPage, ref aboutLabel, "AboutLabel",
+
+			aboutLabel = ApplyResultLabelSettings (aboutPage, "AboutLabel",
 				ProgramDescription.AssemblyTitle + "\n" +
 				ProgramDescription.AssemblyDescription + "\n\n" +
 				ProgramDescription.AssemblyCopyright + "\nv " +
 				ProgramDescription.AssemblyVersion +
 				"; " + ProgramDescription.AssemblyLastUpdate,
-				Color.FromHex ("#000080"));
+				masterTextColor, aboutFieldBackColor);
 			aboutLabel.FontAttributes = FontAttributes.Bold;
-			aboutLabel.HorizontalOptions = LayoutOptions.Fill;
-			aboutLabel.HorizontalTextAlignment = TextAlignment.Center;
 
-			ApplyButtonSettings (aboutPage, ref appButton, "AppPage",
+			ApplyButtonSettings (aboutPage, "AppPage",
 				"Перейти на страницу проекта", aboutFieldBackColor, AppButton_Clicked);
 
-			ApplyButtonSettings (aboutPage, ref updateButton, "UpdatePage",
+			ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Перейти на страницу анализатора данных ФН", aboutFieldBackColor, UpdateButton_Clicked);
 
-			ApplyButtonSettings (aboutPage, ref communityButton, "CommunityPage",
+			ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
+
 			#endregion
 
 			#region Страница серийных номеров и ИНН
-			ApplyLabelSettings (kktSnPage, ref kktSNLabel, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
-			ApplyEditorSettings (kktSnPage, ref kktSN, "SN", snFieldBackColor, Keyboard.Numeric, 16, KKTSN_TextChanged);
-			ApplyLabelSettings (kktSnPage, ref kktTypeLabel, "TypeLabel", "", masterTextColor);
 
-			kktTypeLabel.BackgroundColor = snFieldBackColor;
-			kktTypeLabel.FontFamily = "Serif";
-			kktTypeLabel.HorizontalOptions = LayoutOptions.Fill;
-			kktTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
+			ApplyLabelSettings (kktSnPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
+			kktSN = ApplyEditorSettings (kktSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, KKTSN_TextChanged);
+			kktTypeLabel = ApplyResultLabelSettings (kktSnPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
 
 			//
-			ApplyLabelSettings (fnSnPage, ref fnSNLabel, "SNLabel", "Заводской номер ФН:", masterHeaderColor);
-			ApplyEditorSettings (fnSnPage, ref fnSN, "SN", snFieldBackColor, Keyboard.Numeric, 16, FNSN_TextChanged);
-			ApplyLabelSettings (fnSnPage, ref fnTypeLabel, "TypeLabel", "", masterTextColor);
-
-			fnTypeLabel.BackgroundColor = snFieldBackColor;
-			fnTypeLabel.FontFamily = "Serif";
-			fnTypeLabel.HorizontalOptions = LayoutOptions.Fill;
-			fnTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
+			ApplyLabelSettings (fnSnPage, "SNLabel", "Заводской номер ФН:", masterHeaderColor);
+			fnSN = ApplyEditorSettings (fnSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, FNSN_TextChanged);
+			fnTypeLabel = ApplyResultLabelSettings (fnSnPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
 
 			//
-			ApplyLabelSettings (ofdINNPage, ref ofdINNLabel, "SNLabel", "ИНН ОФД:", masterHeaderColor);
-			ApplyEditorSettings (ofdINNPage, ref ofdINN, "SN", snFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
-			ApplyLabelSettings (ofdINNPage, ref ofdNameLabel, "TypeLabel", "", masterTextColor);
+			ApplyLabelSettings (ofdINNPage, "SNLabel", "ИНН ОФД:", masterHeaderColor);
+			ofdINN = ApplyEditorSettings (ofdINNPage, "SN", snFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
+			ofdNameLabel = ApplyResultLabelSettings (ofdINNPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
 
-			ofdNameLabel.BackgroundColor = snFieldBackColor;
-			ofdNameLabel.FontFamily = "Serif";
-			ofdNameLabel.HorizontalOptions = LayoutOptions.Fill;
-			ofdNameLabel.HorizontalTextAlignment = TextAlignment.Center;
 			#endregion
 
 			#region Страница определения срока жизни ФН
-			ApplyLabelSettings (fnLifePage, ref setModelLabel, "SetModelLabel", "Укажите ЗН ФН или его номинал:",
-				masterHeaderColor);
-			ApplyEditorSettings (fnLifePage, ref fnLifeSerial, "FNLifeSerial", fnLifeFieldBackColor,
+
+			ApplyLabelSettings (fnLifePage, "SetModelLabel", "Укажите ЗН ФН или его номинал:", masterHeaderColor);
+			fnLifeSerial = ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
 				Keyboard.Numeric, 16, FNLifeSerial_TextChanged);
 
 			fnLife13 = (Switch)fnLifePage.FindByName ("FNLife13");
@@ -312,10 +334,10 @@ namespace RD_AAOW
 			fnLife13.ThumbColor = untoggledSwitchColor;
 			fnLife13.OnColor = fnLifeFieldBackColor;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeLabel, "FNLifeLabel", "", masterHeaderColor);
+			fnLifeLabel = ApplyLabelSettings (fnLifePage, "FNLifeLabel", "", masterHeaderColor);
 
 			//
-			ApplyLabelSettings (fnLifePage, ref fnLifeModelLabel, "FNLifeModelLabel", "", masterTextColor);
+			fnLifeModelLabel = ApplyLabelSettings (fnLifePage, "FNLifeModelLabel", "", masterTextColor);
 
 			fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
 			fnLifeModelLabel.FontFamily = "Serif";
@@ -323,8 +345,7 @@ namespace RD_AAOW
 			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
 
 			//
-			ApplyLabelSettings (fnLifePage, ref setUserParameters, "SetUserParameters", "Укажите значимые параметры:",
-				masterHeaderColor);
+			ApplyLabelSettings (fnLifePage, "SetUserParameters", "Укажите значимые параметры:", masterHeaderColor);
 
 			//
 			fnLifeGenericTax = (Switch)fnLifePage.FindByName ("FNLifeGenericTax");
@@ -332,7 +353,7 @@ namespace RD_AAOW
 			fnLifeGenericTax.ThumbColor = untoggledSwitchColor;
 			fnLifeGenericTax.OnColor = fnLifeFieldBackColor;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeGenericTaxLabel, "FNLifeGenericTaxLabel", "", masterHeaderColor);
+			fnLifeGenericTaxLabel = ApplyLabelSettings (fnLifePage, "FNLifeGenericTaxLabel", "", masterHeaderColor);
 
 			//
 			fnLifeGoods = (Switch)fnLifePage.FindByName ("FNLifeGoods");
@@ -340,39 +361,34 @@ namespace RD_AAOW
 			fnLifeGoods.ThumbColor = untoggledSwitchColor;
 			fnLifeGoods.OnColor = fnLifeFieldBackColor;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeGoodsLabel, "FNLifeGoodsLabel", "", masterHeaderColor);
+			fnLifeGoodsLabel = ApplyLabelSettings (fnLifePage, "FNLifeGoodsLabel", "", masterHeaderColor);
 
 			//
 			fnLifeSeason = (Switch)fnLifePage.FindByName ("FNLifeSeason");
 			fnLifeSeason.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeSeasonLabel, "FNLifeSeasonLabel", "Сезонная торговля",
-				masterHeaderColor);
+			ApplyLabelSettings (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля", masterHeaderColor);
 
 			//
 			fnLifeAgents = (Switch)fnLifePage.FindByName ("FNLifeAgents");
 			fnLifeAgents.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeAgentsLabel, "FNLifeAgentsLabel", "Платёжный (суб)агент",
-				masterHeaderColor);
+			ApplyLabelSettings (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент", masterHeaderColor);
 
 			//
 			fnLifeExcise = (Switch)fnLifePage.FindByName ("FNLifeExcise");
 			fnLifeExcise.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeExciseLabel, "FNLifeExciseLabel", "Подакцизный товар",
-				masterHeaderColor);
+			ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизный товар", masterHeaderColor);
 
 			//
 			fnLifeAutonomous = (Switch)fnLifePage.FindByName ("FNLifeAutonomous");
 			fnLifeAutonomous.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, ref fnLifeAutonomousLabel, "FNLifeAutonomousLabel", "Автономный режим",
-				masterHeaderColor);
+			ApplyLabelSettings (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим", masterHeaderColor);
 
 			//
-			ApplyLabelSettings (fnLifePage, ref setDate, "SetDate", "Дата фискализации:",
-				masterHeaderColor);
+			ApplyLabelSettings (fnLifePage, "SetDate", "Дата фискализации:", masterHeaderColor);
 
 			fnLifeStartDate = (DatePicker)fnLifePage.FindByName ("FNLifeStartDate");
 
@@ -388,15 +404,32 @@ namespace RD_AAOW
 			fnLifeStartDate.Date = DateTime.Now;
 
 			//
-			ApplyLabelSettings (fnLifePage, ref fnLifeResult, "FNLifeResult", "", masterTextColor);
-
-			fnLifeResult.BackgroundColor = fnLifeFieldBackColor;
-			fnLifeResult.FontFamily = "Serif";
-			fnLifeResult.HorizontalOptions = LayoutOptions.Fill;
-			fnLifeResult.HorizontalTextAlignment = TextAlignment.Center;
+			fnLifeResult = ApplyResultLabelSettings (fnLifePage, "FNLifeResult", "", masterTextColor, fnLifeFieldBackColor);
 
 			// Применение всех названий
 			FnLife13_Toggled (null, null);
+
+			#endregion
+
+			#region Страница определения корректности РНМ
+
+			ApplyLabelSettings (rnmPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
+			rnmKKTSN = ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 16, RNM_TextChanged);
+			rnmKKTTypeLabel = ApplyLabelSettings (rnmPage, "TypeLabel", "", masterTextColor);
+
+			ApplyLabelSettings (rnmPage, "INNLabel", "ИНН пользователя:", masterHeaderColor);
+			rnmINN = ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12, RNM_TextChanged);
+			rnmINNCheckLabel = ApplyLabelSettings (rnmPage, "INNCheckLabel", "", masterTextColor);
+
+			ApplyLabelSettings (rnmPage, "RNMLabel",
+				"Регистрационный номер для проверки или произвольное число для генерации:", masterHeaderColor);
+			rnmRNM = ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16, RNM_TextChanged);
+			rnmRNMCheckLabel = ApplyLabelSettings (rnmPage, "RNMCheckLabel", "", masterTextColor);
+
+			ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать", rnmFieldBackColor, RNMGenerate_Clicked);
+
+			RNM_TextChanged (null, null);   // Применение значений
+
 			#endregion
 			}
 
@@ -473,10 +506,19 @@ namespace RD_AAOW
 		// Изменение ИНН ОФД, ЗН ФН и ККТ
 		private void KKTSN_TextChanged (object sender, TextChangedEventArgs e)
 			{
-			if (kktSN.Text != "")
+			/*if (kktSN.Text != "")
 				kktTypeLabel.Text = KKTSupport.GetKKTModel (kktSN.Text);
 			else
-				kktTypeLabel.Text = "";
+				kktTypeLabel.Text = "";*/
+			GetKKTName (kktSN, kktTypeLabel);
+			}
+
+		private void GetKKTName (Editor KKTSerial, Label KKTName)
+			{
+			if (KKTSerial.Text != "")
+				KKTName.Text = KKTSupport.GetKKTModel (KKTSerial.Text);
+			else
+				KKTName.Text = "";
 			}
 
 		private void FNSN_TextChanged (object sender, TextChangedEventArgs e)
@@ -495,15 +537,44 @@ namespace RD_AAOW
 				ofdNameLabel.Text = "";
 			}
 
-		// Переключение свичей
-		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
+		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
 			{
-			onlyNewCodesLabel.TextColor = e.Value ? masterTextColor : untoggledSwitchColor;
-			}
+			// ЗН ККТ
+			GetKKTName (rnmKKTSN, rnmKKTTypeLabel);
 
-		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
-			{
-			onlyNewErrorsLabel.TextColor = e.Value ? masterTextColor : untoggledSwitchColor;
+			// ИНН пользователя
+			if (rnmINN.Text.Length < 10)
+				{
+				rnmINNCheckLabel.TextColor = masterTextColor;
+				rnmINNCheckLabel.Text = "неполный";
+				}
+			else if (KKTSupport.CheckINN (rnmINN.Text))
+				{
+				rnmINNCheckLabel.TextColor = correctColor;
+				rnmINNCheckLabel.Text = "ОК";
+				}
+			else
+				{
+				rnmINNCheckLabel.TextColor = errorColor;
+				rnmINNCheckLabel.Text = "некорректный";
+				}
+
+			// РНМ
+			if (rnmRNM.Text.Length < 10)
+				{
+				rnmRNMCheckLabel.TextColor = masterTextColor;
+				rnmRNMCheckLabel.Text = "неполный";
+				}
+			else if (KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
+				{
+				rnmRNMCheckLabel.TextColor = correctColor;
+				rnmRNMCheckLabel.Text = "OK";
+				}
+			else
+				{
+				rnmRNMCheckLabel.TextColor = errorColor;
+				rnmRNMCheckLabel.Text = "некорректный";
+				}
 			}
 
 		// Ввод текста
@@ -516,6 +587,8 @@ namespace RD_AAOW
 			}
 
 		// Выбор модели ККТ
+		private readonly KKTCodes kkmc = new KKTCodes ();
+		private int currentCodesKKT = 0;
 		private async void CodesKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
@@ -1022,6 +1095,8 @@ namespace RD_AAOW
 			}
 
 		// Выбор модели ККТ
+		private readonly KKTErrorsList kkme = new KKTErrorsList ();
+		private int currentErrorsKKT = 0;
 		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
@@ -1078,6 +1153,35 @@ namespace RD_AAOW
 			Launcher.OpenAsync ("https://vk.com/rdaaow_fupl");
 			}
 
+		// Выбор элемента содержания
+		private void HeaderButton_Clicked (object sender, EventArgs e)
+			{
+			Button b = (Button)sender;
+			ContentPage p = (ContentPage)b.CommandParameter;
+			((CarouselPage)MainPage).CurrentPage = p;
+			}
+
+		/// <summary>
+		/// Метод выполняет возврат на страницу содержания
+		/// </summary>
+		public void CallHeadersPage ()
+			{
+			((CarouselPage)MainPage).CurrentPage = headersPage;
+			}
+
+		// Метод генерирует регистрационный номер ККТ
+		private void RNMGenerate_Clicked (object sender, EventArgs e)
+			{
+			if (rnmRNM.Text.Length < 1)
+				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, "0");
+			else if (rnmRNM.Text.Length < 10)
+				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text);
+			else
+				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10));
+			}
+
+		#region Переопределения событий исполнения приложения
+#if false
 		/// <summary>
 		/// Обработчик события запуска приложения
 		/// </summary>
@@ -1098,5 +1202,7 @@ namespace RD_AAOW
 		protected override void OnResume ()
 			{
 			}
+#endif
+		#endregion
 		}
 	}

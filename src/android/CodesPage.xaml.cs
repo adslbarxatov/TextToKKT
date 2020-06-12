@@ -16,5 +16,16 @@ namespace RD_AAOW
 			{
 			InitializeComponent ();
 			}
+
+		/// <summary>
+		/// Переопределение для кнопки возврата
+		/// </summary>
+		protected override bool OnBackButtonPressed ()
+			{
+			App app = (App)App.Current;
+			app.CallHeadersPage ();
+
+			return true;
+			}
 		}
 	}

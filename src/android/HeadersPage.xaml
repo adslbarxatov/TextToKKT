@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.HeadersPage">
+
+    <ScrollView>
+        <StackLayout>
+            <Label x:Name="HeaderLabel" />
+
+            <Button x:Name="Button01" />
+            <Button x:Name="Button02" />
+            <Button x:Name="Button03" />
+            <Button x:Name="Button04" />
+            <Button x:Name="Button05" />
+            <Button x:Name="Button06" />
+            <Button x:Name="Button07" />
+            <Button x:Name="Button08" />
+
+            <Label x:Name="Filler" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
+    

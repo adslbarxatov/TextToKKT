@@ -16,5 +16,4 @@
             <Label x:Name="Filler" />
         </StackLayout>
     </ScrollView>
-</ContentPage>
-    
+ </ContentPage>
