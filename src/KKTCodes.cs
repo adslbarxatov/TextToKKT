@@ -133,7 +133,7 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="KKTType">Модель ККТ</param>
 		/// <returns>Возвращает пояснение или \x7 в случае, если входные параметры некорректны</returns>
-		public string GetKKMTypeDescription (uint KKTType)
+		public string GetKKTTypeDescription (uint KKTType)
 			{
 			if ((int)KKTType < names.Count)
 				return descriptions[(int)KKTType];

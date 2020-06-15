@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -15,6 +16,7 @@ namespace RD_AAOW
 		// Переменные
 		private KKTCodes kkmc = null;
 		private KKTErrorsList kkme = null;
+		private OFD ofd = null;
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -30,11 +32,17 @@ namespace RD_AAOW
 			// Загрузка списка кодов и ошибок
 			kkmc = new KKTCodes ();
 			kkme = new KKTErrorsList ();
+			ofd = new OFD ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
 			OnlyNewErrors_CheckedChanged (null, null);
+
 			FNLifeStartDate.Value = DateTime.Now;
+
+			OFDNamesList.Items.Add ("Неизвестный ОФД");
+			OFDNamesList.Items.AddRange (ofd.GetOFDNames ().ToArray ());
+			OFDNamesList.SelectedIndex = 0;
 
 			// Настройка контролов
 			this.Text = ProgramDescription.AssemblyTitle;
@@ -55,7 +63,7 @@ namespace RD_AAOW
 
 			TextLabel.Text = "Текст (" + TextToConvert.Text.Length + "):";
 
-			DescriptionLabel.Text = kkmc.GetKKMTypeDescription ((uint)KKTListForCodes.SelectedIndex);
+			DescriptionLabel.Text = kkmc.GetKKTTypeDescription ((uint)KKTListForCodes.SelectedIndex);
 			}
 
 		// Функция трансляции строки в набор кодов
@@ -100,16 +108,7 @@ namespace RD_AAOW
 			AboutForm af = new AboutForm (SupportedLanguages.ru_ru,
 				"https://github.com/adslbarxatov/TextToKKT",
 				"https://github.com/adslbarxatov/TextToKKT/releases",
-				"",
-
-				"Инструмент позволяет:\r\n" +
-				"• вручную (без использования клавиатуры) программировать текстовые данные " +
-				"в контрольно-кассовой технике (ККТ, 54-ФЗ), имеющей только цифровую клавиатуру;\r\n" +
-				"• просматривать расшифровки кодов ошибок ККТ;\r\n" +
-				"• определять модели ККТ и фискальных накопителей (ФН) по их заводским номерам;\r\n" +
-				"• определять наименование оператора фискальных данных (ОФД) по его ИНН;\r\n" +
-				"• определять срок жизни ФН в соответствии со значимыми параметрами пользователя;\r\n" +
-				"• определять корректность и генерировать РНМ ККТ");
+				"", ProgramDescription.AssemblyAbilities);
 			}
 
 		// Выбор ошибки
@@ -125,15 +124,6 @@ namespace RD_AAOW
 			ErrorCodesList.DataSource = kkme.GetErrors ((uint)KKTListForErrors.SelectedIndex);
 			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
 			ErrorCodesList.SelectedIndex = 0;
-			}
-
-		// Запрос названия ОФД
-		private void OFDINN_TextChanged (object sender, EventArgs e)
-			{
-			if (OFDINN.Text != "")
-				OFDResult.Text = KKTSupport.GetOFDName (OFDINN.Text);
-			else
-				OFDResult.Text = "(введите ИНН ОФД)";
 			}
 
 		// Запрос модели ФН
@@ -324,6 +314,33 @@ namespace RD_AAOW
 				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text);
 			else
 				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10));
+			}
+
+		// Выбор имени ОФД
+		private void OFDNamesList_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			string s = ofd.GetOFDINNByName (OFDNamesList.Text);
+			if (s != "")
+				OFDINN.Text = s;
+			}
+
+		// Выбор ОФД
+		private void OFDINN_TextChanged (object sender, EventArgs e)
+			{
+			List<string> parameters = ofd.GetOFDParameters (OFDINN.Text);
+
+			OFDNamesList.Text = parameters[1];
+			OFDDNSName.Text = parameters[2];
+			OFDIP.Text = parameters[3];
+			OFDPort.Text = parameters[4];
+			OFDEmail.Text = parameters[5];
+			OFDSite.Text = parameters[6];
+			}
+
+		// Копирование в буфер обмена
+		private void OFDDNSName_Click (object sender, EventArgs e)
+			{
+			Clipboard.SetData (DataFormats.Text, ((Button)sender).Text);
 			}
 		}
 	}

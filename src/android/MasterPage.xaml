@@ -9,10 +9,10 @@
     <mypages:ErrorsPage x:Name="ErrorsPage" />
     <mypages:FNLifePage x:Name="FNLifePage" />
     <mypages:RNMPage x:Name="RNMPage" />
+    <mypages:OFDPage x:Name="OFDPage" />
     <mypages:CodesPage x:Name="CodesPage" />
     <mypages:SnPage x:Name="KKTSnPage" />
     <mypages:SnPage x:Name="FNSnPage" />
-    <mypages:SnPage x:Name="OFDINNPage" />
     
     <mypages:AboutPage x:Name="AboutPage" />
 </CarouselPage>

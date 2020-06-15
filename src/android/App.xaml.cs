@@ -45,17 +45,18 @@ namespace RD_AAOW
 
 		// Переменные страниц
 		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
-			kktSnPage, fnSnPage, ofdINNPage, fnLifePage, rnmPage;
+			kktSnPage, fnSnPage, ofdPage, fnLifePage, rnmPage;
 
 		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
 			errorsResultText,
 			aboutLabel,
-			kktTypeLabel, fnTypeLabel, ofdNameLabel,
+			kktTypeLabel, fnTypeLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeResult,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel;
 
 		private Button codesKKTButton,
-			errorsKKTButton, errorsCodeButton;
+			errorsKKTButton, errorsCodeButton,
+			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton;
 
 		private Editor codesSourceText,
 			kktSN, fnSN, ofdINN,
@@ -213,13 +214,13 @@ namespace RD_AAOW
 				fnLifeMasterBackColor, headerNumber++);
 			rnmPage = ApplyPageSettings ("RNMPage", "Проверить / сгенерировать РНМ",
 				rnmMasterBackColor, headerNumber++);
+			ofdPage = ApplyPageSettings ("OFDPage", "Запросить параметры ОФД",
+				snMasterBackColor, headerNumber++);
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
 			kktSnPage = ApplyPageSettings ("KKTSnPage", "Определить ККТ по зав. номеру",
 				snMasterBackColor, headerNumber++);
 			fnSnPage = ApplyPageSettings ("FNSnPage", "Определить ФН по зав. номеру",
-				snMasterBackColor, headerNumber++);
-			ofdINNPage = ApplyPageSettings ("OFDINNPage", "Определить ОФД по ИНН",
 				snMasterBackColor, headerNumber++);
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
@@ -254,7 +255,7 @@ namespace RD_AAOW
 			codesResultText.HorizontalTextAlignment = TextAlignment.Start;
 
 			codesHelpLabel = ApplyTipLabelSettings (codesPage, "HelpLabel",
-				kkmc.GetKKMTypeDescription ((uint)currentCodesKKT), untoggledSwitchColor);
+				kkmc.GetKKTTypeDescription ((uint)currentCodesKKT), untoggledSwitchColor);
 
 			#endregion
 
@@ -305,7 +306,7 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница серийных номеров и ИНН
+			#region Страница серийных номеров
 
 			ApplyLabelSettings (kktSnPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
 			kktSN = ApplyEditorSettings (kktSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, KKTSN_TextChanged);
@@ -315,11 +316,6 @@ namespace RD_AAOW
 			ApplyLabelSettings (fnSnPage, "SNLabel", "Заводской номер ФН:", masterHeaderColor);
 			fnSN = ApplyEditorSettings (fnSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, FNSN_TextChanged);
 			fnTypeLabel = ApplyResultLabelSettings (fnSnPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
-
-			//
-			ApplyLabelSettings (ofdINNPage, "SNLabel", "ИНН ОФД:", masterHeaderColor);
-			ofdINN = ApplyEditorSettings (ofdINNPage, "SN", snFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
-			ofdNameLabel = ApplyResultLabelSettings (ofdINNPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
 
 			#endregion
 
@@ -431,6 +427,36 @@ namespace RD_AAOW
 			RNM_TextChanged (null, null);   // Применение значений
 
 			#endregion
+
+			#region Страница настроек ОФД
+
+			ApplyLabelSettings (ofdPage, "OFDINNLabel", "ИНН ОФД:", masterHeaderColor);
+			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", snFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
+
+			ApplyLabelSettings (ofdPage, "OFDNameLabel", "Название:", masterHeaderColor);
+			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "?",				snFieldBackColor, OFDName_Clicked);
+
+			ApplyLabelSettings (ofdPage, "OFDDNSNameLabel", "Адрес:", masterHeaderColor);
+			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "?", snFieldBackColor, OFDField_Clicked);
+
+			ApplyLabelSettings (ofdPage, "OFDIPLabel", "IP:", masterHeaderColor);
+			ofdIPButton = ApplyButtonSettings (ofdPage, "OFDIP", "?", snFieldBackColor, OFDField_Clicked);
+
+			ApplyLabelSettings (ofdPage, "OFDPortLabel", "Порт:", masterHeaderColor);
+			ofdPortButton = ApplyButtonSettings (ofdPage, "OFDPort", "?", snFieldBackColor, OFDField_Clicked);
+
+			ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail:", masterHeaderColor);
+			ofdEmailButton = ApplyButtonSettings (ofdPage, "OFDEmail", "?", snFieldBackColor, OFDField_Clicked);
+
+			ApplyLabelSettings (ofdPage, "OFDSiteLabel", "Сайт:", masterHeaderColor);
+			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "?", snFieldBackColor, OFDField_Clicked);
+
+			ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
+				"Нажатие на кнопки копирует их подписи в буфер обмена", untoggledSwitchColor);
+
+			ofdINN.Text = ofd.GetOFDINNByName (ofdNameButton.Text); // Протягивание значений
+
+			#endregion
 			}
 
 		// Ввод ЗН ФН в разделе определения срока жизни
@@ -445,17 +471,17 @@ namespace RD_AAOW
 			// Определение длины ключа
 			if (fnLifeModelLabel.Text.Contains ("(13)") || fnLifeModelLabel.Text.Contains ("(15)"))
 				{
-				fnLife13.IsEnabled = false;
 				fnLife13.IsToggled = false;
+				fnLife13.IsVisible = fnLife13.IsEnabled = false;
 				}
 			else if (fnLifeModelLabel.Text.Contains ("(36)"))
 				{
-				fnLife13.IsEnabled = false;
 				fnLife13.IsToggled = true;
+				fnLife13.IsVisible = fnLife13.IsEnabled = false;
 				}
 			else
 				{
-				fnLife13.IsEnabled = true;
+				fnLife13.IsVisible = fnLife13.IsEnabled = true;
 				}
 
 			// Принудительное изменение
@@ -529,14 +555,6 @@ namespace RD_AAOW
 				fnTypeLabel.Text = "";
 			}
 
-		private void OFDINN_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			if (ofdINN.Text != "")
-				ofdNameLabel.Text = KKTSupport.GetOFDName (ofdINN.Text);
-			else
-				ofdNameLabel.Text = "";
-			}
-
 		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			// ЗН ККТ
@@ -577,6 +595,42 @@ namespace RD_AAOW
 				}
 			}
 
+		private readonly OFD ofd = new OFD ();
+		private void OFDINN_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			List<string> parameters = ofd.GetOFDParameters (ofdINN.Text);
+
+			ofdNameButton.Text = parameters[1];
+			ofdDNSNameButton.Text = parameters[2];
+			ofdIPButton.Text = parameters[3];
+			ofdPortButton.Text = parameters[4];
+			ofdEmailButton.Text = parameters[5];
+			ofdSiteButton.Text = parameters[6];
+			}
+
+		private async void OFDName_Clicked (object sender, EventArgs e)
+			{
+			// Запрос ОФД по имени
+			List<string> list = ofd.GetOFDNames ();
+			string res = await ofdPage.DisplayActionSheet ("Выберите название ОФД:", "Отмена", null,
+				list.ToArray ());
+
+			// Установка результата
+			if (list.IndexOf (res) >= 0)
+				{
+				ofdNameButton.Text = res;
+				string s = ofd.GetOFDINNByName (ofdNameButton.Text);
+				if (s != "")
+					ofdINN.Text = s;
+				}
+			}
+
+		// Отправка значения в буфер обмена
+		private void OFDField_Clicked (object sender, EventArgs e)
+			{
+			Clipboard.SetTextAsync (((Button)sender).Text);
+			}
+
 		// Ввод текста
 		private void SourceText_TextChanged (object sender, TextChangedEventArgs e)
 			{
@@ -601,7 +655,7 @@ namespace RD_AAOW
 
 			codesKKTButton.Text = res;
 			currentCodesKKT = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res);
-			codesHelpLabel.Text = kkmc.GetKKMTypeDescription ((uint)currentCodesKKT);
+			codesHelpLabel.Text = kkmc.GetKKTTypeDescription ((uint)currentCodesKKT);
 
 			SourceText_TextChanged (null, null);
 			}

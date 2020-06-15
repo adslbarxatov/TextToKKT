@@ -8,7 +8,7 @@ namespace RD_AAOW
 	/// </summary>
 	public static class KKTSupport
 		{
-		/// <summary>
+		/*/// <summary>
 		/// Метод возвращает название ОФД по его ИНН
 		/// </summary>
 		/// <param name="OFDINN">ИНН ОФД</param>
@@ -62,7 +62,7 @@ namespace RD_AAOW
 				return "без ОФД";
 
 			return "неизвестный ОФД";
-			}
+			}*/
 
 		/// <summary>
 		/// Метод возвращает модель ФН по его заводскому номеру
