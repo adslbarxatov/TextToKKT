@@ -70,7 +70,7 @@ namespace RD_AAOW
 		/// </summary>
 		public List<string> GetOFDNames ()
 			{
-			return names;
+			return new List<string> (names);
 			}
 
 		/// <summary>

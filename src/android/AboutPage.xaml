@@ -9,9 +9,9 @@
 
             <Label x:Name="AboutLabel" />
 
-            <Button x:Name="AppPage" />
-            <Button x:Name="UpdatePage" />
-            <Button x:Name="CommunityPage" />
+            <Button x:Name="AppPage" HorizontalOptions="Center" />
+            <Button x:Name="UpdatePage" HorizontalOptions="Center" />
+            <Button x:Name="CommunityPage" HorizontalOptions="Center" />
 
             <Label x:Name="Filler" />
         </StackLayout>

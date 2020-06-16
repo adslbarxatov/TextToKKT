@@ -10,6 +10,7 @@
             <StackLayout Orientation="Horizontal">
                 <Label x:Name="OFDINNLabel" VerticalOptions="Center" />
                 <Editor x:Name="OFDINN" />
+                <Button x:Name="OFDINNCopy" />
             </StackLayout>
             
             <Label x:Name="OFDNameLabel" />

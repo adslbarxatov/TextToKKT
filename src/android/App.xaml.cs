@@ -37,6 +37,9 @@ namespace RD_AAOW
 			rnmMasterBackColor = Color.FromHex ("#F0FFFF"),
 			rnmFieldBackColor = Color.FromHex ("#C8FFFF"),
 
+			ofdMasterBackColor = Color.FromHex ("#F0F0FF"),
+			ofdFieldBackColor = Color.FromHex ("#C8C8FF"),
+
 			masterTextColor = Color.FromHex ("#000080"),
 			masterHeaderColor = Color.FromHex ("#303030"),
 			untoggledSwitchColor = Color.FromHex ("#505050"),
@@ -215,7 +218,7 @@ namespace RD_AAOW
 			rnmPage = ApplyPageSettings ("RNMPage", "Проверить / сгенерировать РНМ",
 				rnmMasterBackColor, headerNumber++);
 			ofdPage = ApplyPageSettings ("OFDPage", "Запросить параметры ОФД",
-				snMasterBackColor, headerNumber++);
+				ofdMasterBackColor, headerNumber++);
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
 			kktSnPage = ApplyPageSettings ("KKTSnPage", "Определить ККТ по зав. номеру",
@@ -296,10 +299,10 @@ namespace RD_AAOW
 			aboutLabel.FontAttributes = FontAttributes.Bold;
 
 			ApplyButtonSettings (aboutPage, "AppPage",
-				"Перейти на страницу проекта", aboutFieldBackColor, AppButton_Clicked);
+				"Страница проекта", aboutFieldBackColor, AppButton_Clicked);
 
 			ApplyButtonSettings (aboutPage, "UpdatePage",
-				"Перейти на страницу анализатора данных ФН", aboutFieldBackColor, UpdateButton_Clicked);
+				"Проект FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 
 			ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
@@ -431,28 +434,29 @@ namespace RD_AAOW
 			#region Страница настроек ОФД
 
 			ApplyLabelSettings (ofdPage, "OFDINNLabel", "ИНН ОФД:", masterHeaderColor);
-			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", snFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
+			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
+			ApplyButtonSettings (ofdPage, "OFDINNCopy", "", ofdFieldBackColor, OFDINNCopy_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDNameLabel", "Название:", masterHeaderColor);
-			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "?",				snFieldBackColor, OFDName_Clicked);
+			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "?", ofdFieldBackColor, OFDName_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDDNSNameLabel", "Адрес:", masterHeaderColor);
-			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "?", snFieldBackColor, OFDField_Clicked);
+			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "?", ofdFieldBackColor, OFDField_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDIPLabel", "IP:", masterHeaderColor);
-			ofdIPButton = ApplyButtonSettings (ofdPage, "OFDIP", "?", snFieldBackColor, OFDField_Clicked);
+			ofdIPButton = ApplyButtonSettings (ofdPage, "OFDIP", "?", ofdFieldBackColor, OFDField_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDPortLabel", "Порт:", masterHeaderColor);
-			ofdPortButton = ApplyButtonSettings (ofdPage, "OFDPort", "?", snFieldBackColor, OFDField_Clicked);
+			ofdPortButton = ApplyButtonSettings (ofdPage, "OFDPort", "?", ofdFieldBackColor, OFDField_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail:", masterHeaderColor);
-			ofdEmailButton = ApplyButtonSettings (ofdPage, "OFDEmail", "?", snFieldBackColor, OFDField_Clicked);
+			ofdEmailButton = ApplyButtonSettings (ofdPage, "OFDEmail", "?", ofdFieldBackColor, OFDField_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDSiteLabel", "Сайт:", masterHeaderColor);
-			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "?", snFieldBackColor, OFDField_Clicked);
+			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "?", ofdFieldBackColor, OFDField_Clicked);
 
 			ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
-				"Нажатие на кнопки копирует их подписи в буфер обмена", untoggledSwitchColor);
+				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
 
 			ofdINN.Text = ofd.GetOFDINNByName (ofdNameButton.Text); // Протягивание значений
 
@@ -532,10 +536,6 @@ namespace RD_AAOW
 		// Изменение ИНН ОФД, ЗН ФН и ККТ
 		private void KKTSN_TextChanged (object sender, TextChangedEventArgs e)
 			{
-			/*if (kktSN.Text != "")
-				kktTypeLabel.Text = KKTSupport.GetKKTModel (kktSN.Text);
-			else
-				kktTypeLabel.Text = "";*/
 			GetKKTName (kktSN, kktTypeLabel);
 			}
 
@@ -619,6 +619,7 @@ namespace RD_AAOW
 			if (list.IndexOf (res) >= 0)
 				{
 				ofdNameButton.Text = res;
+				SendToClipboard (res.Replace ('«', '\"').Replace ('»', '\"'));
 				string s = ofd.GetOFDINNByName (ofdNameButton.Text);
 				if (s != "")
 					ofdINN.Text = s;
@@ -628,7 +629,25 @@ namespace RD_AAOW
 		// Отправка значения в буфер обмена
 		private void OFDField_Clicked (object sender, EventArgs e)
 			{
-			Clipboard.SetTextAsync (((Button)sender).Text);
+			SendToClipboard (((Button)sender).Text);
+			}
+
+		private void OFDINNCopy_Clicked (object sender, EventArgs e)
+			{
+			SendToClipboard (ofdINN.Text);
+			}
+
+		private void SendToClipboard (string Text)
+			{
+			try
+				{
+				Clipboard.SetTextAsync (Text);
+				}
+			catch
+				{
+				ofdPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Ошибка обращения к буферу обмена. Попробуйте ещё раз", "OK");
+				}
 			}
 
 		// Ввод текста

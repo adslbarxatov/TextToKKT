@@ -99,11 +99,8 @@ namespace RD_AAOW
 			}
 
 		// Отображение справки
-		private void MainForm_HelpButtonClicked (object sender, CancelEventArgs e)
+		private void BHelp_Clicked (object sender, EventArgs e)
 			{
-			// Отмена обработки события вызова справки
-			e.Cancel = true;
-
 			// Отображение
 			AboutForm af = new AboutForm (SupportedLanguages.ru_ru,
 				"https://github.com/adslbarxatov/TextToKKT",
@@ -164,18 +161,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start ("https://github.com/adslbarxatov/");
-				}
-			catch
-				{
-				}
-			}
-
-		private void AboutFNReader_Click (object sender, EventArgs e)
-			{
-			try
-				{
-				Process.Start ("https://github.com/adslbarxatov/FNReader");
+				Process.Start ("https://vk.com/rdaaow_fupl");
 				}
 			catch
 				{
@@ -340,7 +326,30 @@ namespace RD_AAOW
 		// Копирование в буфер обмена
 		private void OFDDNSName_Click (object sender, EventArgs e)
 			{
-			Clipboard.SetData (DataFormats.Text, ((Button)sender).Text);
+			SendToClipboard (((Button)sender).Text);
+			}
+
+		private void SendToClipboard (string Text)
+			{
+			try
+				{
+				Clipboard.SetData (DataFormats.Text, Text);
+				}
+			catch
+				{
+				MessageBox.Show ("Ошибка обращения к буферу обмена. Попробуйте ещё раз",
+					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				}
+			}
+
+		private void OFDNameCopy_Click (object sender, EventArgs e)
+			{
+			SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'));
+			}
+
+		private void OFDINNCopy_Click (object sender, EventArgs e)
+			{
+			SendToClipboard (OFDINN.Text);
 			}
 		}
 	}

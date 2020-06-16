@@ -8,23 +8,23 @@
             <Label x:Name="HeaderLabel" />
 
             <Label x:Name="SNLabel" />
-            <StackLayout Orientation="Horizontal">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
                 <Editor x:Name="SN" />
                 <Label x:Name="TypeLabel" VerticalOptions="Center" />
             </StackLayout>
 
             <Label x:Name="INNLabel" />
-            <StackLayout Orientation="Horizontal">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
                 <Editor x:Name="INN" />
                 <Label x:Name="INNCheckLabel" VerticalOptions="Center" />
             </StackLayout>
 
             <Label x:Name="RNMLabel" />
-            <StackLayout Orientation="Horizontal">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
                 <Editor x:Name="RNM" />
                 <Label x:Name="RNMCheckLabel" VerticalOptions="Center" />
             </StackLayout>
-            <Button x:Name="RNMGenerate" HorizontalOptions="Start" />
+            <Button x:Name="RNMGenerate" HorizontalOptions="Center" />
 
             <Label x:Name="Filler" />
         </StackLayout>
