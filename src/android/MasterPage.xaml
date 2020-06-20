@@ -11,6 +11,7 @@
     <mypages:RNMPage x:Name="RNMPage" />
     <mypages:OFDPage x:Name="OFDPage" />
     <mypages:CodesPage x:Name="CodesPage" />
+    <mypages:LowLevelPage x:Name="LowLevelPage" />
     <mypages:SnPage x:Name="KKTSnPage" />
     <mypages:SnPage x:Name="FNSnPage" />
     

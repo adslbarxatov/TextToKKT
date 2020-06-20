@@ -82,7 +82,7 @@ namespace RD_AAOW
 			{
 			// Защита
 			if (!inn.Contains (INN))
-				return new List<string> { "?", "Неизвестный ОФД", "?", "?", "?", "?", "?" };
+				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "" };
 
 			// Возврат
 			int i = inn.IndexOf (INN);

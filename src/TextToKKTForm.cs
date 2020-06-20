@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
@@ -17,6 +16,7 @@ namespace RD_AAOW
 		private KKTCodes kkmc = null;
 		private KKTErrorsList kkme = null;
 		private OFD ofd = null;
+		private LowLevel ll = null;
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -33,10 +33,12 @@ namespace RD_AAOW
 			kkmc = new KKTCodes ();
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
+			ll = new LowLevel ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
 			OnlyNewErrors_CheckedChanged (null, null);
+			LowLevelCommandATOL_CheckedChanged (null, null);
 
 			FNLifeStartDate.Value = DateTime.Now;
 
@@ -350,6 +352,36 @@ namespace RD_AAOW
 		private void OFDINNCopy_Click (object sender, EventArgs e)
 			{
 			SendToClipboard (OFDINN.Text);
+			}
+
+		// Выбор списка команд нижнего уровня
+		private void LowLevelCommandATOL_CheckedChanged (object sender, EventArgs e)
+			{
+			LowLevelCommand.Items.Clear ();
+			LowLevelCommand.Items.AddRange (ll.GetATOLCommandsList ().ToArray ());
+			LowLevelCommand.SelectedIndex = 0;
+			}
+
+		private void LowLevelCommandSHTRIH_CheckedChanged (object sender, EventArgs e)
+			{
+			LowLevelCommand.Items.Clear ();
+			LowLevelCommand.Items.AddRange (ll.GetSHTRIHCommandsList ().ToArray ());
+			LowLevelCommand.SelectedIndex = 0;
+			}
+
+		// Выбор команды
+		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			if (LowLevelCommandATOL.Checked)
+				{
+				LowLevelCommandCode.Text = ll.GetATOLCommand ((uint)LowLevelCommand.SelectedIndex, false);
+				LowLevelCommandDescr.Text = ll.GetATOLCommand ((uint)LowLevelCommand.SelectedIndex, true);
+				}
+			else
+				{
+				LowLevelCommandCode.Text = ll.GetSHTRIHCommand ((uint)LowLevelCommand.SelectedIndex, false);
+				LowLevelCommandDescr.Text = ll.GetSHTRIHCommand ((uint)LowLevelCommand.SelectedIndex, true);
+				}
 			}
 		}
 	}

@@ -12,7 +12,8 @@ namespace RD_AAOW
 	/// </summary>
 	public partial class App:Application
 		{
-		// Настройки стилей отображения
+		#region Настройки стилей отображения
+
 		private int masterFontSize = 18, tipsFontSize = 14;
 		private Thickness margin = new Thickness (6);
 		private readonly Color
@@ -40,26 +41,33 @@ namespace RD_AAOW
 			ofdMasterBackColor = Color.FromHex ("#F0F0FF"),
 			ofdFieldBackColor = Color.FromHex ("#C8C8FF"),
 
+			lowLevelMasterBackColor = Color.FromHex ("#FFFFFF"),
+			lowLevelFieldBackColor = Color.FromHex ("#C8C8C8"),
+
 			masterTextColor = Color.FromHex ("#000080"),
 			masterHeaderColor = Color.FromHex ("#303030"),
 			untoggledSwitchColor = Color.FromHex ("#505050"),
 			errorColor = Color.FromHex ("#FF0000"),
 			correctColor = Color.FromHex ("#008000");
 
-		// Переменные страниц
+		#endregion
+
+		#region Переменные страниц
 		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
-			kktSnPage, fnSnPage, ofdPage, fnLifePage, rnmPage;
+			kktSnPage, fnSnPage, ofdPage, fnLifePage, rnmPage, lowLevelPage;
 
 		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
 			errorsResultText,
 			aboutLabel,
 			kktTypeLabel, fnTypeLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeResult,
-			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel;
+			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
+			lowLevelCommandDescr;
 
 		private Button codesKKTButton,
 			errorsKKTButton, errorsCodeButton,
-			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton;
+			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
+			lowLevelCommand, lowLevelCommandCode;
 
 		private Editor codesSourceText,
 			kktSN, fnSN, ofdINN,
@@ -67,11 +75,15 @@ namespace RD_AAOW
 			rnmKKTSN, rnmINN, rnmRNM;
 
 		private Switch onlyNewCodes, onlyNewErrors,
-			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous;
+			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous,
+			lowLevelSHTRIH;
 
 		private DatePicker fnLifeStartDate;
 
-		// Вспомогательные методы
+		#endregion
+
+		#region Вспомогательные методы
+
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
 			{
 			// Инициализация страницы
@@ -196,6 +208,8 @@ namespace RD_AAOW
 			return childLabel;
 			}
 
+		#endregion
+
 		/// <summary>
 		/// Конструктор. Точка входа приложения
 		/// </summary>
@@ -204,7 +218,8 @@ namespace RD_AAOW
 			// Инициализация
 			InitializeComponent ();
 
-			// Общая конструкция страниц приложения
+			#region Общая конструкция страниц приложения
+
 			MainPage = new MasterPage ();
 
 			uint headerNumber = 0;
@@ -221,6 +236,8 @@ namespace RD_AAOW
 				ofdMasterBackColor, headerNumber++);
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
+			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
+				lowLevelMasterBackColor, headerNumber++);
 			kktSnPage = ApplyPageSettings ("KKTSnPage", "Определить ККТ по зав. номеру",
 				snMasterBackColor, headerNumber++);
 			fnSnPage = ApplyPageSettings ("FNSnPage", "Определить ФН по зав. номеру",
@@ -228,6 +245,8 @@ namespace RD_AAOW
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
+
+			#endregion
 
 			#region Страница кодов
 
@@ -305,7 +324,7 @@ namespace RD_AAOW
 				"Проект FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 
 			ApplyButtonSettings (aboutPage, "CommunityPage",
-				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
+				"RD AAOW\nFree utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
 
 			#endregion
 
@@ -435,25 +454,25 @@ namespace RD_AAOW
 
 			ApplyLabelSettings (ofdPage, "OFDINNLabel", "ИНН ОФД:", masterHeaderColor);
 			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
-			ApplyButtonSettings (ofdPage, "OFDINNCopy", "", ofdFieldBackColor, OFDINNCopy_Clicked);
+			ApplyButtonSettings (ofdPage, "OFDINNCopy", "↑", ofdFieldBackColor, OFDINNCopy_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDNameLabel", "Название:", masterHeaderColor);
-			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "?", ofdFieldBackColor, OFDName_Clicked);
+			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -", ofdFieldBackColor, OFDName_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDDNSNameLabel", "Адрес:", masterHeaderColor);
-			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "?", ofdFieldBackColor, OFDField_Clicked);
+			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDIPLabel", "IP:", masterHeaderColor);
-			ofdIPButton = ApplyButtonSettings (ofdPage, "OFDIP", "?", ofdFieldBackColor, OFDField_Clicked);
+			ofdIPButton = ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor, Field_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDPortLabel", "Порт:", masterHeaderColor);
-			ofdPortButton = ApplyButtonSettings (ofdPage, "OFDPort", "?", ofdFieldBackColor, OFDField_Clicked);
+			ofdPortButton = ApplyButtonSettings (ofdPage, "OFDPort", "", ofdFieldBackColor, Field_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail:", masterHeaderColor);
-			ofdEmailButton = ApplyButtonSettings (ofdPage, "OFDEmail", "?", ofdFieldBackColor, OFDField_Clicked);
+			ofdEmailButton = ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDSiteLabel", "Сайт:", masterHeaderColor);
-			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "?", ofdFieldBackColor, OFDField_Clicked);
+			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
 
 			ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
@@ -461,6 +480,71 @@ namespace RD_AAOW
 			ofdINN.Text = ofd.GetOFDINNByName (ofdNameButton.Text); // Протягивание значений
 
 			#endregion
+
+			#region Страница команд нижнего уровня
+
+			ApplyLabelSettings (lowLevelPage, "AtolLabel", "АТОЛ", masterHeaderColor);
+			ApplyLabelSettings (lowLevelPage, "ShtrihLabel", "ШТРИХ", masterHeaderColor);
+
+			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
+			lowLevelSHTRIH.Toggled += LowLevelSHTRIH_Toggled;
+			lowLevelSHTRIH.ThumbColor = untoggledSwitchColor;
+			lowLevelSHTRIH.OnColor = fnLifeFieldBackColor;
+
+			//
+			ApplyLabelSettings (lowLevelPage, "CommandLabel", "Команда:", masterHeaderColor);
+			lowLevelCommand = ApplyButtonSettings (lowLevelPage, "CommandButton",
+				ll.GetATOLCommandsList ()[0],
+				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
+
+			//
+			ApplyLabelSettings (lowLevelPage, "CommandCodeLabel", "Код команды:", masterHeaderColor);
+			lowLevelCommandCode = ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
+				ll.GetATOLCommand (0, false), lowLevelFieldBackColor, Field_Clicked);
+
+			//
+			ApplyLabelSettings (lowLevelPage, "CommandDescrLabel", "Описание:", masterHeaderColor);
+
+			lowLevelCommandDescr = ApplyResultLabelSettings (lowLevelPage, "CommandDescr",
+				ll.GetATOLCommand (0, true), masterTextColor, lowLevelFieldBackColor);
+			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
+
+			//
+			ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
+				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
+
+			#endregion
+			}
+
+		// Выбор команды нижнего уровня
+		private LowLevel ll = new LowLevel ();
+		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
+			{
+			// Запрос кода ошибки
+			List<string> list = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommandsList () : ll.GetATOLCommandsList ());
+			string res = list[0];
+			if (e != null)
+				res = await lowLevelPage.DisplayActionSheet ("Выберите команду:", "Отмена", null,
+				   list.ToArray ());
+
+			// Установка результата
+			int i = 0;
+			if ((e == null) || ((i = list.IndexOf (res)) >= 0))
+				{
+				lowLevelCommand.Text = res;
+				lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
+					ll.GetATOLCommand ((uint)i, false));
+				lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
+					ll.GetATOLCommand ((uint)i, true));
+				}
+
+			list.Clear ();
+			}
+
+		// Выбор списка команд
+		private void LowLevelSHTRIH_Toggled (object sender, ToggledEventArgs e)
+			{
+			LowLevelCommandCodeButton_Clicked (sender, null);
 			}
 
 		// Ввод ЗН ФН в разделе определения срока жизни
@@ -627,7 +711,7 @@ namespace RD_AAOW
 			}
 
 		// Отправка значения в буфер обмена
-		private void OFDField_Clicked (object sender, EventArgs e)
+		private void Field_Clicked (object sender, EventArgs e)
 			{
 			SendToClipboard (((Button)sender).Text);
 			}

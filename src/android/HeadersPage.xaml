@@ -15,6 +15,7 @@
             <Button x:Name="Button06" />
             <Button x:Name="Button07" />
             <Button x:Name="Button08" />
+            <Button x:Name="Button09" />
 
             <Label x:Name="Filler" />
         </StackLayout>
