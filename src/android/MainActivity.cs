@@ -39,6 +39,10 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[Activity (Theme = "@style/SplashTheme", MainLauncher = true, NoHistory = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+#if EVOTOR
+	[IntentFilter (new[] { Intent.ActionMain },
+		Categories = new[] { Intent.CategorySampleCode, "android.intent.category.EVOTOR" })]
+#endif
 	public class SplashActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
 		/// <summary>

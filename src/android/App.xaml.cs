@@ -100,6 +100,7 @@ namespace RD_AAOW
 					headersFieldBackColor, HeaderButton_Clicked);
 				b.Margin = b.Padding = new Thickness (1);
 				b.CommandParameter = page;
+				b.IsVisible = true;
 				}
 
 			return page;
@@ -131,7 +132,8 @@ namespace RD_AAOW
 			childButton.TextColor = masterTextColor;
 			childButton.Margin = margin;
 			childButton.Text = ButtonTitle;
-			childButton.Clicked += ButtonMethod;
+			if (ButtonMethod != null)
+				childButton.Clicked += ButtonMethod;
 
 			return childButton;
 			}
@@ -234,14 +236,26 @@ namespace RD_AAOW
 				rnmMasterBackColor, headerNumber++);
 			ofdPage = ApplyPageSettings ("OFDPage", "Запросить параметры ОФД",
 				ofdMasterBackColor, headerNumber++);
+#if !EVOTOR
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
+#else
+			codesPage = (ContentPage)MainPage.FindByName ("CodesPage");
+			((CarouselPage)MainPage).Children.Remove (codesPage);
+#endif
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, headerNumber++);
+#if !EVOTOR
 			kktSnPage = ApplyPageSettings ("KKTSnPage", "Определить ККТ по зав. номеру",
 				snMasterBackColor, headerNumber++);
 			fnSnPage = ApplyPageSettings ("FNSnPage", "Определить ФН по зав. номеру",
 				snMasterBackColor, headerNumber++);
+#else
+			kktSnPage = (ContentPage)MainPage.FindByName ("KKTSnPage");
+			fnSnPage = (ContentPage)MainPage.FindByName ("FNSnPage");
+			((CarouselPage)MainPage).Children.Remove (kktSnPage);
+			((CarouselPage)MainPage).Children.Remove (fnSnPage);
+#endif
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
@@ -249,6 +263,7 @@ namespace RD_AAOW
 			#endregion
 
 			#region Страница кодов
+#if !EVOTOR
 
 			ApplyLabelSettings (codesPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
 
@@ -279,6 +294,7 @@ namespace RD_AAOW
 			codesHelpLabel = ApplyTipLabelSettings (codesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription ((uint)currentCodesKKT), untoggledSwitchColor);
 
+#endif
 			#endregion
 
 			#region Страница ошибок
@@ -288,11 +304,20 @@ namespace RD_AAOW
 			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
 			onlyNewErrors.IsToggled = true;
 
+#if !EVOTOR
 			ApplyLabelSettings (errorsPage, "OnlyNewErrorsLabel", "Только новые", masterTextColor);
 
 			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
 				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
+#else
+			onlyNewErrors.IsVisible = false;
+
+			currentErrorsKKT = 3;
+			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
+				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT],
+				errorsFieldBackColor, null);
+#endif
 
 			ApplyLabelSettings (errorsPage, "ErrorCodeLabel", "Код / сообщение:", masterHeaderColor);
 
@@ -329,6 +354,7 @@ namespace RD_AAOW
 			#endregion
 
 			#region Страница серийных номеров
+#if !EVOTOR
 
 			ApplyLabelSettings (kktSnPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
 			kktSN = ApplyEditorSettings (kktSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, KKTSN_TextChanged);
@@ -339,6 +365,7 @@ namespace RD_AAOW
 			fnSN = ApplyEditorSettings (fnSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, FNSN_TextChanged);
 			fnTypeLabel = ApplyResultLabelSettings (fnSnPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
 
+#endif
 			#endregion
 
 			#region Страница определения срока жизни ФН
@@ -483,13 +510,17 @@ namespace RD_AAOW
 
 			#region Страница команд нижнего уровня
 
-			ApplyLabelSettings (lowLevelPage, "AtolLabel", "АТОЛ", masterHeaderColor);
-			ApplyLabelSettings (lowLevelPage, "ShtrihLabel", "ШТРИХ", masterHeaderColor);
-
 			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
 			lowLevelSHTRIH.Toggled += LowLevelSHTRIH_Toggled;
 			lowLevelSHTRIH.ThumbColor = untoggledSwitchColor;
 			lowLevelSHTRIH.OnColor = fnLifeFieldBackColor;
+
+#if !EVOTOR
+			ApplyLabelSettings (lowLevelPage, "AtolLabel", "АТОЛ", masterHeaderColor);
+			ApplyLabelSettings (lowLevelPage, "ShtrihLabel", "ШТРИХ", masterHeaderColor);
+#else
+			lowLevelSHTRIH.IsVisible = false;
+#endif
 
 			//
 			ApplyLabelSettings (lowLevelPage, "CommandLabel", "Команда:", masterHeaderColor);

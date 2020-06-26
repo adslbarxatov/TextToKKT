@@ -7,15 +7,15 @@
         <StackLayout>
             <Label x:Name="HeaderLabel" />
 
-            <Button x:Name="Button01" />
-            <Button x:Name="Button02" />
-            <Button x:Name="Button03" />
-            <Button x:Name="Button04" />
-            <Button x:Name="Button05" />
-            <Button x:Name="Button06" />
-            <Button x:Name="Button07" />
-            <Button x:Name="Button08" />
-            <Button x:Name="Button09" />
+            <Button x:Name="Button01" IsVisible="False" />
+            <Button x:Name="Button02" IsVisible="False" />
+            <Button x:Name="Button03" IsVisible="False" />
+            <Button x:Name="Button04" IsVisible="False" />
+            <Button x:Name="Button05" IsVisible="False" />
+            <Button x:Name="Button06" IsVisible="False" />
+            <Button x:Name="Button07" IsVisible="False" />
+            <Button x:Name="Button08" IsVisible="False" />
+            <Button x:Name="Button09" IsVisible="False" />
 
             <Label x:Name="Filler" />
         </StackLayout>

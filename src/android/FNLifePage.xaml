@@ -16,8 +16,6 @@
             </StackLayout>
             <Label x:Name="FNLifeModelLabel" />
 
-            <Label x:Name="Filler1" />
-
             <!-- Зона указания параметров -->
             <Label x:Name="SetUserParameters" />
 
@@ -52,8 +50,6 @@
                     <Label x:Name="FNLifeAutonomousLabel" VerticalOptions="Center" />
                 </StackLayout>
             </FlexLayout>
-
-            <Label x:Name="Filler2" />
 
             <!-- Поле указания даты -->
             <StackLayout HorizontalOptions="Fill" Orientation="Horizontal">

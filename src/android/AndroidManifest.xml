@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT" 
-	android:installLocation="internalOnly" android:versionName="3.7" android:versionCode="308">
+	android:installLocation="internalOnly" android:versionName="3.7.2" android:versionCode="309">
 	
 	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="28" />
 	
-	<application android:label="Text to KKT" android:icon="@mipmap/icon"></application>
+	<application android:label="Text to KKT" android:icon="@mipmap/icon">
+		<meta-data android:name="app_uuid" android:value="2bd6603b-5cf9-4c6d-b0e8-966a7c975359"/>
+	</application>
 </manifest>
