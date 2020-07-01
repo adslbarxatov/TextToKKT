@@ -54,12 +54,11 @@ namespace RD_AAOW
 
 		#region Переменные страниц
 		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
-			kktSnPage, fnSnPage, ofdPage, fnLifePage, rnmPage, lowLevelPage;
+			ofdPage, fnLifePage, rnmPage, lowLevelPage;
 
 		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
 			errorsResultText,
 			aboutLabel,
-			kktTypeLabel, fnTypeLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeResult,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
 			lowLevelCommandDescr;
@@ -70,13 +69,14 @@ namespace RD_AAOW
 			lowLevelCommand, lowLevelCommandCode;
 
 		private Editor codesSourceText,
-			kktSN, fnSN, ofdINN,
+			ofdINN,
 			fnLifeSerial,
 			rnmKKTSN, rnmINN, rnmRNM;
 
 		private Switch onlyNewCodes, onlyNewErrors,
 			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous,
-			lowLevelSHTRIH;
+			lowLevelSHTRIH,
+			keepAppState;
 
 		private DatePicker fnLifeStartDate;
 
@@ -155,7 +155,8 @@ namespace RD_AAOW
 			}
 
 		private Editor ApplyEditorSettings (ContentPage ParentPage, string EditorName,
-			Color EditorColor, Keyboard EditorKeyboard, uint MaxLength, EventHandler<TextChangedEventArgs> EditMethod)
+			Color EditorColor, Keyboard EditorKeyboard, uint MaxLength,
+			string InitialText, EventHandler<TextChangedEventArgs> EditMethod)
 			{
 			Editor childEditor = (Editor)ParentPage.FindByName (EditorName);
 
@@ -172,7 +173,7 @@ namespace RD_AAOW
 			childEditor.TextColor = masterTextColor;
 			childEditor.Margin = margin;
 
-			childEditor.Text = "";
+			childEditor.Text = InitialText;
 			childEditor.TextChanged += EditMethod;
 
 			return childEditor;
@@ -212,6 +213,8 @@ namespace RD_AAOW
 
 		#endregion
 
+		private ConfigAccessor ca = new ConfigAccessor ();
+
 		/// <summary>
 		/// Конструктор. Точка входа приложения
 		/// </summary>
@@ -236,6 +239,9 @@ namespace RD_AAOW
 				rnmMasterBackColor, headerNumber++);
 			ofdPage = ApplyPageSettings ("OFDPage", "Запросить параметры ОФД",
 				ofdMasterBackColor, headerNumber++);
+			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
+				lowLevelMasterBackColor, headerNumber++);
+
 #if !EVOTOR
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
@@ -243,23 +249,19 @@ namespace RD_AAOW
 			codesPage = (ContentPage)MainPage.FindByName ("CodesPage");
 			((CarouselPage)MainPage).Children.Remove (codesPage);
 #endif
-			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
-				lowLevelMasterBackColor, headerNumber++);
-#if !EVOTOR
-			kktSnPage = ApplyPageSettings ("KKTSnPage", "Определить ККТ по зав. номеру",
-				snMasterBackColor, headerNumber++);
-			fnSnPage = ApplyPageSettings ("FNSnPage", "Определить ФН по зав. номеру",
-				snMasterBackColor, headerNumber++);
-#else
-			kktSnPage = (ContentPage)MainPage.FindByName ("KKTSnPage");
-			fnSnPage = (ContentPage)MainPage.FindByName ("FNSnPage");
-			((CarouselPage)MainPage).Children.Remove (kktSnPage);
-			((CarouselPage)MainPage).Children.Remove (fnSnPage);
-#endif
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
 
+			#endregion
+
+			#region Страница «оглавления»
+			keepAppState = (Switch)headersPage.FindByName ("KeepAppState");
+			keepAppState.IsToggled = ca.KeepApplicationState;
+
+			ApplyLabelSettings (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", masterHeaderColor);
+
+			((CarouselPage)MainPage).CurrentPage = ((CarouselPage)MainPage).Children[(int)ca.CurrentTab];
 			#endregion
 
 			#region Страница кодов
@@ -268,31 +270,33 @@ namespace RD_AAOW
 			ApplyLabelSettings (codesPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
 
 			onlyNewCodes = (Switch)codesPage.FindByName ("OnlyNewCodes");
-			onlyNewCodes.IsToggled = true;
+			onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
+			onlyNewCodes.Toggled += OnlyNewCodes_Toggled;
 
 			ApplyLabelSettings (codesPage, "OnlyNewCodesLabel", "Только новые", masterTextColor);
 
 			codesKKTButton = ApplyButtonSettings (codesPage, "KKTButton",
-				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[currentCodesKKT],
+				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes],
 				codesFieldBackColor, CodesKKTButton_Clicked);
 
 			codesSourceTextLabel = ApplyLabelSettings (codesPage, "SourceTextLabel", "Исходный текст:", masterHeaderColor);
 
 			codesSourceText = ApplyEditorSettings (codesPage, "SourceText",
-				codesFieldBackColor, Keyboard.Default, 72, SourceText_TextChanged);
+				codesFieldBackColor, Keyboard.Default, 72, ca.CodesText, SourceText_TextChanged);
 
 			ApplyLabelSettings (codesPage, "ResultTextLabel", "Коды ККТ:", masterHeaderColor);
 
 			codesErrorLabel = ApplyTipLabelSettings (codesPage, "ErrorLabel",
 				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
 				errorColor);
-			codesErrorLabel.IsVisible = false;
 
 			codesResultText = ApplyResultLabelSettings (codesPage, "ResultText", "", masterTextColor, codesFieldBackColor);
 			codesResultText.HorizontalTextAlignment = TextAlignment.Start;
 
 			codesHelpLabel = ApplyTipLabelSettings (codesPage, "HelpLabel",
-				kkmc.GetKKTTypeDescription ((uint)currentCodesKKT), untoggledSwitchColor);
+				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
+
+			SourceText_TextChanged (null, null);    // Протягивание кодов
 
 #endif
 			#endregion
@@ -302,31 +306,35 @@ namespace RD_AAOW
 			ApplyLabelSettings (errorsPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
 
 			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
-			onlyNewErrors.IsToggled = true;
+			onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
+			onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
 
 #if !EVOTOR
 			ApplyLabelSettings (errorsPage, "OnlyNewErrorsLabel", "Только новые", masterTextColor);
 
 			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
-				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT],
+				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
 #else
 			onlyNewErrors.IsVisible = false;
 
-			currentErrorsKKT = 3;
+			ca.KKTForErrors = 3;
 			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
-				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[currentErrorsKKT],
+				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
 				errorsFieldBackColor, null);
 #endif
 
 			ApplyLabelSettings (errorsPage, "ErrorCodeLabel", "Код / сообщение:", masterHeaderColor);
 
 			errorsCodeButton = ApplyButtonSettings (errorsPage, "ErrorCodeButton",
-				"- Выберите код ошибки -", errorsFieldBackColor, ErrorsCodeButton_Clicked);
+				kkme.GetErrorCodesList (ca.KKTForErrors)[(int)ca.ErrorCode],
+				errorsFieldBackColor, ErrorsCodeButton_Clicked);
 
 			ApplyLabelSettings (errorsPage, "ResultTextLabel", "Расшифровка:", masterHeaderColor);
 
-			errorsResultText = ApplyResultLabelSettings (errorsPage, "ResultText", "", masterTextColor, errorsFieldBackColor);
+			errorsResultText = ApplyResultLabelSettings (errorsPage, "ResultText",
+				kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode),
+				masterTextColor, errorsFieldBackColor);
 			errorsResultText.HorizontalTextAlignment = TextAlignment.Start;
 
 			#endregion
@@ -353,26 +361,11 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница серийных номеров
-#if !EVOTOR
-
-			ApplyLabelSettings (kktSnPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
-			kktSN = ApplyEditorSettings (kktSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, KKTSN_TextChanged);
-			kktTypeLabel = ApplyResultLabelSettings (kktSnPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
-
-			//
-			ApplyLabelSettings (fnSnPage, "SNLabel", "Заводской номер ФН:", masterHeaderColor);
-			fnSN = ApplyEditorSettings (fnSnPage, "SN", snFieldBackColor, Keyboard.Numeric, 16, FNSN_TextChanged);
-			fnTypeLabel = ApplyResultLabelSettings (fnSnPage, "TypeLabel", "", masterTextColor, snFieldBackColor);
-
-#endif
-			#endregion
-
 			#region Страница определения срока жизни ФН
 
 			ApplyLabelSettings (fnLifePage, "SetModelLabel", "Укажите ЗН ФН или его номинал:", masterHeaderColor);
 			fnLifeSerial = ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
-				Keyboard.Numeric, 16, FNLifeSerial_TextChanged);
+				Keyboard.Numeric, 16, ca.FNSerial, FNLifeSerial_TextChanged);
 
 			fnLife13 = (Switch)fnLifePage.FindByName ("FNLife13");
 			fnLife13.Toggled += FnLife13_Toggled;
@@ -394,6 +387,7 @@ namespace RD_AAOW
 
 			//
 			fnLifeGenericTax = (Switch)fnLifePage.FindByName ("FNLifeGenericTax");
+			fnLifeGenericTax.IsToggled = !ca.GenericTaxFlag;
 			fnLifeGenericTax.Toggled += FnLife13_Toggled;
 			fnLifeGenericTax.ThumbColor = untoggledSwitchColor;
 			fnLifeGenericTax.OnColor = fnLifeFieldBackColor;
@@ -402,6 +396,7 @@ namespace RD_AAOW
 
 			//
 			fnLifeGoods = (Switch)fnLifePage.FindByName ("FNLifeGoods");
+			fnLifeGoods.IsToggled = !ca.GoodsFlag;
 			fnLifeGoods.Toggled += FnLife13_Toggled;
 			fnLifeGoods.ThumbColor = untoggledSwitchColor;
 			fnLifeGoods.OnColor = fnLifeFieldBackColor;
@@ -410,24 +405,28 @@ namespace RD_AAOW
 
 			//
 			fnLifeSeason = (Switch)fnLifePage.FindByName ("FNLifeSeason");
+			fnLifeSeason.IsToggled = ca.SeasonFlag;
 			fnLifeSeason.Toggled += FnLife13_Toggled;
 
 			ApplyLabelSettings (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля", masterHeaderColor);
 
 			//
 			fnLifeAgents = (Switch)fnLifePage.FindByName ("FNLifeAgents");
+			fnLifeAgents.IsToggled = ca.AgentsFlag;
 			fnLifeAgents.Toggled += FnLife13_Toggled;
 
 			ApplyLabelSettings (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент", masterHeaderColor);
 
 			//
 			fnLifeExcise = (Switch)fnLifePage.FindByName ("FNLifeExcise");
+			fnLifeExcise.IsToggled = ca.ExciseFlag;
 			fnLifeExcise.Toggled += FnLife13_Toggled;
 
 			ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизный товар", masterHeaderColor);
 
 			//
 			fnLifeAutonomous = (Switch)fnLifePage.FindByName ("FNLifeAutonomous");
+			fnLifeAutonomous.IsToggled = ca.AutonomousFlag;
 			fnLifeAutonomous.Toggled += FnLife13_Toggled;
 
 			ApplyLabelSettings (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим", masterHeaderColor);
@@ -445,33 +444,40 @@ namespace RD_AAOW
 			fnLifeStartDate.TextColor = masterHeaderColor;
 			fnLifeStartDate.Margin = margin;
 
-			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;
 			fnLifeStartDate.Date = DateTime.Now;
+			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;
 
 			//
 			fnLifeResult = ApplyResultLabelSettings (fnLifePage, "FNLifeResult", "", masterTextColor, fnLifeFieldBackColor);
 
 			// Применение всех названий
-			FnLife13_Toggled (null, null);
+			FNLifeSerial_TextChanged (null, null);
 
 			#endregion
 
 			#region Страница определения корректности РНМ
 
 			ApplyLabelSettings (rnmPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
-			rnmKKTSN = ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 16, RNM_TextChanged);
+			rnmKKTSN = ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 16,
+				ca.KKTSerial, RNM_TextChanged);
 			rnmKKTTypeLabel = ApplyLabelSettings (rnmPage, "TypeLabel", "", masterTextColor);
 
 			ApplyLabelSettings (rnmPage, "INNLabel", "ИНН пользователя:", masterHeaderColor);
-			rnmINN = ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12, RNM_TextChanged);
+			rnmINN = ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12,
+				ca.UserINN, RNM_TextChanged);
 			rnmINNCheckLabel = ApplyLabelSettings (rnmPage, "INNCheckLabel", "", masterTextColor);
 
 			ApplyLabelSettings (rnmPage, "RNMLabel",
-				"Регистрационный номер для проверки или произвольное число для генерации:", masterHeaderColor);
-			rnmRNM = ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16, RNM_TextChanged);
+				"Регистрационный номер для проверки или произвольное число для генерации¹:", masterHeaderColor);
+			rnmRNM = ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16,
+				ca.RNMKKT, RNM_TextChanged);
 			rnmRNMCheckLabel = ApplyLabelSettings (rnmPage, "RNMCheckLabel", "", masterTextColor);
 
 			ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать", rnmFieldBackColor, RNMGenerate_Clicked);
+
+			ApplyTipLabelSettings (rnmPage, "RNMAbout",
+				"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
+				untoggledSwitchColor);
 
 			RNM_TextChanged (null, null);   // Применение значений
 
@@ -480,11 +486,13 @@ namespace RD_AAOW
 			#region Страница настроек ОФД
 
 			ApplyLabelSettings (ofdPage, "OFDINNLabel", "ИНН ОФД:", masterHeaderColor);
-			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10, OFDINN_TextChanged);
+			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
+				ca.OFDINN, OFDINN_TextChanged);
 			ApplyButtonSettings (ofdPage, "OFDINNCopy", "↑", ofdFieldBackColor, OFDINNCopy_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDNameLabel", "Название:", masterHeaderColor);
-			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -", ofdFieldBackColor, OFDName_Clicked);
+			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
+				ofdFieldBackColor, OFDName_Clicked);
 
 			ApplyLabelSettings (ofdPage, "OFDDNSNameLabel", "Адрес:", masterHeaderColor);
 			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
@@ -504,13 +512,14 @@ namespace RD_AAOW
 			ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
 
-			ofdINN.Text = ofd.GetOFDINNByName (ofdNameButton.Text); // Протягивание значений
+			OFDINN_TextChanged (null, null); // Протягивание значений
 
 			#endregion
 
 			#region Страница команд нижнего уровня
 
 			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
+			lowLevelSHTRIH.IsToggled = !ca.LowLevelCommandsATOL;
 			lowLevelSHTRIH.Toggled += LowLevelSHTRIH_Toggled;
 			lowLevelSHTRIH.ThumbColor = untoggledSwitchColor;
 			lowLevelSHTRIH.OnColor = fnLifeFieldBackColor;
@@ -525,19 +534,24 @@ namespace RD_AAOW
 			//
 			ApplyLabelSettings (lowLevelPage, "CommandLabel", "Команда:", masterHeaderColor);
 			lowLevelCommand = ApplyButtonSettings (lowLevelPage, "CommandButton",
-				ll.GetATOLCommandsList ()[0],
+				ca.LowLevelCommandsATOL ? ll.GetATOLCommandsList ()[(int)ca.LowLevelCode] :
+				ll.GetSHTRIHCommandsList ()[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
 
 			//
 			ApplyLabelSettings (lowLevelPage, "CommandCodeLabel", "Код команды:", masterHeaderColor);
 			lowLevelCommandCode = ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
-				ll.GetATOLCommand (0, false), lowLevelFieldBackColor, Field_Clicked);
+				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, false) :
+				ll.GetSHTRIHCommand (ca.LowLevelCode, false),
+				lowLevelFieldBackColor, Field_Clicked);
 
 			//
 			ApplyLabelSettings (lowLevelPage, "CommandDescrLabel", "Описание:", masterHeaderColor);
 
 			lowLevelCommandDescr = ApplyResultLabelSettings (lowLevelPage, "CommandDescr",
-				ll.GetATOLCommand (0, true), masterTextColor, lowLevelFieldBackColor);
+				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, true) :
+				ll.GetSHTRIHCommand (ca.LowLevelCode, true),
+				masterTextColor, lowLevelFieldBackColor);
 			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
 
 			//
@@ -545,6 +559,23 @@ namespace RD_AAOW
 				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
 
 			#endregion
+			}
+
+		// Сброс списков ККТ и ошибок
+		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
+			{
+			ca.KKTForErrors = ca.ErrorCode = 0;
+			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
+
+			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
+			errorsCodeButton.Text = list[(int)ca.ErrorCode];
+			list.Clear ();
+			}
+
+		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
+			{
+			ca.KKTForCodes = 0;
+			codesKKTButton.Text = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes];
 			}
 
 		// Выбор команды нижнего уровня
@@ -562,7 +593,9 @@ namespace RD_AAOW
 			int i = 0;
 			if ((e == null) || ((i = list.IndexOf (res)) >= 0))
 				{
+				ca.LowLevelCode = (uint)i;
 				lowLevelCommand.Text = res;
+
 				lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
 					ll.GetATOLCommand ((uint)i, false));
 				lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
@@ -575,6 +608,7 @@ namespace RD_AAOW
 		// Выбор списка команд
 		private void LowLevelSHTRIH_Toggled (object sender, ToggledEventArgs e)
 			{
+			ca.LowLevelCommandsATOL = !lowLevelSHTRIH.IsToggled;
 			LowLevelCommandCodeButton_Clicked (sender, null);
 			}
 
@@ -648,32 +682,14 @@ namespace RD_AAOW
 				}
 			}
 
-		// Изменение ИНН ОФД, ЗН ФН и ККТ
-		private void KKTSN_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			GetKKTName (kktSN, kktTypeLabel);
-			}
-
-		private void GetKKTName (Editor KKTSerial, Label KKTName)
-			{
-			if (KKTSerial.Text != "")
-				KKTName.Text = KKTSupport.GetKKTModel (KKTSerial.Text);
-			else
-				KKTName.Text = "";
-			}
-
-		private void FNSN_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			if (fnSN.Text != "")
-				fnTypeLabel.Text = KKTSupport.GetFNName (fnSN.Text);
-			else
-				fnTypeLabel.Text = "";
-			}
-
+		// Изменение ИНН ОФД и РНМ ККТ
 		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			// ЗН ККТ
-			GetKKTName (rnmKKTSN, rnmKKTTypeLabel);
+			if (rnmKKTSN.Text != "")
+				rnmKKTTypeLabel.Text = KKTSupport.GetKKTModel (rnmKKTSN.Text);
+			else
+				rnmKKTTypeLabel.Text = "";
 
 			// ИНН пользователя
 			if (rnmINN.Text.Length < 10)
@@ -776,7 +792,6 @@ namespace RD_AAOW
 
 		// Выбор модели ККТ
 		private readonly KKTCodes kkmc = new KKTCodes ();
-		private int currentCodesKKT = 0;
 		private async void CodesKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
@@ -788,8 +803,8 @@ namespace RD_AAOW
 				return;
 
 			codesKKTButton.Text = res;
-			currentCodesKKT = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res);
-			codesHelpLabel.Text = kkmc.GetKKTTypeDescription ((uint)currentCodesKKT);
+			ca.KKTForCodes = (uint)kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res);
+			codesHelpLabel.Text = kkmc.GetKKTTypeDescription (ca.KKTForCodes);
 
 			SourceText_TextChanged (null, null);
 			}
@@ -805,7 +820,7 @@ namespace RD_AAOW
 				{
 				string s;
 
-				if ((s = kkmc.GetCode ((uint)currentCodesKKT, CharToCP1251 (codesSourceText.Text[i]))) ==
+				if ((s = kkmc.GetCode (ca.KKTForCodes, CharToCP1251 (codesSourceText.Text[i]))) ==
 					KKTCodes.EmptyCode)
 					{
 					codesResultText.Text += "xxx   ";
@@ -1284,7 +1299,6 @@ namespace RD_AAOW
 
 		// Выбор модели ККТ
 		private readonly KKTErrorsList kkme = new KKTErrorsList ();
-		private int currentErrorsKKT = 0;
 		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
@@ -1296,12 +1310,13 @@ namespace RD_AAOW
 				return;
 
 			errorsKKTButton.Text = res;
-			currentErrorsKKT = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).IndexOf (res);
+			ca.KKTForErrors = (uint)kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).IndexOf (res);
 
-			List<string> list = kkme.GetErrorCodesList ((uint)currentErrorsKKT);
+			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
 			errorsCodeButton.Text = list[0];
 
-			errorsResultText.Text = kkme.GetErrorText ((uint)currentErrorsKKT, 0);
+			ca.ErrorCode = 0;
+			errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
 			list.Clear ();
 			}
 
@@ -1309,7 +1324,7 @@ namespace RD_AAOW
 		private async void ErrorsCodeButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос кода ошибки
-			List<string> list = kkme.GetErrorCodesList ((uint)currentErrorsKKT);
+			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
 			string res = await errorsPage.DisplayActionSheet ("Выберите код/сообщение ошибки:", "Отмена", null,
 				list.ToArray ());
 
@@ -1317,7 +1332,8 @@ namespace RD_AAOW
 			if (list.IndexOf (res) >= 0)
 				{
 				errorsCodeButton.Text = res;
-				errorsResultText.Text = kkme.GetErrorText ((uint)currentErrorsKKT, (uint)list.IndexOf (res));
+				ca.ErrorCode = (uint)list.IndexOf (res);
+				errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
 				}
 
 			list.Clear ();
@@ -1368,19 +1384,51 @@ namespace RD_AAOW
 				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10));
 			}
 
+		/// <summary>
+		/// Обработчик события перехода в ждущий режим
+		/// </summary>
+		protected override void OnSleep ()
+			{
+			ca.KeepApplicationState = keepAppState.IsToggled;
+			if (!ca.KeepApplicationState)
+				return;
+
+			ca.CurrentTab = (uint)((CarouselPage)MainPage).Children.IndexOf (((CarouselPage)MainPage).CurrentPage);
+
+			// ca.KKTForErrors	// Обновляется в коде программы
+			// ca.ErrorCode		// -||-
+			ca.OnlyNewKKTErrors = onlyNewErrors.IsToggled;
+
+			ca.FNSerial = fnLifeSerial.Text;
+			ca.GenericTaxFlag = !fnLifeGenericTax.IsToggled;
+			ca.GoodsFlag = !fnLifeGoods.IsToggled;
+			ca.SeasonFlag = fnLifeSeason.IsToggled;
+			ca.AgentsFlag = fnLifeAgents.IsToggled;
+			ca.ExciseFlag = fnLifeExcise.IsToggled;
+			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
+
+			ca.KKTSerial = rnmKKTSN.Text;
+			ca.UserINN = rnmINN.Text;
+			ca.RNMKKT = rnmRNM.Text;
+
+			ca.OFDINN = ofdINN.Text;
+
+			ca.LowLevelCommandsATOL = !lowLevelSHTRIH.IsToggled;
+			//ca.LowLevelCode	// -||-
+
+#if !EVOTOR
+			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
+			//ca.KKTForCodes	// -||-
+			ca.CodesText = codesSourceText.Text;
+#endif
+			}
+
 		#region Переопределения событий исполнения приложения
 #if false
 		/// <summary>
 		/// Обработчик события запуска приложения
 		/// </summary>
 		protected override void OnStart ()
-			{
-			}
-
-		/// <summary>
-		/// Обработчик события перехода в ждущий режим
-		/// </summary>
-		protected override void OnSleep ()
 			{
 			}
 

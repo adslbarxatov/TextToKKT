@@ -26,6 +26,8 @@
             </StackLayout>
             <Button x:Name="RNMGenerate" HorizontalOptions="Center" />
 
+            <Label x:Name="RNMAbout" />
+
             <Label x:Name="Filler" />
         </StackLayout>
     </ScrollView>

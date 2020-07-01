@@ -17,6 +17,7 @@ namespace RD_AAOW
 		private KKTErrorsList kkme = null;
 		private OFD ofd = null;
 		private LowLevel ll = null;
+		private ConfigAccessor ca = new ConfigAccessor ();
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -46,8 +47,46 @@ namespace RD_AAOW
 			OFDNamesList.Items.AddRange (ofd.GetOFDNames ().ToArray ());
 			OFDNamesList.SelectedIndex = 0;
 
-			// Настройка контролов
 			this.Text = ProgramDescription.AssemblyTitle;
+
+			// Получение настроек
+			KeepAppState.Checked = ca.KeepApplicationState;
+
+			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
+
+			OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
+			KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
+			ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
+
+			FNLifeSN.Text = ca.FNSerial;
+			if (ca.GenericTaxFlag)
+				GenericTaxFlag.Checked = true;
+			else
+				OtherTaxFlag.Checked = true;
+			if (ca.GoodsFlag)
+				GoodsFlag.Checked = true;
+			else
+				ServicesFlag.Checked = true;
+			SeasonFlag.Checked = ca.SeasonFlag;
+			AgentsFlag.Checked = ca.AgentsFlag;
+			ExciseFlag.Checked = ca.ExciseFlag;
+			AutonomousFlag.Checked = ca.AutonomousFlag;
+
+			RNMSerial.Text = ca.KKTSerial;
+			RNMUserINN.Text = ca.UserINN;
+			RNMValue.Text = ca.RNMKKT;
+
+			OFDINN.Text = ca.OFDINN;
+
+			if (ca.LowLevelCommandsATOL)
+				LowLevelCommandATOL.Checked = true;
+			else
+				LowLevelCommandSHTRIH.Checked = true;
+			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
+
+			OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
+			KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
+			TextToConvert.Text = ca.CodesText;
 			}
 
 		// Завершение работы
@@ -123,28 +162,6 @@ namespace RD_AAOW
 			ErrorCodesList.DataSource = kkme.GetErrors ((uint)KKTListForErrors.SelectedIndex);
 			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
 			ErrorCodesList.SelectedIndex = 0;
-			}
-
-		// Запрос модели ФН
-		private void FNSerial_TextChanged (object sender, EventArgs e)
-			{
-			if (FNSerial.Text != "")
-				FNResult.Text = KKTSupport.GetFNName (FNSerial.Text);
-			else
-				FNResult.Text = "(введите ЗН ФН)";
-			}
-
-		// Запрос модели ККТ
-		private void KKTSerial_TextChanged (object sender, EventArgs e)
-			{
-			if (KKTSerial.Text != "")
-				{
-				KKTResult.Text = KKTSupport.GetKKTModel (KKTSerial.Text);
-				}
-			else
-				{
-				KKTResult.Text = "(введите ЗН ККТ)";
-				}
 			}
 
 		// Дополнительные функции
@@ -382,6 +399,41 @@ namespace RD_AAOW
 				LowLevelCommandCode.Text = ll.GetSHTRIHCommand ((uint)LowLevelCommand.SelectedIndex, false);
 				LowLevelCommandDescr.Text = ll.GetSHTRIHCommand ((uint)LowLevelCommand.SelectedIndex, true);
 				}
+			}
+
+		// Сохранение настроек приложения
+		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
+			{
+			ca.KeepApplicationState = KeepAppState.Checked;
+			if (!ca.KeepApplicationState)
+				return;
+
+			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
+
+			ca.OnlyNewKKTErrors = OnlyNewErrors.Checked;
+			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
+			ca.ErrorCode = (uint)ErrorCodesList.SelectedIndex;
+
+			ca.FNSerial = FNLifeSN.Text;
+			ca.GenericTaxFlag = GenericTaxFlag.Checked;
+			ca.GoodsFlag = GoodsFlag.Checked;
+			ca.SeasonFlag = SeasonFlag.Checked;
+			ca.AgentsFlag = AgentsFlag.Checked;
+			ca.ExciseFlag = ExciseFlag.Checked;
+			ca.AutonomousFlag = AutonomousFlag.Checked;
+
+			ca.KKTSerial = RNMSerial.Text;
+			ca.UserINN = RNMUserINN.Text;
+			ca.RNMKKT = RNMValue.Text;
+
+			ca.OFDINN = OFDINN.Text;
+
+			ca.LowLevelCommandsATOL = LowLevelCommandATOL.Checked;
+			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
+
+			ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;
+			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
+			ca.CodesText = TextToConvert.Text;
 			}
 		}
 	}

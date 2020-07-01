@@ -17,6 +17,11 @@
             <Button x:Name="Button08" IsVisible="False" />
             <Button x:Name="Button09" IsVisible="False" />
 
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Switch x:Name="KeepAppState" />
+                <Label x:Name="KeepAppStateLabel" />
+            </StackLayout>
+
             <Label x:Name="Filler" />
         </StackLayout>
     </ScrollView>
