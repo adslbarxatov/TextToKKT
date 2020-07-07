@@ -354,7 +354,7 @@ namespace RD_AAOW
 				"Страница проекта", aboutFieldBackColor, AppButton_Clicked);
 
 			ApplyButtonSettings (aboutPage, "UpdatePage",
-				"Проект FNReader", aboutFieldBackColor, UpdateButton_Clicked);
+				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 
 			ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW\nFree utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
@@ -670,15 +670,16 @@ namespace RD_AAOW
 				fnLifeModelLabel.Text.Contains ("(13)"), !fnLifeGenericTax.IsToggled, !fnLifeGoods.IsToggled,
 				fnLifeSeason.IsToggled || fnLifeAgents.IsToggled, fnLifeExcise.IsToggled, fnLifeAutonomous.IsToggled);
 
-			if (res == "")
+			fnLifeResult.Text = "ФН прекратит работу ";
+			if (res.Contains ("!"))
 				{
 				fnLifeResult.TextColor = errorColor;
-				fnLifeResult.Text = "Выбранная модель ФН неприменима к указанным параметрам пользователя";
+				fnLifeResult.Text += (res.Substring (1) + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
 			else
 				{
 				fnLifeResult.TextColor = masterTextColor;
-				fnLifeResult.Text = "ФН прекратит работу " + res;
+				fnLifeResult.Text += res;
 				}
 			}
 
@@ -799,11 +800,12 @@ namespace RD_AAOW
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).ToArray ());
 
 			// Установка модели
-			if (kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res) < 0)
+			int i;
+			if ((i = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res)) < 0)
 				return;
 
 			codesKKTButton.Text = res;
-			ca.KKTForCodes = (uint)kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res);
+			ca.KKTForCodes = (uint)i;
 			codesHelpLabel.Text = kkmc.GetKKTTypeDescription (ca.KKTForCodes);
 
 			SourceText_TextChanged (null, null);

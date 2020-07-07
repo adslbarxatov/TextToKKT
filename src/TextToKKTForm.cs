@@ -254,15 +254,16 @@ namespace RD_AAOW
 				FNLifeName.Text.Contains ("(13)"), GenericTaxFlag.Checked, GoodsFlag.Checked,
 				SeasonFlag.Checked || AgentsFlag.Checked, ExciseFlag.Checked, AutonomousFlag.Checked);
 
-			if (res == "")
+			FNLifeResult.Text = "ФН прекратит работу ";
+			if (res.Contains ("!"))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
-				FNLifeResult.Text = "Выбранная модель ФН неприменима к указанным параметрам пользователя";
+				FNLifeResult.Text += (res.Substring (1) + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
 			else
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (0, 0, 0);
-				FNLifeResult.Text = "ФН прекратит работу " + res;
+				FNLifeResult.Text += res;
 				}
 			}
 

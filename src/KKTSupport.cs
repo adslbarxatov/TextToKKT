@@ -29,7 +29,7 @@ namespace RD_AAOW
 				return "ФН-1 Из13-2 (13) ООО НТЦ Измеритель";
 			if (FNSerialNumber.Contains ("92810001"))
 				return "ФН-1.1 исп. 4 (36) ООО Инвента";
-			if (FNSerialNumber.Contains ("92820001"))
+			if (FNSerialNumber.Contains ("92820001") || FNSerialNumber.Contains ("92824403"))
 				return "ФН-1.1 исп. 5-15-2 (15) ООО Инвента";
 			if (FNSerialNumber.Contains ("92834403"))
 				return "ФН-1.1 ЭВ36-2 (36) ООО Эвотор";
@@ -327,11 +327,13 @@ namespace RD_AAOW
 		public static string GetFNLifeEndDate (DateTime StartDate, bool FN15, bool FNExactly13,
 			bool GenericTax, bool Goods, bool SeasonOrAgents, bool Excise, bool Autonomous)
 			{
+			string res = "";
+
 			// Отсечение недопустимых вариантов
 			if (GenericTax && !FN15 && Goods ||
 				!GenericTax && FN15 && !SeasonOrAgents && !Excise && !Autonomous)
 				{
-				return "";
+				res = "!";
 				}
 
 			// Определение срока жизни
@@ -354,7 +356,7 @@ namespace RD_AAOW
 				}
 
 			// Результат
-			return StartDate.AddDays (length).ToString ("dd.MM.yyyy");
+			return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");
 			}
 
 		// Контрольная последовательность для определения корректности ИНН

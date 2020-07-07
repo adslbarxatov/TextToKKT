@@ -57,8 +57,6 @@
                 <DatePicker x:Name="FNLifeStartDate" VerticalOptions="Center" />
             </StackLayout>
 
-            <Label x:Name="Filler3" />
-
             <!-- Результат -->
             <Label x:Name="FNLifeResult" />
 
