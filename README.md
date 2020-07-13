@@ -15,10 +15,10 @@
 
 #
 
-Актуальная Windows-версия утилиты доступна в
-[релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases)
-
-Android-версия доступна на
+- Актуальная Windows-версия утилиты доступна в
+[релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases);
+- Android-версия доступна не только в [релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases) 
+(для установки на смарт-терминалы без доступа к Google play) и на
 [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT)
 
 #
