@@ -22,12 +22,12 @@
 [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
 - Ожидается подтверждение для развёртки Android-версии на платформе Evotor market
 
-# Требования
+## Требования
 
 - Для Windows-версии требуется ОС Windows XP или новее, Framework 4.0 или новее. Язык интерфейса: ru_ru;
 - Для Android-версии требуется ОС Android 4.4 или новее. Язык интерфейса: ru_ru
 
-# ADP
+## ADP
 
 Мы формализовали нашу [Политику разработки приложений (ADP)](https://vk.com/@rdaaow_fupl-adp).
 Настоятельно рекомендуем ознакомиться с ней перед использованием наших продуктов
