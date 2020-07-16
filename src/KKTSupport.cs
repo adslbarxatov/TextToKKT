@@ -295,8 +295,14 @@ namespace RD_AAOW
 								return "PayVKP-80 ФА";
 							}
 
-						if (TEST_SN_D (8, 3) && TEST_SN_D (9, 0))
-							return "Элвес-МФ";
+						if (TEST_SN_D (8, 3))
+							{
+							if (TEST_SN_D (9, 0))
+								return "Элвес-МФ";
+
+							if (TEST_SN_D (9, 3))
+								return "Штрих-СмартПОС-Ф";
+							}
 						}
 
 					break;
