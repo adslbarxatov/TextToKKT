@@ -10,10 +10,14 @@
             <Label x:Name="AboutLabel" />
 
             <Button x:Name="AppPage" HorizontalOptions="Center" />
+            <Button x:Name="ADPPage" HorizontalOptions="Center" />
+
+            <Label x:Name="Filler1" />
+
             <Button x:Name="UpdatePage" HorizontalOptions="Center" />
             <Button x:Name="CommunityPage" HorizontalOptions="Center" />
 
-            <Label x:Name="Filler" />
+            <Label x:Name="Filler2" />
         </StackLayout>
     </ScrollView>
  </ContentPage>

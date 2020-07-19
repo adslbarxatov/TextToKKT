@@ -352,10 +352,11 @@ namespace RD_AAOW
 
 			ApplyButtonSettings (aboutPage, "AppPage",
 				"Страница проекта", aboutFieldBackColor, AppButton_Clicked);
+			ApplyButtonSettings (aboutPage, "ADPPage",
+				"Политика разработки и EULA", aboutFieldBackColor, ADPButton_Clicked);
 
 			ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
-
 			ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW\nFree utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
 
@@ -1351,6 +1352,12 @@ namespace RD_AAOW
 		private void AppButton_Clicked (object sender, EventArgs e)
 			{
 			Launcher.OpenAsync ("https://github.com/adslbarxatov/TextToKKT");
+			}
+
+		// Страница политики и EULA
+		private void ADPButton_Clicked (object sender, EventArgs e)
+			{
+			Launcher.OpenAsync ("https://vk.com/@rdaaow_fupl-adp");
 			}
 
 		// Страница лаборатории

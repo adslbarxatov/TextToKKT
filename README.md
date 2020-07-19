@@ -21,10 +21,9 @@
 
 - Актуальная Windows-версия утилиты доступна в
 [релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases);
-- Android-версия доступна не только в [релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases) 
-(для установки на смарт-терминалы без доступа к сети), но и на
-[Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
-- Ожидается подтверждение для развёртки Android-версии на платформе Evotor market
+- Android-версия снова доступна только в [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
+- Ожидается подтверждение для развёртки Android-версии на платформе Evotor market;
+- Ожидается подтверждение для развёртки Android-версии на платформе AppGallery
 
 
 
