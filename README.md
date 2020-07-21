@@ -21,7 +21,7 @@
 
 - Актуальная Windows-версия утилиты доступна в
 [релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases);
-- Android-версия снова доступна только в [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
+- Android-версия доступна в релизах (для устройств без Play market) и на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
 - Ожидается подтверждение для развёртки Android-версии на платформе Evotor market;
 - Ожидается подтверждение для развёртки Android-версии на платформе AppGallery
 
