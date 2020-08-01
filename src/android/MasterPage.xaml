@@ -4,15 +4,14 @@
              xmlns:mypages="clr-namespace:RD_AAOW"
              x:Class="RD_AAOW.MasterPage">
 
-    <mypages:HeadersPage x:Name="HeadersPage" />
+	<mypages:HeadersPage x:Name="HeadersPage" />
 
-    <mypages:ErrorsPage x:Name="ErrorsPage" />
-    <mypages:FNLifePage x:Name="FNLifePage" />
-    <mypages:RNMPage x:Name="RNMPage" />
-    <mypages:OFDPage x:Name="OFDPage" />
-    <mypages:LowLevelPage x:Name="LowLevelPage" />
-    <mypages:CodesPage x:Name="CodesPage" />
-    
-    <mypages:AboutPage x:Name="AboutPage" />
+	<mypages:ErrorsPage x:Name="ErrorsPage" />
+	<mypages:FNLifePage x:Name="FNLifePage" />
+	<mypages:RNMPage x:Name="RNMPage" />
+	<mypages:OFDPage x:Name="OFDPage" />
+	<mypages:LowLevelPage x:Name="LowLevelPage" />
+	<mypages:CodesPage x:Name="CodesPage" />
+
+	<mypages:AboutPage x:Name="AboutPage" />
 </CarouselPage>
-

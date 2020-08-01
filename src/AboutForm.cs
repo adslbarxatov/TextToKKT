@@ -20,6 +20,16 @@ namespace RD_AAOW
 		private string updatesMessage = "";
 
 		/// <summary>
+		/// Основная Git-ссылка
+		/// </summary>
+		public const string DefaultGitLink = "https://github.com/adslbarxatov/";
+
+		/// <summary>
+		/// Часть ссылки на раздел Git-обновлений
+		/// </summary>
+		public const string GitUpdatesSublink = "/releases";
+
+		/// <summary>
 		/// Конструктор. Запускает форму
 		/// </summary>
 		/// <param name="InterfaceLanguage">Язык интерфейса</param>
@@ -63,8 +73,20 @@ namespace RD_AAOW
 
 			// Получение параметров
 			userManualLink = ((UserManualLink == null) ? "" : UserManualLink);
-			projectLink = ((ProjectLink == null) ? "" : ProjectLink);
-			updatesLink = ((UpdatesLink == null) ? "" : UpdatesLink);
+
+			if (ProjectLink == null)
+				projectLink = "";
+			else if (ProjectLink == "*")
+				projectLink = DefaultGitLink + ProgramDescription.AssemblyMainName;
+			else
+				projectLink = ProjectLink;
+
+			if (UpdatesLink == null)
+				updatesLink = "";
+			else if (UpdatesLink == "*")
+				updatesLink = DefaultGitLink + ProgramDescription.AssemblyMainName + GitUpdatesSublink;
+			else
+				updatesLink = UpdatesLink;
 
 			DescriptionBox.Text = ((Description == null) ? "" : Description);
 
@@ -92,12 +114,15 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Открывает указанную ссылку без запуска формы
 		/// </summary>
-		/// <param name="Link">Ссылка для отображения</param>
+		/// <param name="Link">Ссылка для отображения (если null, запускается стандартная)</param>
 		public AboutForm (string Link)
 			{
 			try
 				{
-				Process.Start (Link);
+				if (Link == null)
+					Process.Start (DefaultGitLink + ProgramDescription.AssemblyMainName + GitUpdatesSublink);
+				else
+					Process.Start (Link);
 				}
 			catch
 				{
@@ -215,14 +240,14 @@ namespace RD_AAOW
 			switch (al)
 				{
 				case SupportedLanguages.ru_ru:
-					if (ProgramDescription.AssemblyTitle.Contains (version))
+					if (ProgramDescription.AssemblyTitle.EndsWith (version))
 						updatesMessage = "обновлений нет";
 					else
 						updatesMessage = "доступна " + version;
 					break;
 
 				default:	// en_us
-					if (ProgramDescription.AssemblyTitle.Contains (version))
+					if (ProgramDescription.AssemblyTitle.EndsWith (version))
 						updatesMessage = "no updates";
 					else
 						updatesMessage = version + " available";

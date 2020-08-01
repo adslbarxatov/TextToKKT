@@ -3,27 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.HeadersPage">
 
-    <ScrollView>
-        <StackLayout>
-            <Label x:Name="HeaderLabel" />
+	<ScrollView>
+		<StackLayout>
+			<Label x:Name="HeaderLabel" />
 
-            <Button x:Name="Button01" IsVisible="False" />
-            <Button x:Name="Button02" IsVisible="False" />
-            <Button x:Name="Button03" IsVisible="False" />
-            <Button x:Name="Button04" IsVisible="False" />
-            <Button x:Name="Button05" IsVisible="False" />
-            <Button x:Name="Button06" IsVisible="False" />
-            <Button x:Name="Button07" IsVisible="False" />
-            <Button x:Name="Button08" IsVisible="False" />
-            <Button x:Name="Button09" IsVisible="False" />
+			<Button x:Name="Button01" IsVisible="False" />
+			<Button x:Name="Button02" IsVisible="False" />
+			<Button x:Name="Button03" IsVisible="False" />
+			<Button x:Name="Button04" IsVisible="False" />
+			<Button x:Name="Button05" IsVisible="False" />
+			<Button x:Name="Button06" IsVisible="False" />
+			<Button x:Name="Button07" IsVisible="False" />
+			<Button x:Name="Button08" IsVisible="False" />
+			<Button x:Name="Button09" IsVisible="False" />
 
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                <Switch x:Name="KeepAppState" />
-                <Label x:Name="KeepAppStateLabel" />
-            </StackLayout>
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Switch x:Name="KeepAppState" />
+				<Label x:Name="KeepAppStateLabel" />
+			</StackLayout>
 
-            <Label x:Name="Filler" />
-        </StackLayout>
-    </ScrollView>
+			<Label x:Name="Filler" />
+		</StackLayout>
+	</ScrollView>
 </ContentPage>
     

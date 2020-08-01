@@ -3,33 +3,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.RNMPage">
 
-    <ScrollView>
-        <StackLayout>
-            <Label x:Name="HeaderLabel" />
+	<ScrollView>
+		<StackLayout>
+			<Label x:Name="HeaderLabel" />
 
-            <Label x:Name="SNLabel" />
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                <Editor x:Name="SN" />
-                <Label x:Name="TypeLabel" VerticalOptions="Center" />
-            </StackLayout>
+			<Label x:Name="SNLabel" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Editor x:Name="SN" />
+				<Label x:Name="TypeLabel" VerticalOptions="Center" />
+			</StackLayout>
 
-            <Label x:Name="INNLabel" />
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                <Editor x:Name="INN" />
-                <Label x:Name="INNCheckLabel" VerticalOptions="Center" />
-            </StackLayout>
+			<Label x:Name="INNLabel" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Editor x:Name="INN" />
+				<Label x:Name="INNCheckLabel" VerticalOptions="Center" />
+			</StackLayout>
 
-            <Label x:Name="RNMLabel" />
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                <Editor x:Name="RNM" />
-                <Label x:Name="RNMCheckLabel" VerticalOptions="Center" />
-            </StackLayout>
-            <Button x:Name="RNMGenerate" HorizontalOptions="Center" />
+			<Label x:Name="RNMLabel" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Editor x:Name="RNM" />
+				<Label x:Name="RNMCheckLabel" VerticalOptions="Center" />
+			</StackLayout>
+			<Button x:Name="RNMGenerate" HorizontalOptions="Center" />
 
-            <Label x:Name="RNMAbout" />
+			<Label x:Name="RNMAbout" />
 
-            <Label x:Name="Filler" />
-        </StackLayout>
-    </ScrollView>
+			<Label x:Name="Filler" />
+		</StackLayout>
+	</ScrollView>
 </ContentPage>
     

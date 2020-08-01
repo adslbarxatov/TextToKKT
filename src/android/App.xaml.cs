@@ -14,7 +14,7 @@ namespace RD_AAOW
 		{
 		#region Настройки стилей отображения
 
-		private int masterFontSize = 18, tipsFontSize = 14;
+		private int masterFontSize = 14, tipsFontSize = 13;
 		private Thickness margin = new Thickness (6);
 		private readonly Color
 			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
@@ -702,7 +702,7 @@ namespace RD_AAOW
 			else if (KKTSupport.CheckINN (rnmINN.Text))
 				{
 				rnmINNCheckLabel.TextColor = correctColor;
-				rnmINNCheckLabel.Text = "ОК";
+				rnmINNCheckLabel.Text = "ОК (" + KKTSupport.GetRegionName (rnmINN.Text) + ")";
 				}
 			else
 				{
@@ -778,8 +778,8 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				ofdPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Ошибка обращения к буферу обмена. Попробуйте ещё раз", "OK");
+				/*ofdPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Ошибка обращения к буферу обмена. Попробуйте ещё раз", "OK");*/
 				}
 			}
 

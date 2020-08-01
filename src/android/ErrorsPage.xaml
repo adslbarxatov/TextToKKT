@@ -3,27 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.ErrorsPage">
 
-    <ScrollView>
-        <StackLayout>
-            <Label x:Name="HeaderLabel" />
-            
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
-                <Label x:Name="SelectionLabel" />
-                <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
-                    <Switch x:Name="OnlyNewErrors" />
-                    <Label x:Name="OnlyNewErrorsLabel" />
-                </StackLayout> 
-            </StackLayout>
-            
-            <Button x:Name="KKTButton" />
+	<ScrollView>
+		<StackLayout>
+			<Label x:Name="HeaderLabel" />
 
-            <Label x:Name="ErrorCodeLabel" />
-            <Button x:Name="ErrorCodeButton" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+				<Label x:Name="SelectionLabel" />
+				<StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
+					<Switch x:Name="OnlyNewErrors" />
+					<Label x:Name="OnlyNewErrorsLabel" />
+				</StackLayout>
+			</StackLayout>
 
-            <Label x:Name="ResultTextLabel" />
-            <Label x:Name="ResultText" />
+			<Button x:Name="KKTButton" />
 
-            <Label x:Name="Filler" />
-        </StackLayout>
-    </ScrollView>
+			<Label x:Name="ErrorCodeLabel" />
+			<Button x:Name="ErrorCodeButton" />
+
+			<Label x:Name="ResultTextLabel" />
+			<Label x:Name="ResultText" />
+
+			<Label x:Name="Filler" />
+		</StackLayout>
+	</ScrollView>
 </ContentPage>

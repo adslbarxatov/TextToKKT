@@ -144,9 +144,7 @@ namespace RD_AAOW
 			{
 			// Отображение
 			AboutForm af = new AboutForm (SupportedLanguages.ru_ru,
-				"https://github.com/adslbarxatov/TextToKKT",
-				"https://github.com/adslbarxatov/TextToKKT/releases",
-				"", ProgramDescription.AssemblyAbilities);
+				"*", "*", "", ProgramDescription.AssemblyAbilities);
 			}
 
 		// Выбор ошибки
@@ -169,7 +167,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start ("mailto://adslbarxatov@scat-m.ru");
+				Process.Start ("mailto://adslbarxatov@mail.ru");
 				}
 			catch
 				{
@@ -277,6 +275,7 @@ namespace RD_AAOW
 				RNMSerialResult.Text = "(введите ЗН ККТ)";
 
 			// ИНН пользователя
+			RegionLabel.Text = "";
 			if (RNMUserINN.Text.Length < 10)
 				{
 				RNMUserINNResult.ForeColor = Color.FromArgb (0, 0, 0);
@@ -286,6 +285,7 @@ namespace RD_AAOW
 				{
 				RNMUserINNResult.ForeColor = Color.FromArgb (0, 128, 0);
 				RNMUserINNResult.Text = "OK";
+				RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 				}
 			else
 				{
@@ -357,8 +357,8 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				MessageBox.Show ("Ошибка обращения к буферу обмена. Попробуйте ещё раз",
-					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				/*MessageBox.Show ("Ошибка обращения к буферу обмена. Попробуйте ещё раз",
+					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
 				}
 			}
 

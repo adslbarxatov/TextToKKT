@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT" 
-	android:installLocation="internalOnly" android:versionName="3.8.4p" android:versionCode="313">
-	
-	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="28" />
-	
-	<application android:label="Text to KKT" android:icon="@mipmap/icon">
-		<meta-data android:name="app_uuid" android:value="2bd6603b-5cf9-4c6d-b0e8-966a7c975359"/>
-	</application>
+<!--manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
+	android:installLocation="internalOnly" android:versionName="3.9.1" android:versionCode="600315"-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="texttokkt.huawei"
+	android:installLocation="internalOnly" android:versionName="3.9.1" android:versionCode="600315">
+
+	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="29" />
+
+	<application android:label="Text to KKT" android:icon="@mipmap/icon"></application>
 </manifest>
