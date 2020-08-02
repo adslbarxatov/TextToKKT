@@ -17,19 +17,13 @@
 
 
 
-## Ссылки на загрузку
-
-- Актуальная Windows-версия утилиты доступна в
-[релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases);
-- Android-версия доступна в релизах (для устройств без Play market) и на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
-- Подтверждена развёртка Android-версии на платформе AppGallery. Ожидается формирование выделенной ссылки для загрузки
-
-
-
 ## Требования
 
-- Для Windows-версии требуется ОС Windows XP или новее, Framework 4.0 или новее. Язык интерфейса: ru_ru;
-- Для Android-версии требуется ОС Android 4.4 или новее. Язык интерфейса: ru_ru
+- Актуальная Windows-версия утилиты доступна в [релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases);
+для неё потребуется ОС Windows XP или новее, Framework 4.0 или новее. Язык интерфейса: ru_ru;
+- Android-версия доступна в релизах (для устройств без Play market) и на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
+для неё потребуется ОС Android 4.4 или новее. Язык интерфейса: ru_ru;
+- Подтверждена развёртка Android-версии на платформе AppGallery; она доступна для загрузки в магазине приложений
 
 
 
