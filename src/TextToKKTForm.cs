@@ -142,9 +142,7 @@ namespace RD_AAOW
 		// Отображение справки
 		private void BHelp_Clicked (object sender, EventArgs e)
 			{
-			// Отображение
-			AboutForm af = new AboutForm (SupportedLanguages.ru_ru,
-				"*", "*", "", ProgramDescription.AssemblyAbilities);
+			ProgramDescription.ShowAbout (false);
 			}
 
 		// Выбор ошибки
