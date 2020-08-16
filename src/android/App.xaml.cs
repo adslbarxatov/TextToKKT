@@ -49,6 +49,7 @@ namespace RD_AAOW
 			untoggledSwitchColor = Color.FromHex ("#505050"),
 			errorColor = Color.FromHex ("#FF0000"),
 			correctColor = Color.FromHex ("#008000");
+		private const string firstStartRegKey = "HelpShownAt";
 
 		#endregion
 
@@ -560,6 +561,28 @@ namespace RD_AAOW
 				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
 
 			#endregion
+
+			// Обязательное принятие Политики и EULA
+			AcceptPolicy ();
+			}
+
+		// Контроль принятия Политики и EULA
+		private async void AcceptPolicy ()
+			{
+			if (Preferences.Get (firstStartRegKey, "") != "")
+				return;
+
+			while (await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Перед началом работы с этим инструментом Вы должны принять или отказаться "+
+					"от Политики разработки приложений и Пользовательского соглашения. Хотите "+
+					"открыть их тексты в браузере?",
+
+					"Да, я хочу прочесть их",
+					"Нет, я уже знаком(а) и полностью принял(а) их"))
+				{
+				ADPButton_Clicked (null, null);
+				}
+			Preferences.Set (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
 			}
 
 		// Сброс списков ККТ и ошибок
