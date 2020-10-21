@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--package="texttokkt.huawei" package="com.RD_AAOW.TextToKKT"-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionName="3.10" android:versionCode="600317">
-<!--manifest xmlns:android="http://schemas.android.com/apk/res/android" package="texttokkt.huawei"
-	android:installLocation="internalOnly" android:versionName="3.10" android:versionCode="600317"-->
+	android:installLocation="internalOnly" android:versionName="3.10.1" android:versionCode="600318">
 
 	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="29" />
 
