@@ -10,7 +10,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает главную форму программы
 	/// </summary>
-	public partial class TextToKKMForm:Form
+	public partial class TextToKKTForm: Form
 		{
 		// Переменные
 		private KKTCodes kkmc = null;
@@ -22,7 +22,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		public TextToKKMForm ()
+		public TextToKKTForm ()
 			{
 			// Функция, используемая для добавления новых моделей
 			//TablesInterpreter.Interpretate ();
