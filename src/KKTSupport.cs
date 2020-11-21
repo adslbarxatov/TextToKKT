@@ -274,7 +274,7 @@ namespace RD_AAOW
 						if (TEST_SN_D (8, 1))
 							{
 							if (TEST_SN_D (9, 2))
-								return "Ритейл-01Ф";
+								return "Ритейл-01Ф / АЗУР-01Ф";
 
 							if (TEST_SN_D (9, 4))
 								return "РР-03Ф";

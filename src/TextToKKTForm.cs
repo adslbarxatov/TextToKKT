@@ -339,6 +339,8 @@ namespace RD_AAOW
 			OFDPort.Text = parameters[4];
 			OFDEmail.Text = parameters[5];
 			OFDSite.Text = parameters[6];
+
+			OFDNalogSite.Text = "www.nalog.ru";
 			}
 
 		// Копирование в буфер обмена
