@@ -10,11 +10,11 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает функционал приложения
 	/// </summary>
-	public partial class App:Application
+	public partial class App: Application
 		{
 		#region Настройки стилей отображения
 
-		private int masterFontSize = 14, tipsFontSize = 13;
+		private int masterFontSize = 13, tipsFontSize = 12;
 		private Thickness margin = new Thickness (6);
 		private readonly Color
 			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
@@ -135,6 +135,7 @@ namespace RD_AAOW
 			childButton.Text = ButtonTitle;
 			if (ButtonMethod != null)
 				childButton.Clicked += ButtonMethod;
+			childButton.TextTransform = TextTransform.None;
 
 			return childButton;
 			}
@@ -511,6 +512,9 @@ namespace RD_AAOW
 			ApplyLabelSettings (ofdPage, "OFDSiteLabel", "Сайт:", masterHeaderColor);
 			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
 
+			ApplyLabelSettings (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", masterHeaderColor);
+			ApplyButtonSettings (ofdPage, "OFDNalogSite", "www.nalog.ru", ofdFieldBackColor, Field_Clicked);
+
 			ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
 
@@ -573,15 +577,17 @@ namespace RD_AAOW
 				return;
 
 			while (await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Перед началом работы с этим инструментом необходимо принять "+
-					"Политику разработки приложений и Пользовательское соглашение. Хотите "+
-					"открыть их тексты в браузере?\r\n\r\nЧтобы отказаться от соглашений, просто закройте приложение",
+					"Перед началом работы с этим инструментом Вы должны принять Политику разработки приложений и " +
+					"Пользовательское соглашение. Хотите открыть их тексты в браузере?\r\n\r\n" +
+					"• Нажмите «Принять», если Вы уже ознакомились и полностью приняли их;\r\n" +
+					"• Нажмите «Читать», если хотите открыть их в браузере;\r\n" +
+					"• Чтобы отклонить их, закройте приложение",
 
-					"Да, я хочу прочесть их",
-					"Нет, я уже знаком(а) и полностью принял(а) их"))
+					"Читать", "Принять"))
 				{
 				ADPButton_Clicked (null, null);
 				}
+
 			Preferences.Set (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
 			}
 

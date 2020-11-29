@@ -115,9 +115,10 @@ namespace RD_AAOW
 				{
 				try
 					{
+					// Исправлен некорректный порядок вызовов
+					adpRevision = Registry.GetValue (ADPRevisionPath, ADPRevisionKey, "").ToString ();
 					helpShownAt = Registry.GetValue (ProgramDescription.AssemblySettingsKey,
 						LastShownVersionKey, "").ToString ();
-					adpRevision = Registry.GetValue (ADPRevisionPath, ADPRevisionKey, "").ToString ();
 					}
 				catch
 					{
@@ -166,7 +167,8 @@ namespace RD_AAOW
 					AvailableUpdatesLabel.Text = "checking...";
 					ExitButton.Text = AcceptMode ? "&Accept" : "&OK";
 					MisacceptButton.Text = "&Decline";
-					DescriptionBox.Text = AcceptMode ? "Failed to get Policy text. Try button to open it in browser" : description;
+					DescriptionBox.Text = AcceptMode ? "Failed to get Policy text. Try button to open it in browser" :
+						description;
 					policyLoaderCaption = "Preparing for launch...";
 
 					this.Text = AcceptMode ? "Development policy and user agreement" : "About application";
@@ -213,7 +215,9 @@ namespace RD_AAOW
 					Registry.SetValue (ProgramDescription.AssemblySettingsKey, LastShownVersionKey,
 						ProgramDescription.AssemblyVersion);
 				if (AcceptMode && accepted)
-					Registry.SetValue (ADPRevisionPath, ADPRevisionKey, adpRevision);
+					Registry.SetValue (ADPRevisionPath, ADPRevisionKey, adpRevision.Replace ("!", ""));
+				// В случае невозможности загрузки Политики признак необходимости принятия до этого момента
+				// не удаляется из строки версии. Поэтому требуется страховка
 				}
 			catch { }
 
@@ -342,6 +346,7 @@ namespace RD_AAOW
 			new string[] { "<p>", "\r\n\r\n" },
 			new string[] { "<li>", "\r\n• " },
 			new string[] { "</p>", "\r\n" },
+			new string[] { "<br>", "\r\n" },
 
 			new string[] { "</li>", "" },
 			new string[] { "<ul>", "" },

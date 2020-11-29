@@ -41,6 +41,11 @@
 					<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
 					<Button x:Name="OFDSite" />
 				</StackLayout>
+
+				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+					<Label x:Name="OFDNalogSiteLabel" VerticalOptions="Center" />
+					<Button x:Name="OFDNalogSite" />
+				</StackLayout>
 			</FlexLayout>
 
 			<Label x:Name="OFDHelpLabel" />
