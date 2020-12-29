@@ -15,44 +15,44 @@ namespace RD_AAOW
 		/// <returns>Модель ФН</returns>
 		public static string GetFNName (string FNSerialNumber)
 			{
-			if (FNSerialNumber.Contains ("87100001"))
+			if (FNSerialNumber.StartsWith ("87100001"))
 				return "ФН-1 (13) ООО РИК";
-			if (FNSerialNumber.Contains ("87110001"))
+			if (FNSerialNumber.StartsWith ("87110001"))
 				return "ФН-1 исп. 2 (36) ООО РИК";
-			if (FNSerialNumber.Contains ("8712000100"))
+			if (FNSerialNumber.StartsWith ("8712000100"))
 				return "ФН-1 исп. 3 v2 (13) ООО Прагматик";
-			if (FNSerialNumber.Contains ("8712000101"))
+			if (FNSerialNumber.StartsWith ("8712000101"))
 				return "ФН-1 исп. 3 v1 (13) ООО НТЦ Измеритель";
-			if (FNSerialNumber.Contains ("87150001"))
+			if (FNSerialNumber.StartsWith ("87150001"))
 				return "ФН-1 Пр13-2 (13) ООО Прагматик";
-			if (FNSerialNumber.Contains ("87160001"))
+			if (FNSerialNumber.StartsWith ("87160001"))
 				return "ФН-1 Из13-2 (13) ООО НТЦ Измеритель";
-			if (FNSerialNumber.Contains ("92810001"))
+			if (FNSerialNumber.StartsWith ("92810001"))
 				return "ФН-1.1 исп. 4 (36) ООО Инвента";
-			if (FNSerialNumber.Contains ("92820001") || FNSerialNumber.Contains ("92824403"))
+			if (FNSerialNumber.StartsWith ("92820001") || FNSerialNumber.StartsWith ("92824403"))
 				return "ФН-1.1 исп. 5-15-2 (15) ООО Инвента";
-			if (FNSerialNumber.Contains ("92834403"))
+			if (FNSerialNumber.StartsWith ("92834403"))
 				return "ФН-1.1 ЭВ36-2 (36) ООО Эвотор";
-			if (FNSerialNumber.Contains ("92840001"))
+			if (FNSerialNumber.StartsWith ("92840001"))
 				return "ФН-1.1 ЭВ15-2 (15) ООО Эвотор";
-			if (FNSerialNumber.Contains ("92850001"))
+			if (FNSerialNumber.StartsWith ("92850001") || FNSerialNumber.StartsWith ("92854403"))
 				return "ФН-1.1 Из15-2 (15) ООО НТЦ Измеритель";
-			if (FNSerialNumber.Contains ("92860001"))
+			if (FNSerialNumber.StartsWith ("92860001"))
 				return "ФН-1.1 исп. 3 (15) АО Концерн Автоматика";
-			if (FNSerialNumber.Contains ("92874403"))
+			if (FNSerialNumber.StartsWith ("92874403"))
 				return "ФН-1.1 исп. 2 (36) ООО Инвента";
-			if (FNSerialNumber.Contains ("92880001"))
+			if (FNSerialNumber.StartsWith ("92880001"))
 				return "ФН-1.1 исп. 5-15-1 (15) ООО Инвента";
-			if (FNSerialNumber.Contains ("92890001"))
+			if (FNSerialNumber.StartsWith ("92890001"))
 				return "ФН-1.1 Пр15-2 (15) ООО Прагматик";
-			if (FNSerialNumber.Contains ("92514403"))
+			if (FNSerialNumber.StartsWith ("92514403"))
 				return "ФН-1.1 исп. 6-15-2 (15) ООО Дримкас";
-			if (FNSerialNumber.Contains ("92804403"))
+			if (FNSerialNumber.StartsWith ("92804403"))
 				return "ФН-1.1 Ав15-2 (15) АО Концерн Автоматика";
-			if (FNSerialNumber.Contains ("92524403"))
+			if (FNSerialNumber.StartsWith ("92524403"))
 				return "ФН-1.1 Ав36-2 (36) АО Концерн Автоматика";
 
-			if (FNSerialNumber.Contains ("99990789"))
+			if (FNSerialNumber.StartsWith ("99990789"))
 				return "Массо-габаритная модель ФН (МГМ)";
 
 			return "неизвестная модель ФН";

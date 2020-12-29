@@ -60,11 +60,11 @@ namespace RD_AAOW
 		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
 			errorsResultText,
 			aboutLabel,
-			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel, fnLifeResult,
+			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
 			lowLevelCommandDescr;
 
-		private Button codesKKTButton,
+		private Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			lowLevelCommand, lowLevelCommandCode;
@@ -451,7 +451,7 @@ namespace RD_AAOW
 			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;
 
 			//
-			fnLifeResult = ApplyResultLabelSettings (fnLifePage, "FNLifeResult", "", masterTextColor, fnLifeFieldBackColor);
+			fnLifeResult = ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor, FNLifeResultCopy);
 
 			// Применение всех названий
 			FNLifeSerial_TextChanged (null, null);
@@ -704,11 +704,13 @@ namespace RD_AAOW
 			if (res.Contains ("!"))
 				{
 				fnLifeResult.TextColor = errorColor;
-				fnLifeResult.Text += (res.Substring (1) + "\n(выбранный ФН неприменим с указанными параметрами)");
+				fnLifeResultDate = res.Substring (1);
+				fnLifeResult.Text += (fnLifeResultDate + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
 			else
 				{
 				fnLifeResult.TextColor = masterTextColor;
+				fnLifeResultDate = res;
 				fnLifeResult.Text += res;
 				}
 			}
@@ -731,13 +733,14 @@ namespace RD_AAOW
 			else if (KKTSupport.CheckINN (rnmINN.Text))
 				{
 				rnmINNCheckLabel.TextColor = correctColor;
-				rnmINNCheckLabel.Text = "ОК (" + KKTSupport.GetRegionName (rnmINN.Text) + ")";
+				rnmINNCheckLabel.Text = "ОК";
 				}
 			else
 				{
 				rnmINNCheckLabel.TextColor = errorColor;
 				rnmINNCheckLabel.Text = "некорректный";
 				}
+			rnmINNCheckLabel.Text += (" (" + KKTSupport.GetRegionName (rnmINN.Text) + ")");
 
 			// РНМ
 			if (rnmRNM.Text.Length < 10)
@@ -797,6 +800,12 @@ namespace RD_AAOW
 		private void OFDINNCopy_Clicked (object sender, EventArgs e)
 			{
 			SendToClipboard (ofdINN.Text);
+			}
+
+		private string fnLifeResultDate = "";
+		private void FNLifeResultCopy (object sender, EventArgs e)
+			{
+			SendToClipboard (fnLifeResultDate);
 			}
 
 		private void SendToClipboard (string Text)

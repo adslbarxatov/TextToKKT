@@ -254,13 +254,22 @@ namespace RD_AAOW
 			if (res.Contains ("!"))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
-				FNLifeResult.Text += (res.Substring (1) + "\n(выбранный ФН неприменим с указанными параметрами)");
+				fnLifeResult = res.Substring (1);
+				FNLifeResult.Text += (fnLifeResult + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
 			else
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (0, 0, 0);
+				fnLifeResult = res;
 				FNLifeResult.Text += res;
 				}
+			}
+
+		// Копирование срока действия ФН
+		private string fnLifeResult = "";
+		private void FNLifeResult_Click (object sender, EventArgs e)
+			{
+			SendToClipboard (fnLifeResult);
 			}
 
 		// Ввод номеров в разделе РНМ
@@ -283,13 +292,13 @@ namespace RD_AAOW
 				{
 				RNMUserINNResult.ForeColor = Color.FromArgb (0, 128, 0);
 				RNMUserINNResult.Text = "OK";
-				RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 				}
 			else
 				{
 				RNMUserINNResult.ForeColor = Color.FromArgb (255, 0, 0);
 				RNMUserINNResult.Text = "XXX";
 				}
+			RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 
 			// РНМ
 			if (RNMValue.Text.Length < 10)

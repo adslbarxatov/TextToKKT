@@ -58,7 +58,7 @@
 			</StackLayout>
 
 			<!-- Результат -->
-			<Label x:Name="FNLifeResult" />
+			<Button x:Name="FNLifeResult" />
 
 			<Label x:Name="Filler4" />
 		</StackLayout>

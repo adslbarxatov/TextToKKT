@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -20,17 +19,12 @@ namespace RD_AAOW
 			links = new List<string> ();
 
 		/// <summary>
-		/// Конструктор. Инициализирует таблицу
+		/// Конструктор. Инициализирует таблицу ОФД
 		/// </summary>
 		public OFD ()
 			{
 			// Получение файла символов
-#if !ANDROID
-			byte[] s = Properties.TextToKKMResources.OFD;
-#else
-			byte[] s = Properties.Resources.OFD;
-#endif
-			string buf = Encoding.UTF8.GetString (s);
+			string buf = ProgramDescription.OFDData;
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -81,6 +75,9 @@ namespace RD_AAOW
 		public List<string> GetOFDParameters (string INN)
 			{
 			// Защита
+			if (inn.Contains ("0000000000"))
+				return new List<string> { "?", "Без ОФД", "", "", "", "", "" };
+
 			if (!inn.Contains (INN))
 				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "" };
 
