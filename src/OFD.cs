@@ -75,7 +75,7 @@ namespace RD_AAOW
 		public List<string> GetOFDParameters (string INN)
 			{
 			// Защита
-			if (inn.Contains ("0000000000"))
+			if (INN.Contains ("0000000000"))
 				return new List<string> { "?", "Без ОФД", "", "", "", "", "" };
 
 			if (!inn.Contains (INN))

@@ -14,8 +14,6 @@ namespace RD_AAOW
 		{
 		#region Настройки стилей отображения
 
-		private int masterFontSize = 13, tipsFontSize = 12;
-		private Thickness margin = new Thickness (6);
 		private readonly Color
 			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
 			codesFieldBackColor = Color.FromHex ("#FFFFD0"),
@@ -44,8 +42,6 @@ namespace RD_AAOW
 			lowLevelMasterBackColor = Color.FromHex ("#FFFFFF"),
 			lowLevelFieldBackColor = Color.FromHex ("#C8C8C8"),
 
-			masterTextColor = Color.FromHex ("#000080"),
-			masterHeaderColor = Color.FromHex ("#303030"),
 			untoggledSwitchColor = Color.FromHex ("#505050"),
 			errorColor = Color.FromHex ("#FF0000"),
 			correctColor = Color.FromHex ("#008000");
@@ -83,21 +79,18 @@ namespace RD_AAOW
 
 		#endregion
 
-		#region Вспомогательные методы
+		private ConfigAccessor ca = new ConfigAccessor ();
 
+		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
 			{
 			// Инициализация страницы
-			ContentPage page = (ContentPage)MainPage.FindByName (PageName);
-			page.Title = PageTitle;
-			page.BackgroundColor = PageBackColor;
-
-			ApplyHeaderLabelSettings (page, PageTitle, PageBackColor);
+			ContentPage page = AndroidSupport.ApplyPageSettings (MainPage, PageName, PageTitle, PageBackColor);
 
 			// Добавление в содержание
 			if (HeaderNumber > 0)
 				{
-				Button b = ApplyButtonSettings (headersPage, "Button" + HeaderNumber.ToString ("D02"), PageTitle,
+				Button b = AndroidSupport.ApplyButtonSettings (headersPage, "Button" + HeaderNumber.ToString ("D02"), PageTitle,
 					headersFieldBackColor, HeaderButton_Clicked);
 				b.Margin = b.Padding = new Thickness (1);
 				b.CommandParameter = page;
@@ -106,116 +99,6 @@ namespace RD_AAOW
 
 			return page;
 			}
-
-		private Label ApplyLabelSettings (ContentPage ParentPage, string LabelName,
-			string LabelTitle, Color LabelTextColor)
-			{
-			Label childLabel = (Label)ParentPage.FindByName (LabelName);
-
-			childLabel.Text = LabelTitle;
-			childLabel.HorizontalOptions = LayoutOptions.Start;
-			childLabel.FontAttributes = FontAttributes.None;
-			childLabel.FontSize = masterFontSize;
-			childLabel.TextColor = LabelTextColor;
-			childLabel.Margin = margin;
-
-			return childLabel;
-			}
-
-		private Button ApplyButtonSettings (ContentPage ParentPage, string ButtonName,
-			string ButtonTitle, Color ButtonColor, EventHandler ButtonMethod)
-			{
-			Button childButton = (Button)ParentPage.FindByName (ButtonName);
-
-			childButton.BackgroundColor = ButtonColor;
-			childButton.FontAttributes = FontAttributes.None;
-			childButton.FontSize = masterFontSize;
-			childButton.TextColor = masterTextColor;
-			childButton.Margin = margin;
-			childButton.Text = ButtonTitle;
-			if (ButtonMethod != null)
-				childButton.Clicked += ButtonMethod;
-			childButton.TextTransform = TextTransform.None;
-
-			return childButton;
-			}
-
-		private Label ApplyTipLabelSettings (ContentPage ParentPage, string LabelName,
-			string LabelTitle, Color LabelTextColor)
-			{
-			Label childLabel = (Label)ParentPage.FindByName (LabelName);
-
-			childLabel.Text = LabelTitle;
-			childLabel.HorizontalOptions = LayoutOptions.Center;
-			childLabel.FontAttributes = FontAttributes.Italic;
-			childLabel.FontSize = tipsFontSize;
-			childLabel.TextColor = LabelTextColor;
-			childLabel.HorizontalTextAlignment = TextAlignment.Center;
-			childLabel.Margin = margin;
-
-			return childLabel;
-			}
-
-		private Editor ApplyEditorSettings (ContentPage ParentPage, string EditorName,
-			Color EditorColor, Keyboard EditorKeyboard, uint MaxLength,
-			string InitialText, EventHandler<TextChangedEventArgs> EditMethod)
-			{
-			Editor childEditor = (Editor)ParentPage.FindByName (EditorName);
-
-			childEditor.AutoSize = EditorAutoSizeOption.TextChanges;
-			childEditor.BackgroundColor = EditorColor;
-			childEditor.FontAttributes = FontAttributes.None;
-			childEditor.FontFamily = "Serif";
-			childEditor.FontSize = masterFontSize;
-			childEditor.HorizontalOptions = LayoutOptions.Fill;
-			childEditor.Keyboard = EditorKeyboard;
-			childEditor.MaxLength = (int)MaxLength;
-			//childEditor.Placeholder = "...";
-			//childEditor.PlaceholderColor = Color.FromRgb (255, 255, 0);
-			childEditor.TextColor = masterTextColor;
-			childEditor.Margin = margin;
-
-			childEditor.Text = InitialText;
-			childEditor.TextChanged += EditMethod;
-
-			return childEditor;
-			}
-
-		private void ApplyHeaderLabelSettings (ContentPage ParentPage, string LabelTitle, Color BackColor)
-			{
-			Label childLabel = (Label)ParentPage.FindByName ("HeaderLabel");
-
-			childLabel.BackgroundColor = masterHeaderColor;
-			childLabel.FontAttributes = FontAttributes.Bold;
-			childLabel.FontSize = masterFontSize;
-			childLabel.HorizontalTextAlignment = TextAlignment.Center;
-			childLabel.HorizontalOptions = LayoutOptions.Fill;
-			childLabel.Padding = margin;
-			childLabel.Text = LabelTitle;
-			childLabel.TextColor = BackColor;
-			}
-
-		private Label ApplyResultLabelSettings (ContentPage ParentPage, string LabelName,
-			string LabelTitle, Color LabelTextColor, Color LabelBackColor)
-			{
-			Label childLabel = (Label)ParentPage.FindByName (LabelName);
-
-			childLabel.BackgroundColor = LabelBackColor;
-			childLabel.Text = LabelTitle;
-			childLabel.FontAttributes = FontAttributes.None;
-			childLabel.FontFamily = "Serif";
-			childLabel.FontSize = masterFontSize;
-			childLabel.HorizontalOptions = LayoutOptions.Fill;
-			childLabel.HorizontalTextAlignment = TextAlignment.Center;
-			childLabel.Margin = margin;
-			childLabel.TextColor = LabelTextColor;
-
-			return childLabel;
-			}
-
-		#endregion
-
-		private ConfigAccessor ca = new ConfigAccessor ();
 
 		/// <summary>
 		/// Конструктор. Точка входа приложения
@@ -243,15 +126,8 @@ namespace RD_AAOW
 				ofdMasterBackColor, headerNumber++);
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, headerNumber++);
-
-#if !EVOTOR
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
-#else
-			codesPage = (ContentPage)MainPage.FindByName ("CodesPage");
-			((CarouselPage)MainPage).Children.Remove (codesPage);
-#endif
-
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
 
@@ -261,113 +137,105 @@ namespace RD_AAOW
 			keepAppState = (Switch)headersPage.FindByName ("KeepAppState");
 			keepAppState.IsToggled = ca.KeepApplicationState;
 
-			ApplyLabelSettings (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", true);
 
 			((CarouselPage)MainPage).CurrentPage = ((CarouselPage)MainPage).Children[(int)ca.CurrentTab];
 			#endregion
 
 			#region Страница кодов
-#if !EVOTOR
 
-			ApplyLabelSettings (codesPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
 
 			onlyNewCodes = (Switch)codesPage.FindByName ("OnlyNewCodes");
 			onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
 			onlyNewCodes.Toggled += OnlyNewCodes_Toggled;
 
-			ApplyLabelSettings (codesPage, "OnlyNewCodesLabel", "Только новые", masterTextColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "OnlyNewCodesLabel", "Только новые", false);
 
-			codesKKTButton = ApplyButtonSettings (codesPage, "KKTButton",
+			codesKKTButton = AndroidSupport.ApplyButtonSettings (codesPage, "KKTButton",
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes],
 				codesFieldBackColor, CodesKKTButton_Clicked);
 
-			codesSourceTextLabel = ApplyLabelSettings (codesPage, "SourceTextLabel", "Исходный текст:", masterHeaderColor);
+			codesSourceTextLabel = AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SourceTextLabel",
+				"Исходный текст:", true);
 
-			codesSourceText = ApplyEditorSettings (codesPage, "SourceText",
+			codesSourceText = AndroidSupport.ApplyEditorSettings (codesPage, "SourceText",
 				codesFieldBackColor, Keyboard.Default, 72, ca.CodesText, SourceText_TextChanged);
+			codesSourceText.HorizontalOptions = LayoutOptions.Fill;
 
-			ApplyLabelSettings (codesPage, "ResultTextLabel", "Коды ККТ:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "ResultTextLabel", "Коды ККТ:", true);
 
-			codesErrorLabel = ApplyTipLabelSettings (codesPage, "ErrorLabel",
+			codesErrorLabel = AndroidSupport.ApplyTipLabelSettings (codesPage, "ErrorLabel",
 				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
 				errorColor);
 
-			codesResultText = ApplyResultLabelSettings (codesPage, "ResultText", "", masterTextColor, codesFieldBackColor);
+			codesResultText = AndroidSupport.ApplyResultLabelSettings (codesPage, "ResultText", "", codesFieldBackColor);
 			codesResultText.HorizontalTextAlignment = TextAlignment.Start;
 
-			codesHelpLabel = ApplyTipLabelSettings (codesPage, "HelpLabel",
+			codesHelpLabel = AndroidSupport.ApplyTipLabelSettings (codesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
 
 			SourceText_TextChanged (null, null);    // Протягивание кодов
 
-#endif
 			#endregion
 
 			#region Страница ошибок
 
-			ApplyLabelSettings (errorsPage, "SelectionLabel", "Модель ККТ:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "SelectionLabel", "Модель ККТ:", true);
 
 			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
 			onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
 			onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
 
-#if !EVOTOR
-			ApplyLabelSettings (errorsPage, "OnlyNewErrorsLabel", "Только новые", masterTextColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "OnlyNewErrorsLabel", "Только новые", false);
 
-			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
+			errorsKKTButton = AndroidSupport.ApplyButtonSettings (errorsPage, "KKTButton",
 				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
-#else
-			onlyNewErrors.IsVisible = false;
 
-			ca.KKTForErrors = 3;
-			errorsKKTButton = ApplyButtonSettings (errorsPage, "KKTButton",
-				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
-				errorsFieldBackColor, null);
-#endif
+			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ErrorCodeLabel", "Код / сообщение:", true);
 
-			ApplyLabelSettings (errorsPage, "ErrorCodeLabel", "Код / сообщение:", masterHeaderColor);
-
-			errorsCodeButton = ApplyButtonSettings (errorsPage, "ErrorCodeButton",
+			errorsCodeButton = AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorCodeButton",
 				kkme.GetErrorCodesList (ca.KKTForErrors)[(int)ca.ErrorCode],
 				errorsFieldBackColor, ErrorsCodeButton_Clicked);
 
-			ApplyLabelSettings (errorsPage, "ResultTextLabel", "Расшифровка:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ResultTextLabel", "Расшифровка:", true);
 
-			errorsResultText = ApplyResultLabelSettings (errorsPage, "ResultText",
-				kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode),
-				masterTextColor, errorsFieldBackColor);
+			errorsResultText = AndroidSupport.ApplyResultLabelSettings (errorsPage, "ResultText",
+				kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode), errorsFieldBackColor);
 			errorsResultText.HorizontalTextAlignment = TextAlignment.Start;
 
 			#endregion
 
 			#region Страница "О программе"
 
-			aboutLabel = ApplyResultLabelSettings (aboutPage, "AboutLabel",
+			aboutLabel = AndroidSupport.ApplyLabelSettings (aboutPage, "AboutLabel",
 				ProgramDescription.AssemblyTitle + "\n" +
 				ProgramDescription.AssemblyDescription + "\n\n" +
 				ProgramDescription.AssemblyCopyright + "\nv " +
 				ProgramDescription.AssemblyVersion +
-				"; " + ProgramDescription.AssemblyLastUpdate,
-				masterTextColor, aboutFieldBackColor);
+				"; " + ProgramDescription.AssemblyLastUpdate);
 			aboutLabel.FontAttributes = FontAttributes.Bold;
 
-			ApplyButtonSettings (aboutPage, "AppPage",
-				"Страница проекта", aboutFieldBackColor, AppButton_Clicked);
-			ApplyButtonSettings (aboutPage, "ADPPage",
-				"Политика разработки и EULA", aboutFieldBackColor, ADPButton_Clicked);
+			AndroidSupport.ApplyButtonSettings (aboutPage, "AppPage", "Страница проекта",
+				aboutFieldBackColor, AppButton_Clicked);
+			AndroidSupport.ApplyButtonSettings (aboutPage, "ADPPage", "Политика разработки и EULA",
+				aboutFieldBackColor, ADPButton_Clicked);
+			AndroidSupport.ApplyButtonSettings (aboutPage, "DevPage", "Спросить разработчика",
+				aboutFieldBackColor, DevButton_Clicked);
 
-			ApplyButtonSettings (aboutPage, "UpdatePage",
+			AndroidSupport.ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
-			ApplyButtonSettings (aboutPage, "CommunityPage",
+			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW\nFree utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
 
 			#endregion
 
 			#region Страница определения срока жизни ФН
 
-			ApplyLabelSettings (fnLifePage, "SetModelLabel", "Укажите ЗН ФН или его номинал:", masterHeaderColor);
-			fnLifeSerial = ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetModelLabel", "Укажите ЗН ФН или его номинал:",
+				true);
+			fnLifeSerial = AndroidSupport.ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
 				Keyboard.Numeric, 16, ca.FNSerial, FNLifeSerial_TextChanged);
 
 			fnLife13 = (Switch)fnLifePage.FindByName ("FNLife13");
@@ -375,10 +243,10 @@ namespace RD_AAOW
 			fnLife13.ThumbColor = untoggledSwitchColor;
 			fnLife13.OnColor = fnLifeFieldBackColor;
 
-			fnLifeLabel = ApplyLabelSettings (fnLifePage, "FNLifeLabel", "", masterHeaderColor);
+			fnLifeLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeLabel", "", false);
 
 			//
-			fnLifeModelLabel = ApplyLabelSettings (fnLifePage, "FNLifeModelLabel", "", masterTextColor);
+			fnLifeModelLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeModelLabel", "", false);
 
 			fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
 			fnLifeModelLabel.FontFamily = "Serif";
@@ -386,7 +254,7 @@ namespace RD_AAOW
 			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
 
 			//
-			ApplyLabelSettings (fnLifePage, "SetUserParameters", "Укажите значимые параметры:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetUserParameters", "Укажите значимые параметры:", true);
 
 			//
 			fnLifeGenericTax = (Switch)fnLifePage.FindByName ("FNLifeGenericTax");
@@ -395,7 +263,7 @@ namespace RD_AAOW
 			fnLifeGenericTax.ThumbColor = untoggledSwitchColor;
 			fnLifeGenericTax.OnColor = fnLifeFieldBackColor;
 
-			fnLifeGenericTaxLabel = ApplyLabelSettings (fnLifePage, "FNLifeGenericTaxLabel", "", masterHeaderColor);
+			fnLifeGenericTaxLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeGenericTaxLabel", "", false);
 
 			//
 			fnLifeGoods = (Switch)fnLifePage.FindByName ("FNLifeGoods");
@@ -404,40 +272,40 @@ namespace RD_AAOW
 			fnLifeGoods.ThumbColor = untoggledSwitchColor;
 			fnLifeGoods.OnColor = fnLifeFieldBackColor;
 
-			fnLifeGoodsLabel = ApplyLabelSettings (fnLifePage, "FNLifeGoodsLabel", "", masterHeaderColor);
+			fnLifeGoodsLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeGoodsLabel", "", false);
 
 			//
 			fnLifeSeason = (Switch)fnLifePage.FindByName ("FNLifeSeason");
 			fnLifeSeason.IsToggled = ca.SeasonFlag;
 			fnLifeSeason.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля", false);
 
 			//
 			fnLifeAgents = (Switch)fnLifePage.FindByName ("FNLifeAgents");
 			fnLifeAgents.IsToggled = ca.AgentsFlag;
 			fnLifeAgents.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент", false);
 
 			//
 			fnLifeExcise = (Switch)fnLifePage.FindByName ("FNLifeExcise");
 			fnLifeExcise.IsToggled = ca.ExciseFlag;
 			fnLifeExcise.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизный товар", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeExciseLabel", "Подакцизный товар", false);
 
 			//
 			fnLifeAutonomous = (Switch)fnLifePage.FindByName ("FNLifeAutonomous");
 			fnLifeAutonomous.IsToggled = ca.AutonomousFlag;
 			fnLifeAutonomous.Toggled += FnLife13_Toggled;
 
-			ApplyLabelSettings (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим", false);
 
 			//
-			ApplyLabelSettings (fnLifePage, "SetDate", "Дата фискализации:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetDate", "Дата фискализации:", false);
 
-			fnLifeStartDate = (DatePicker)fnLifePage.FindByName ("FNLifeStartDate");
+			/*fnLifeStartDate = (DatePicker)fnLifePage.FindByName ("FNLifeStartDate");
 
 			fnLifeStartDate.BackgroundColor = fnLifeFieldBackColor;
 			fnLifeStartDate.FontSize = masterFontSize;
@@ -448,10 +316,13 @@ namespace RD_AAOW
 			fnLifeStartDate.Margin = margin;
 
 			fnLifeStartDate.Date = DateTime.Now;
-			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;
+			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;*/
+			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate", fnLifeFieldBackColor,
+				FnLifeStartDate_DateSelected);
 
 			//
-			fnLifeResult = ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor, FNLifeResultCopy);
+			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "",
+				fnLifeFieldBackColor, FNLifeResultCopy);
 
 			// Применение всех названий
 			FNLifeSerial_TextChanged (null, null);
@@ -460,25 +331,25 @@ namespace RD_AAOW
 
 			#region Страница определения корректности РНМ
 
-			ApplyLabelSettings (rnmPage, "SNLabel", "Заводской номер ККТ:", masterHeaderColor);
-			rnmKKTSN = ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 16,
+			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "SNLabel", "Заводской номер ККТ:", true);
+			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 16,
 				ca.KKTSerial, RNM_TextChanged);
-			rnmKKTTypeLabel = ApplyLabelSettings (rnmPage, "TypeLabel", "", masterTextColor);
+			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "TypeLabel", "", false);
 
-			ApplyLabelSettings (rnmPage, "INNLabel", "ИНН пользователя:", masterHeaderColor);
-			rnmINN = ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12,
+			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNLabel", "ИНН пользователя:", true);
+			rnmINN = AndroidSupport.ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12,
 				ca.UserINN, RNM_TextChanged);
-			rnmINNCheckLabel = ApplyLabelSettings (rnmPage, "INNCheckLabel", "", masterTextColor);
+			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNCheckLabel", "", false);
 
-			ApplyLabelSettings (rnmPage, "RNMLabel",
-				"Регистрационный номер для проверки или произвольное число для генерации¹:", masterHeaderColor);
-			rnmRNM = ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16,
+			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
+				"Регистрационный номер для проверки или произвольное число для генерации¹:", true);
+			rnmRNM = AndroidSupport.ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16,
 				ca.RNMKKT, RNM_TextChanged);
-			rnmRNMCheckLabel = ApplyLabelSettings (rnmPage, "RNMCheckLabel", "", masterTextColor);
+			rnmRNMCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMCheckLabel", "", false);
 
-			ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать", rnmFieldBackColor, RNMGenerate_Clicked);
+			AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать", rnmFieldBackColor, RNMGenerate_Clicked);
 
-			ApplyTipLabelSettings (rnmPage, "RNMAbout",
+			AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
 				"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
 				untoggledSwitchColor);
 
@@ -488,34 +359,34 @@ namespace RD_AAOW
 
 			#region Страница настроек ОФД
 
-			ApplyLabelSettings (ofdPage, "OFDINNLabel", "ИНН ОФД:", masterHeaderColor);
-			ofdINN = ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDINNLabel", "ИНН ОФД:", true);
+			ofdINN = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
 				ca.OFDINN, OFDINN_TextChanged);
-			ApplyButtonSettings (ofdPage, "OFDINNCopy", "↑", ofdFieldBackColor, OFDINNCopy_Clicked);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy", "↑", ofdFieldBackColor, OFDINNCopy_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDNameLabel", "Название:", masterHeaderColor);
-			ofdNameButton = ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNameLabel", "Название:", true);
+			ofdNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
 				ofdFieldBackColor, OFDName_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDDNSNameLabel", "Адрес:", masterHeaderColor);
-			ofdDNSNameButton = ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameLabel", "Адрес:", true);
+			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDIPLabel", "IP:", masterHeaderColor);
-			ofdIPButton = ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor, Field_Clicked);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDIPLabel", "IP:", true);
+			ofdIPButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor, Field_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDPortLabel", "Порт:", masterHeaderColor);
-			ofdPortButton = ApplyButtonSettings (ofdPage, "OFDPort", "", ofdFieldBackColor, Field_Clicked);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDPortLabel", "Порт:", true);
+			ofdPortButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPort", "", ofdFieldBackColor, Field_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail:", masterHeaderColor);
-			ofdEmailButton = ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail:", true);
+			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDSiteLabel", "Сайт:", masterHeaderColor);
-			ofdSiteButton = ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDSiteLabel", "Сайт:", true);
+			ofdSiteButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
 
-			ApplyLabelSettings (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", masterHeaderColor);
-			ApplyButtonSettings (ofdPage, "OFDNalogSite", "www.nalog.ru", ofdFieldBackColor, Field_Clicked);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", true);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", "www.nalog.ru", ofdFieldBackColor, Field_Clicked);
 
-			ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
+			AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
 
 			OFDINN_TextChanged (null, null); // Протягивание значений
@@ -530,38 +401,33 @@ namespace RD_AAOW
 			lowLevelSHTRIH.ThumbColor = untoggledSwitchColor;
 			lowLevelSHTRIH.OnColor = fnLifeFieldBackColor;
 
-#if !EVOTOR
-			ApplyLabelSettings (lowLevelPage, "AtolLabel", "АТОЛ", masterHeaderColor);
-			ApplyLabelSettings (lowLevelPage, "ShtrihLabel", "ШТРИХ", masterHeaderColor);
-#else
-			lowLevelSHTRIH.IsVisible = false;
-#endif
+			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "AtolLabel", "АТОЛ", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ShtrihLabel", "ШТРИХ", false);
 
 			//
-			ApplyLabelSettings (lowLevelPage, "CommandLabel", "Команда:", masterHeaderColor);
-			lowLevelCommand = ApplyButtonSettings (lowLevelPage, "CommandButton",
+			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandLabel", "Команда:", true);
+			lowLevelCommand = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandButton",
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommandsList ()[(int)ca.LowLevelCode] :
 				ll.GetSHTRIHCommandsList ()[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
 
 			//
-			ApplyLabelSettings (lowLevelPage, "CommandCodeLabel", "Код команды:", masterHeaderColor);
-			lowLevelCommandCode = ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
+			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandCodeLabel", "Код команды:", true);
+			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, false) :
 				ll.GetSHTRIHCommand (ca.LowLevelCode, false),
 				lowLevelFieldBackColor, Field_Clicked);
 
 			//
-			ApplyLabelSettings (lowLevelPage, "CommandDescrLabel", "Описание:", masterHeaderColor);
+			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandDescrLabel", "Описание:", true);
 
-			lowLevelCommandDescr = ApplyResultLabelSettings (lowLevelPage, "CommandDescr",
+			lowLevelCommandDescr = AndroidSupport.ApplyResultLabelSettings (lowLevelPage, "CommandDescr",
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, true) :
-				ll.GetSHTRIHCommand (ca.LowLevelCode, true),
-				masterTextColor, lowLevelFieldBackColor);
+				ll.GetSHTRIHCommand (ca.LowLevelCode, true), lowLevelFieldBackColor);
 			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
 
 			//
-			ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
+			AndroidSupport.ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
 
 			#endregion
@@ -709,7 +575,7 @@ namespace RD_AAOW
 				}
 			else
 				{
-				fnLifeResult.TextColor = masterTextColor;
+				fnLifeResult.TextColor = fnLifeStartDate.TextColor;
 				fnLifeResultDate = res;
 				fnLifeResult.Text += res;
 				}
@@ -727,7 +593,7 @@ namespace RD_AAOW
 			// ИНН пользователя
 			if (rnmINN.Text.Length < 10)
 				{
-				rnmINNCheckLabel.TextColor = masterTextColor;
+				rnmINNCheckLabel.TextColor = rnmINN.TextColor;
 				rnmINNCheckLabel.Text = "неполный";
 				}
 			else if (KKTSupport.CheckINN (rnmINN.Text))
@@ -745,7 +611,7 @@ namespace RD_AAOW
 			// РНМ
 			if (rnmRNM.Text.Length < 10)
 				{
-				rnmRNMCheckLabel.TextColor = masterTextColor;
+				rnmRNMCheckLabel.TextColor = rnmRNM.TextColor;
 				rnmRNMCheckLabel.Text = "неполный";
 				}
 			else if (KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
@@ -1383,25 +1249,61 @@ namespace RD_AAOW
 		// Страница обновлений
 		private void UpdateButton_Clicked (object sender, EventArgs e)
 			{
-			Launcher.OpenAsync ("https://github.com/adslbarxatov/FNReader");
+			try
+				{
+				Launcher.OpenAsync (AndroidSupport.MasterGitLink + "FNReader");
+				}
+			catch { }
 			}
 
 		// Страница проекта
 		private void AppButton_Clicked (object sender, EventArgs e)
 			{
-			Launcher.OpenAsync ("https://github.com/adslbarxatov/TextToKKT");
+			try
+				{
+				Launcher.OpenAsync (AndroidSupport.MasterGitLink + "TextToKKT");
+				}
+			catch { }
 			}
 
 		// Страница политики и EULA
 		private void ADPButton_Clicked (object sender, EventArgs e)
 			{
-			Launcher.OpenAsync ("https://vk.com/@rdaaow_fupl-adp");
+			try
+				{
+				Launcher.OpenAsync (AndroidSupport.ADPLink);
+				}
+			catch { }
 			}
 
 		// Страница лаборатории
 		private void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			Launcher.OpenAsync ("https://vk.com/rdaaow_fupl");
+			try
+				{
+				Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
+				}
+			catch { }
+			}
+
+		// Страница политики и EULA
+		private async void DevButton_Clicked (object sender, EventArgs e)
+			{
+			try
+				{
+				EmailMessage message = new EmailMessage
+					{
+					Subject = "Wish, advice or bug in " + ProgramDescription.AssemblyTitle,
+					Body = "",
+					To = new List<string> () { AndroidSupport.MasterDeveloperLink }
+					};
+				await Email.ComposeAsync (message);
+				}
+			catch
+				{
+				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Электронная почта недоступна на этом устройстве", "ОК");
+				}
 			}
 
 		// Выбор элемента содержания
