@@ -227,7 +227,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
-				"RD AAOW\nFree utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
+				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
 
 			#endregion
 
@@ -362,7 +362,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDINNLabel", "ИНН ОФД:", true);
 			ofdINN = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
 				ca.OFDINN, OFDINN_TextChanged);
-			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy", "↑", ofdFieldBackColor, OFDINNCopy_Clicked);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy", "▲", ofdFieldBackColor, OFDINNCopy_Clicked);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNameLabel", "Название:", true);
 			ofdNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",

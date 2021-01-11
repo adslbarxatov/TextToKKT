@@ -27,6 +27,7 @@ namespace RD_AAOW
 				return "ФН-1 Пр13-2 (13) ООО Прагматик";
 			if (FNSerialNumber.StartsWith ("87160001"))
 				return "ФН-1 Из13-2 (13) ООО НТЦ Измеритель";
+
 			if (FNSerialNumber.StartsWith ("92810001"))
 				return "ФН-1.1 исп. 4 (36) ООО Инвента";
 			if (FNSerialNumber.StartsWith ("92820001") || FNSerialNumber.StartsWith ("92824403"))
@@ -51,6 +52,9 @@ namespace RD_AAOW
 				return "ФН-1.1 Ав15-2 (15) АО Концерн Автоматика";
 			if (FNSerialNumber.StartsWith ("92524403"))
 				return "ФН-1.1 Ав36-2 (36) АО Концерн Автоматика";
+
+			if (FNSerialNumber.StartsWith ("99604403"))
+				return "ФН-1.1М Ин15-1М (15) ООО Инвента";
 
 			if (FNSerialNumber.StartsWith ("99990789"))
 				return "Массо-габаритная модель ФН (МГМ)";
@@ -302,6 +306,12 @@ namespace RD_AAOW
 
 							if (TEST_SN_D (9, 3))
 								return "Штрих-СмартПОС-Ф";
+							}
+
+						if (TEST_SN_D (8, 4))
+							{
+							if (TEST_SN_D (9, 0))
+								return "Элвес-МФ (ФР)";
 							}
 						}
 

@@ -10,19 +10,19 @@
 			<StackLayout>
 				<Label x:Name="AboutLabel" />
 
-				<FlexLayout JustifyContent="Center" Direction="Row" Wrap="Wrap">
+				<!--<FlexLayout JustifyContent="Center" Direction="Row" Wrap="Wrap">-->
 					<Button x:Name="AppPage" HorizontalOptions="Center" />
 					<Button x:Name="ADPPage" HorizontalOptions="Center" />
-				</FlexLayout>
+				<!--</FlexLayout>-->
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#606060" Margin="9" />
 
-				<FlexLayout JustifyContent="Center" Direction="Row" Wrap="Wrap">
+				<!--<FlexLayout JustifyContent="Center" Direction="Row" Wrap="Wrap">-->
 					<Button x:Name="UpdatePage" HorizontalOptions="Center" />
 					<Button x:Name="DevPage" HorizontalOptions="Center" />
 					<Button x:Name="CommunityPage" HorizontalOptions="Center" />
-				</FlexLayout>
+				<!--</FlexLayout>-->
 
 				<Label x:Name="Filler1" />
 			</StackLayout>
