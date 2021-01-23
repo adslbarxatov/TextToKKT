@@ -142,7 +142,7 @@ namespace RD_AAOW
 					if (TEST_SN_D (0, 0) && TEST_SN_D (2, 1) && TEST_SN_D (3, 7))
 						return "Орион 100Ф";
 
-					if (TEST_SN_D (0, 1) && TEST_SN_D (3, 0) && TEST_SN_D (6, 0))
+					if (TEST_SN_D (0, 1) && TEST_SN_D (3, 0)) //&& TEST_SN_D (6, 0))
 						{
 						if (TEST_SN_D (1, 7) && TEST_SN_D (2, 7) && TEST_SN_D (4, 4) && TEST_SN_D (5, 4))
 							return "MSPOS-Е-Ф";

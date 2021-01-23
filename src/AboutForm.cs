@@ -475,8 +475,6 @@ htmlError:
 		/// <summary>
 		/// Метод-исполнитель загрузки пакета обновлений
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		public static void PackageLoader (object sender, DoWorkEventArgs e)
 			{
 			// Разбор аргументов

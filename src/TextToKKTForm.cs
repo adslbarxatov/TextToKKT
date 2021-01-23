@@ -50,6 +50,9 @@ namespace RD_AAOW
 			this.Text = ProgramDescription.AssemblyTitle;
 
 			// Получение настроек
+			this.Left = ca.WindowLeft;
+			this.Top = ca.WindowTop;
+
 			KeepAppState.Checked = ca.KeepApplicationState;
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
@@ -414,6 +417,9 @@ namespace RD_AAOW
 		// Сохранение настроек приложения
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
+			ca.WindowLeft = this.Left;
+			ca.WindowTop = this.Top;
+
 			ca.KeepApplicationState = KeepAppState.Checked;
 			if (!ca.KeepApplicationState)
 				return;

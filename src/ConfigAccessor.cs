@@ -55,6 +55,13 @@ namespace RD_AAOW
 		public ConfigAccessor ()
 			{
 			// Получение настроек
+			try
+				{
+				windowLeft = int.Parse (GetSetting (windowLeftPar));
+				windowTop = int.Parse (GetSetting (windowTopPar));
+				}
+			catch { }
+
 			keepApplicationState = GetSetting (keepApplicationStatePar) != nullValue;
 			if (!keepApplicationState)
 				return;
@@ -463,5 +470,41 @@ namespace RD_AAOW
 			}
 		private bool onlyNewKKTCodes = true;
 		private const string onlyNewKKTCodesPar = "ONKKTC";
+
+		/// <summary>
+		/// Возвращает или задаёт левое смещение окна приложения
+		/// </summary>
+		public int WindowLeft
+			{
+			get
+				{
+				return windowLeft;
+				}
+			set
+				{
+				windowLeft = value;
+				SetSetting (windowLeftPar, windowLeft.ToString ());
+				}
+			}
+		private int windowLeft = 0;
+		private const string windowLeftPar = "WL";
+
+		/// <summary>
+		/// Возвращает или задаёт верхнее смещение окна приложения
+		/// </summary>
+		public int WindowTop
+			{
+			get
+				{
+				return windowTop;
+				}
+			set
+				{
+				windowTop = value;
+				SetSetting (windowTopPar, windowTop.ToString ());
+				}
+			}
+		private int windowTop = 0;
+		private const string windowTopPar = "WT";
 		}
 	}
