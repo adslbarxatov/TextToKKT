@@ -1,5 +1,5 @@
-# TextToKKT v 3.12.4
-> PCC: 0005BA4A0BE7DFD9
+# TextToKKT v 4.0
+> PCC: 0005FA47BFD4CF49
 
 
 Утилита сервис-инженера ККТ (54-ФЗ)

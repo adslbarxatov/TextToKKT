@@ -6,6 +6,7 @@
 
 	<mypages:HeadersPage x:Name="HeadersPage" />
 
+	<mypages:UserManualsPage x:Name="UserManualsPage" />
 	<mypages:ErrorsPage x:Name="ErrorsPage" />
 	<mypages:FNLifePage x:Name="FNLifePage" />
 	<mypages:RNMPage x:Name="RNMPage" />

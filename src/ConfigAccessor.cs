@@ -1,5 +1,6 @@
 ﻿#if !ANDROID
 using Microsoft.Win32;
+using System.Windows.Forms;
 #else
 using Xamarin.Essentials;
 #endif
@@ -52,15 +53,33 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Загружает настройки приложения
 		/// </summary>
-		public ConfigAccessor ()
+		/// <param name="WindowHeight">Высота окна приложения</param>
+		/// <param name="WindowWidth">Ширина окна приложения</param>
+		public ConfigAccessor (int WindowWidth, int WindowHeight)
 			{
 			// Получение настроек
+
+#if !ANDROID
+			// Запрос размеров текущего экрана
+			int screenWidth = 1280, screenHeight = 720;
+			try
+				{
+				screenWidth = Screen.PrimaryScreen.Bounds.Width;
+				screenHeight = Screen.PrimaryScreen.Bounds.Height;
+				}
+			catch { }
+
 			try
 				{
 				windowLeft = int.Parse (GetSetting (windowLeftPar));
 				windowTop = int.Parse (GetSetting (windowTopPar));
 				}
-			catch { }
+			catch
+				{
+				windowLeft = (screenWidth - WindowWidth) / 2;
+				windowTop = (screenHeight - WindowHeight) / 2;
+				}
+#endif
 
 			keepApplicationState = GetSetting (keepApplicationStatePar) != nullValue;
 			if (!keepApplicationState)
@@ -70,12 +89,12 @@ namespace RD_AAOW
 				{
 				currentTab = uint.Parse (GetSetting (currentTabPar));
 
-				kktForErrors = uint.Parse (GetSetting (kktForErrorsPar));
+				kktForErrors = uint.Parse ("0" + GetSetting (kktForErrorsPar));
 				onlyNewKKTErrors = GetSetting (onlyNewKKTErrorsPar) != nullValue;
-				errorCode = uint.Parse (GetSetting (errorCodePar));
+				errorCode = uint.Parse ("0" + GetSetting (errorCodePar));
 
 				fnSerial = GetSetting (fnSerialPar);
-				fnLifeFlags = uint.Parse (GetSetting (fnLifeFlagsPar));
+				fnLifeFlags = uint.Parse ("0" + GetSetting (fnLifeFlagsPar));
 
 				kktSerial = GetSetting (kktSerialPar);
 				userINN = GetSetting (userINNPar);
@@ -84,11 +103,14 @@ namespace RD_AAOW
 				ofdINN = GetSetting (ofdINNPar);
 
 				lowLevelCommandsATOL = GetSetting (lowLevelCommandsATOLPar) != nullValue;
-				lowLevelCode = uint.Parse (GetSetting (lowLevelCodePar));
+				lowLevelCode = uint.Parse ("0" + GetSetting (lowLevelCodePar));
 
-				kktForCodes = uint.Parse (GetSetting (kktForCodesPar));
+				kktForCodes = uint.Parse ("0" + GetSetting (kktForCodesPar));
 				onlyNewKKTCodes = GetSetting (onlyNewKKTCodesPar) != nullValue;
 				codesText = GetSetting (codesTextPar);
+
+				kktForManuals = uint.Parse (GetSetting (kktForManualsPar));
+				operationForManuals = uint.Parse ("0" + GetSetting (operationForManualsPar));
 				}
 			catch
 				{
@@ -149,6 +171,42 @@ namespace RD_AAOW
 			}
 		private uint kktForErrors = 0;
 		private const string kktForErrorsPar = "KKTFE";
+
+		/// <summary>
+		/// Возвращает или задаёт номер выбранной ККТ на вкладке инструкций
+		/// </summary>
+		public uint KKTForManuals
+			{
+			get
+				{
+				return kktForManuals;
+				}
+			set
+				{
+				kktForManuals = value;
+				SetSetting (kktForManualsPar, kktForManuals.ToString ());
+				}
+			}
+		private uint kktForManuals = 0;
+		private const string kktForManualsPar = "KKTFM";
+
+		/// <summary>
+		/// Возвращает или задаёт номер выбранной операции на вкладке инструкций
+		/// </summary>
+		public uint OperationForManuals
+			{
+			get
+				{
+				return operationForManuals;
+				}
+			set
+				{
+				operationForManuals = value;
+				SetSetting (operationForManualsPar, operationForManuals.ToString ());
+				}
+			}
+		private uint operationForManuals = 0;
+		private const string operationForManualsPar = "OFM";
 
 		/// <summary>
 		/// Возвращает или задаёт номер ошибки на вкладке ошибок

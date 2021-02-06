@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.UserManualsPage">
+
+	<StackLayout>
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<Label x:Name="SelectionLabel" />
+				<Button x:Name="KKTButton" />
+
+				<Label x:Name="HelpLabel" />
+
+				<Label x:Name="OperationLabel01" />
+				<Label x:Name="OperationText01" />
+
+				<Label x:Name="OperationLabel02" />
+				<Label x:Name="OperationText02" />
+
+				<Label x:Name="OperationLabel03" />
+				<Label x:Name="OperationText03" />
+
+				<Label x:Name="OperationLabel04" />
+				<Label x:Name="OperationText04" />
+
+				<Label x:Name="OperationLabel05" />
+				<Label x:Name="OperationText05" />
+
+				<Label x:Name="OperationLabel06" />
+				<Label x:Name="OperationText06" />
+
+				<Label x:Name="OperationLabel07" />
+				<Label x:Name="OperationText07" />
+
+				<Label x:Name="OperationLabel08" />
+				<Label x:Name="OperationText08" />
+
+				<Label x:Name="Filler" />
+				
+			</StackLayout>
+		</ScrollView>
+		
+	</StackLayout>
+</ContentPage>

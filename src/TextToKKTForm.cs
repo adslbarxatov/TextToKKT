@@ -17,7 +17,8 @@ namespace RD_AAOW
 		private KKTErrorsList kkme = null;
 		private OFD ofd = null;
 		private LowLevel ll = null;
-		private ConfigAccessor ca = new ConfigAccessor ();
+		private UserManuals um = null;
+		private ConfigAccessor ca = null;
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -29,12 +30,14 @@ namespace RD_AAOW
 
 			// Инициализация
 			InitializeComponent ();
+			ca = new ConfigAccessor (this.Width, this.Height);
 
 			// Загрузка списка кодов и ошибок
 			kkmc = new KKTCodes ();
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
+			um = new UserManuals ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -90,6 +93,11 @@ namespace RD_AAOW
 			OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
 			KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
 			TextToConvert.Text = ca.CodesText;
+
+			KKTListForManuals.Items.AddRange (um.GetKKTList ().ToArray ());
+			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
+			OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes);
+			OperationsListForManuals.SelectedIndex = (int)ca.OperationForManuals;
 			}
 
 		// Завершение работы
@@ -414,6 +422,13 @@ namespace RD_AAOW
 				}
 			}
 
+		// Выбор модели аппарата
+		private void KKTListForManuals_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			UMOperationText.Text = um.GetManual ((uint)KKTListForManuals.SelectedIndex,
+				(uint)OperationsListForManuals.SelectedIndex);
+			}
+
 		// Сохранение настроек приложения
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
@@ -450,6 +465,9 @@ namespace RD_AAOW
 			ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;
 			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			ca.CodesText = TextToConvert.Text;
+
+			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
+			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
 			}
 		}
 	}

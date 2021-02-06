@@ -27,8 +27,8 @@ namespace RD_AAOW
 			fnLifeMasterBackColor = Color.FromHex ("#FFF0E0"),
 			fnLifeFieldBackColor = Color.FromHex ("#FFE0C0"),
 
-			snMasterBackColor = Color.FromHex ("#F4E8FF"),
-			snFieldBackColor = Color.FromHex ("#ECD8FF"),
+			//snMasterBackColor = Color.FromHex ("#F4E8FF"),
+			//snFieldBackColor = Color.FromHex ("#ECD8FF"),
 
 			headersMasterBackColor = Color.FromHex ("#E8E8E8"),
 			headersFieldBackColor = Color.FromHex ("#E0E0E0"),
@@ -39,8 +39,11 @@ namespace RD_AAOW
 			ofdMasterBackColor = Color.FromHex ("#F0F0FF"),
 			ofdFieldBackColor = Color.FromHex ("#C8C8FF"),
 
-			lowLevelMasterBackColor = Color.FromHex ("#FFFFFF"),
-			lowLevelFieldBackColor = Color.FromHex ("#C8C8C8"),
+			lowLevelMasterBackColor = Color.FromHex ("#FFF0FF"),
+			lowLevelFieldBackColor = Color.FromHex ("#FFC8FF"),
+
+			userManualsMasterBackColor = Color.FromHex ("#F4E8FF"),
+			userManualsFieldBackColor = Color.FromHex ("#ECD8FF"),
 
 			untoggledSwitchColor = Color.FromHex ("#505050"),
 			errorColor = Color.FromHex ("#FF0000"),
@@ -51,7 +54,7 @@ namespace RD_AAOW
 
 		#region Переменные страниц
 		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
-			ofdPage, fnLifePage, rnmPage, lowLevelPage;
+			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage;
 
 		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
 			errorsResultText,
@@ -59,9 +62,10 @@ namespace RD_AAOW
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
 			lowLevelCommandDescr;
+		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Button codesKKTButton, fnLifeResult,
-			errorsKKTButton, errorsCodeButton,
+			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			lowLevelCommand, lowLevelCommandCode;
 
@@ -79,7 +83,7 @@ namespace RD_AAOW
 
 		#endregion
 
-		private ConfigAccessor ca = new ConfigAccessor ();
+		private ConfigAccessor ca = new ConfigAccessor (0, 0);
 
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
@@ -116,6 +120,8 @@ namespace RD_AAOW
 			headersPage = ApplyPageSettings ("HeadersPage", "Функции приложения",
 				headersMasterBackColor, headerNumber++);
 
+			userManualsPage = ApplyPageSettings ("UserManualsPage", "Инструкции по работе с ККТ",
+				userManualsMasterBackColor, headerNumber++);
 			errorsPage = ApplyPageSettings ("ErrorsPage", "Расшифровать код ошибки ККТ",
 				errorsMasterBackColor, headerNumber++);
 			fnLifePage = ApplyPageSettings ("FNLifePage", "Определить срок жизни ФН",
@@ -140,6 +146,28 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", true);
 
 			((CarouselPage)MainPage).CurrentPage = ((CarouselPage)MainPage).Children[(int)ca.CurrentTab];
+			#endregion
+
+			#region Страница инструкций
+
+			AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "SelectionLabel", "Модель ККТ:", true);
+
+			for (int i = 0; i < UserManuals.OperationTypes.Length; i++)
+				{
+				AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "OperationLabel" + (i + 1).ToString ("D2"),
+					UserManuals.OperationTypes[i], true);
+				operationTextLabels.Add (AndroidSupport.ApplyResultLabelSettings (userManualsPage,
+					"OperationText" + (i + 1).ToString ("D2"), "   ", userManualsFieldBackColor));
+				operationTextLabels[operationTextLabels.Count - 1].HorizontalTextAlignment = TextAlignment.Start;
+				}
+
+			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "KKTButton",
+				"   ", userManualsFieldBackColor, UserManualsKKTButton_Clicked);
+			AndroidSupport.ApplyTipLabelSettings (userManualsPage, "HelpLabel",
+				"<...> – индикация на экране, [...] – клавиши ККТ", untoggledSwitchColor);
+
+			UserManualsKKTButton_Clicked (null, null);
+
 			#endregion
 
 			#region Страница кодов
@@ -1247,43 +1275,59 @@ namespace RD_AAOW
 			}
 
 		// Страница обновлений
-		private void UpdateButton_Clicked (object sender, EventArgs e)
+		private async void UpdateButton_Clicked (object sender, EventArgs e)
 			{
 			try
 				{
 				Launcher.OpenAsync (AndroidSupport.MasterGitLink + "FNReader");
 				}
-			catch { }
+			catch
+				{
+				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Веб-браузер отсутствует на этом устройстве", "OK");
+				}
 			}
 
 		// Страница проекта
-		private void AppButton_Clicked (object sender, EventArgs e)
+		private async void AppButton_Clicked (object sender, EventArgs e)
 			{
 			try
 				{
 				Launcher.OpenAsync (AndroidSupport.MasterGitLink + "TextToKKT");
 				}
-			catch { }
+			catch
+				{
+				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Веб-браузер отсутствует на этом устройстве", "OK");
+				}
 			}
 
 		// Страница политики и EULA
-		private void ADPButton_Clicked (object sender, EventArgs e)
+		private async void ADPButton_Clicked (object sender, EventArgs e)
 			{
 			try
 				{
 				Launcher.OpenAsync (AndroidSupport.ADPLink);
 				}
-			catch { }
+			catch
+				{
+				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Веб-браузер отсутствует на этом устройстве", "OK");
+				}
 			}
 
 		// Страница лаборатории
-		private void CommunityButton_Clicked (object sender, EventArgs e)
+		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
 			try
 				{
 				Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
 				}
-			catch { }
+			catch
+				{
+				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Веб-браузер отсутствует на этом устройстве", "OK");
+				}
 			}
 
 		// Страница политики и EULA
@@ -1302,7 +1346,7 @@ namespace RD_AAOW
 			catch
 				{
 				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Электронная почта недоступна на этом устройстве", "ОК");
+					"Почтовый агент отсутствует на этом устройстве", "ОК");
 				}
 			}
 
@@ -1331,6 +1375,32 @@ namespace RD_AAOW
 				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text);
 			else
 				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10));
+			}
+
+		// Выбор модели ККТ
+		private readonly UserManuals um = new UserManuals ();
+		private async void UserManualsKKTButton_Clicked (object sender, EventArgs e)
+			{
+			int idx = (int)ca.KKTForManuals;
+			string res = um.GetKKTList ()[idx];
+
+			if (sender != null)
+				{
+				// Запрос модели ККТ
+				res = await userManualsPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
+					um.GetKKTList ().ToArray ());
+
+				// Установка модели
+				idx = um.GetKKTList ().IndexOf (res);
+				if (idx < 0)
+					return;
+				}
+
+			userManualsKKTButton.Text = res;
+			ca.KKTForManuals = (uint)idx;
+
+			for (int i = 0; i < operationTextLabels.Count; i++)
+				operationTextLabels[i].Text = um.GetManual ((uint)idx, (uint)i);
 			}
 
 		/// <summary>
