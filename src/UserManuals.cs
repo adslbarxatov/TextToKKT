@@ -19,18 +19,22 @@ namespace RD_AAOW
 			new List<string> (),
 			new List<string> (),
 			new List<string> (),
+			new List<string> (),
+			new List<string> (),
 			new List<string> () };
 
 		/// <summary>
 		/// Возвращает список операций, для которых доступны инструкции
 		/// </summary>
-		public static string[] OperationTypes
+		public string[] OperationTypes
 			{
 			get
 				{
-				return operationTypes;
+				return availableOperations.ToArray ();
 				}
 			}
+		private List<string> availableOperations = new List<string> ();
+
 		private static string[] operationTypes = new string[] {
 			"Открытие смены",
 			"Продажа по коду товара",
@@ -40,12 +44,21 @@ namespace RD_AAOW
 			"Продажа с электронным чеком",
 			"Возврат",
 			"Закрытие смены" };
+		private static string[] operationTypesExt = new string[] {
+			"Коррекция даты",
+			"Коррекция времени" };
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
-		public UserManuals ()
+		/// <param name="AllowExtended">Флаг разрешает отображение расширенных инструкций</param>
+		public UserManuals (bool AllowExtended)
 			{
+			// Формирование списка
+			availableOperations.AddRange (operationTypes);
+			if (AllowExtended)
+				availableOperations.AddRange (operationTypesExt);
+
 			// Получение файлов
 #if !ANDROID
 			byte[] s1 = Properties.TextToKKMResources.UserManuals;
@@ -66,6 +79,8 @@ namespace RD_AAOW
 						continue;
 
 					names.Add (str);
+
+					// Загрузка файла целиком (требует структура)
 					for (int i = 0; i < operations.Count; i++)
 						{
 						operations[i].Add ("• " + SR.ReadLine ().Replace ("|", "\r\n• "));
@@ -75,7 +90,7 @@ namespace RD_AAOW
 								"Повторить предыдущие действия для всех позиций чека");
 						if (i == 3)
 							{
-							if (operations[i][operations[i].Count - 1] == "• ")
+							if (operations[i][operations[i].Count - 1] == "• -")
 								operations[i][operations[i].Count - 1] = "(не предусмотрена)";
 							else
 								operations[i][operations[i].Count - 1] +=
@@ -86,6 +101,10 @@ namespace RD_AAOW
 								";\r\n• Дальнейшие действия совпадают с действиями при продаже";
 						if (i == 7)
 							operations[i][operations[i].Count - 1] += ";\r\n• Дождаться снятия отчёта";
+						if ((i == 8) || (i == 9))
+							operations[i][operations[i].Count - 1] =
+								"• Настоятельно рекомендуется предварительно закрыть смену;\r\n" +
+								operations[i][operations[i].Count - 1];
 						}
 					}
 				}
@@ -106,78 +125,6 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Возвращает инструкцию по открытию смены
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetOpening (uint KKTType)
-			{
-			return GetManual (KKTType, 0);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по продаже по коду товара
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetOperationWithCode (uint KKTType)
-			{
-			return GetManual (KKTType, 1);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по продаже с безналичным расчётом
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetOperationWithCard (uint KKTType)
-			{
-			return GetManual (KKTType, 2);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по продаже по свободной цене
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetOperationWithFreePrice (uint KKTType)
-			{
-			return GetManual (KKTType, 3);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по продаже с количеством
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetOperationWithQuantity (uint KKTType)
-			{
-			return GetManual (KKTType, 4);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по продаже с электронным чеком
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetOperationWithContact (uint KKTType)
-			{
-			return GetManual (KKTType, 5);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по оформлению возврата
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetReturn (uint KKTType)
-			{
-			return GetManual (KKTType, 6);
-			}
-
-		/// <summary>
-		/// Возвращает инструкцию по закрытию смены
-		/// </summary>
-		/// <param name="KKTType">Тип ККТ из списка</param>
-		public string GetClosing (uint KKTType)
-			{
-			return GetManual (KKTType, 7);
-			}
-
-		/// <summary>
 		/// Возвращает инструкцию по указанному типу операции
 		/// </summary>
 		/// <param name="KKTType">Тип ККТ</param>
@@ -187,7 +134,7 @@ namespace RD_AAOW
 			if (KKTType >= names.Count)
 				return "";
 
-			if (ManualType < operations.Count)
+			if (ManualType < availableOperations.Count)
 				return operations[(int)ManualType][(int)KKTType];
 
 			return names[(int)KKTType];

@@ -61,16 +61,16 @@ namespace RD_AAOW
 			aboutLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
-			lowLevelCommandDescr;
+			lowLevelCommandDescr, unlockLabel;
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
-			lowLevelCommand, lowLevelCommandCode;
+			lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText,
-			ofdINN,
+			ofdINN, unlockField,
 			fnLifeSerial,
 			rnmKKTSN, rnmINN, rnmRNM;
 
@@ -83,7 +83,7 @@ namespace RD_AAOW
 
 		#endregion
 
-		private ConfigAccessor ca = new ConfigAccessor (0, 0);
+		private ConfigAccessor ca;
 
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
@@ -111,6 +111,8 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
+			ca = new ConfigAccessor (0, 0);
+			um = new UserManuals (ca.AllowExtendedFunctions);
 
 			#region Общая конструкция страниц приложения
 
@@ -130,35 +132,47 @@ namespace RD_AAOW
 				rnmMasterBackColor, headerNumber++);
 			ofdPage = ApplyPageSettings ("OFDPage", "Запросить параметры ОФД",
 				ofdMasterBackColor, headerNumber++);
+
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, headerNumber++);
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
+			lowLevelPage.IsEnabled = codesPage.IsEnabled = ca.AllowExtendedFunctions;
+
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
 
 			#endregion
 
 			#region Страница «оглавления»
+
 			keepAppState = (Switch)headersPage.FindByName ("KeepAppState");
 			keepAppState.IsToggled = ca.KeepApplicationState;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", true);
 
-			((CarouselPage)MainPage).CurrentPage = ((CarouselPage)MainPage).Children[(int)ca.CurrentTab];
+			try
+				{
+				((CarouselPage)MainPage).CurrentPage = ((CarouselPage)MainPage).Children[(int)ca.CurrentTab];
+				}
+			catch { }
+
 			#endregion
 
 			#region Страница инструкций
 
 			AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "SelectionLabel", "Модель ККТ:", true);
 
-			for (int i = 0; i < UserManuals.OperationTypes.Length; i++)
+			for (int i = 0; i < um.OperationTypes.Length; i++)
 				{
-				AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "OperationLabel" + (i + 1).ToString ("D2"),
-					UserManuals.OperationTypes[i], true);
+				Label l = AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "OperationLabel" + (i + 1).ToString ("D2"),
+					um.OperationTypes[i], true);
+				l.IsVisible = true;
+
 				operationTextLabels.Add (AndroidSupport.ApplyResultLabelSettings (userManualsPage,
 					"OperationText" + (i + 1).ToString ("D2"), "   ", userManualsFieldBackColor));
 				operationTextLabels[operationTextLabels.Count - 1].HorizontalTextAlignment = TextAlignment.Start;
+				operationTextLabels[operationTextLabels.Count - 1].IsVisible = true;
 				}
 
 			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "KKTButton",
@@ -171,6 +185,9 @@ namespace RD_AAOW
 			#endregion
 
 			#region Страница кодов
+
+			if (!ca.AllowExtendedFunctions)
+				codesFieldBackColor = codesMasterBackColor = Color.FromRgb (128, 128, 128);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
 
@@ -256,6 +273,16 @@ namespace RD_AAOW
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
+
+			if (!ca.AllowExtendedFunctions)
+				{
+				unlockLabel = AndroidSupport.ApplyLabelSettingsForKKT (aboutPage, "UnlockLabel",
+					ConfigAccessor.LockMessage, false);
+				unlockLabel.IsVisible = true;
+				unlockField = AndroidSupport.ApplyEditorSettings (aboutPage, "UnlockField", aboutFieldBackColor,
+					Keyboard.Default, 32, "", UnlockMethod);
+				unlockField.IsVisible = true;
+				}
 
 			#endregion
 
@@ -369,17 +396,25 @@ namespace RD_AAOW
 				ca.UserINN, RNM_TextChanged);
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNCheckLabel", "", false);
 
-			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
-				"Регистрационный номер для проверки или произвольное число для генерации¹:", true);
+			if (ca.AllowExtendedFunctions)
+				AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
+					"Регистрационный номер для проверки или произвольное число для генерации¹:", true);
+			else
+				AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
+					"Регистрационный номер для проверки:", true);
+
 			rnmRNM = AndroidSupport.ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16,
 				ca.RNMKKT, RNM_TextChanged);
 			rnmRNMCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMCheckLabel", "", false);
 
-			AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать", rnmFieldBackColor, RNMGenerate_Clicked);
+			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать",
+				rnmFieldBackColor, RNMGenerate_Clicked);
+			rnmGenerate.IsVisible = ca.AllowExtendedFunctions;
 
-			AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
-				"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
-				untoggledSwitchColor);
+			if (ca.AllowExtendedFunctions)
+				AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
+					"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
+					untoggledSwitchColor);
 
 			RNM_TextChanged (null, null);   // Применение значений
 
@@ -423,6 +458,9 @@ namespace RD_AAOW
 
 			#region Страница команд нижнего уровня
 
+			if (!ca.AllowExtendedFunctions)
+				lowLevelFieldBackColor = lowLevelMasterBackColor = Color.FromRgb (128, 128, 128);
+
 			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
 			lowLevelSHTRIH.IsToggled = !ca.LowLevelCommandsATOL;
 			lowLevelSHTRIH.Toggled += LowLevelSHTRIH_Toggled;
@@ -432,21 +470,18 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "AtolLabel", "АТОЛ", false);
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ShtrihLabel", "ШТРИХ", false);
 
-			//
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandLabel", "Команда:", true);
 			lowLevelCommand = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandButton",
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommandsList ()[(int)ca.LowLevelCode] :
 				ll.GetSHTRIHCommandsList ()[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
 
-			//
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandCodeLabel", "Код команды:", true);
 			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, false) :
 				ll.GetSHTRIHCommand (ca.LowLevelCode, false),
 				lowLevelFieldBackColor, Field_Clicked);
 
-			//
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandDescrLabel", "Описание:", true);
 
 			lowLevelCommandDescr = AndroidSupport.ApplyResultLabelSettings (lowLevelPage, "CommandDescr",
@@ -454,7 +489,6 @@ namespace RD_AAOW
 				ll.GetSHTRIHCommand (ca.LowLevelCode, true), lowLevelFieldBackColor);
 			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
 
-			//
 			AndroidSupport.ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
 
@@ -1378,7 +1412,7 @@ namespace RD_AAOW
 			}
 
 		// Выбор модели ККТ
-		private readonly UserManuals um = new UserManuals ();
+		private readonly UserManuals um;
 		private async void UserManualsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			int idx = (int)ca.KKTForManuals;
@@ -1401,6 +1435,17 @@ namespace RD_AAOW
 
 			for (int i = 0; i < operationTextLabels.Count; i++)
 				operationTextLabels[i].Text = um.GetManual ((uint)idx, (uint)i);
+			}
+
+		// Разблокировка расширенного функционала
+		private void UnlockMethod (object sender, TextChangedEventArgs e)
+			{
+			if (ca.TestPass (unlockField.Text))
+				{
+				unlockField.IsEnabled = false;
+				unlockLabel.Text = ConfigAccessor.UnlockMessage;
+				unlockLabel.HorizontalTextAlignment = TextAlignment.Center;
+				}
 			}
 
 		/// <summary>
@@ -1441,23 +1486,5 @@ namespace RD_AAOW
 			ca.CodesText = codesSourceText.Text;
 #endif
 			}
-
-		#region Переопределения событий исполнения приложения
-#if false
-		/// <summary>
-		/// Обработчик события запуска приложения
-		/// </summary>
-		protected override void OnStart ()
-			{
-			}
-
-		/// <summary>
-		/// Обработчик события выхода из ждущего режима
-		/// </summary>
-		protected override void OnResume ()
-			{
-			}
-#endif
-		#endregion
 		}
 	}

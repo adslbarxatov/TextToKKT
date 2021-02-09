@@ -305,20 +305,23 @@ namespace RD_AAOW
 								return "Элвес-МФ";
 
 							if (TEST_SN_D (9, 3))
-								return "Штрих-СмартПОС-Ф";
+								return "Штрих-СМАРТПОС-Ф v 1";
 							}
 
 						if (TEST_SN_D (8, 4))
 							{
 							if (TEST_SN_D (9, 0))
 								return "Элвес-МФ (ФР)";
+
+							if (TEST_SN_D (9, 3))
+								return "Штрих-СМАРТПОС-Ф v 2";
 							}
 						}
 
 					break;
 				}
 
-			return "???";
+			return "неизвестная модель ККТ";
 			}
 
 		private static string kktSerialNumber;

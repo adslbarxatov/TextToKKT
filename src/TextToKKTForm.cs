@@ -25,9 +25,6 @@ namespace RD_AAOW
 		/// </summary>
 		public TextToKKTForm ()
 			{
-			// Функция, используемая для добавления новых моделей
-			//TablesInterpreter.Interpretate ();
-
 			// Инициализация
 			InitializeComponent ();
 			ca = new ConfigAccessor (this.Width, this.Height);
@@ -37,7 +34,7 @@ namespace RD_AAOW
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
-			um = new UserManuals ();
+			um = new UserManuals (ca.AllowExtendedFunctions);
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -96,8 +93,19 @@ namespace RD_AAOW
 
 			KKTListForManuals.Items.AddRange (um.GetKKTList ().ToArray ());
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
-			OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes);
+			OperationsListForManuals.Items.AddRange (um.OperationTypes);
 			OperationsListForManuals.SelectedIndex = (int)ca.OperationForManuals;
+
+			// Блокировка расширенных функций при необходимости
+			RNMGenerate.Visible = RNMTip.Visible = LowLevelTab.Enabled =
+				CodesTab.Enabled = ca.AllowExtendedFunctions;
+			if (!ca.AllowExtendedFunctions)
+				{
+				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
+
+				UnlockField.Visible = UnlockLabel.Visible = true;
+				UnlockLabel.Text = ConfigAccessor.LockMessage;
+				}
 			}
 
 		// Завершение работы
@@ -468,6 +476,17 @@ namespace RD_AAOW
 
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
+			}
+
+		// Разблокировка функционала
+		private void UnlockField_TextChanged (object sender, EventArgs e)
+			{
+			if (ca.TestPass (UnlockField.Text))
+				{
+				UnlockField.Enabled = false;
+				UnlockLabel.Text = ConfigAccessor.UnlockMessage;
+				UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
+				}
 			}
 		}
 	}

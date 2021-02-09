@@ -3,54 +3,58 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.OFDPage">
 
-	<ScrollView>
-		<StackLayout>
-			<Label x:Name="HeaderLabel" />
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
 
-			<StackLayout Orientation="Horizontal">
-				<Label x:Name="OFDINNLabel" VerticalOptions="Center" />
-				<Editor x:Name="OFDINN" />
-				<Button x:Name="OFDINNCopy" />
+		<ScrollView>
+			<StackLayout>
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="OFDINNLabel" VerticalOptions="Center" />
+					<Editor x:Name="OFDINN" />
+					<Button x:Name="OFDINNCopy" />
+				</StackLayout>
+
+				<Label x:Name="OFDNameLabel" />
+				<Button x:Name="OFDName" />
+
+				<FlexLayout Direction="Row" Wrap="Wrap" >
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Label x:Name="OFDDNSNameLabel" VerticalOptions="Center" />
+						<Button x:Name="OFDDNSName" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Label x:Name="OFDIPLabel" VerticalOptions="Center" />
+						<Button x:Name="OFDIP" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Label x:Name="OFDPortLabel" VerticalOptions="Center" />
+						<Button x:Name="OFDPort" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Label x:Name="OFDEmailLabel" VerticalOptions="Center" />
+						<Button x:Name="OFDEmail" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
+						<Button x:Name="OFDSite" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Label x:Name="OFDNalogSiteLabel" VerticalOptions="Center" />
+						<Button x:Name="OFDNalogSite" />
+					</StackLayout>
+				</FlexLayout>
+
+				<Label x:Name="OFDHelpLabel" />
+
+				<Label x:Name="Filler" />
+
 			</StackLayout>
+		</ScrollView>
 
-			<Label x:Name="OFDNameLabel" />
-			<Button x:Name="OFDName" />
-
-			<FlexLayout Direction="Row" Wrap="Wrap" >
-				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Label x:Name="OFDDNSNameLabel" VerticalOptions="Center" />
-					<Button x:Name="OFDDNSName" />
-				</StackLayout>
-
-				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Label x:Name="OFDIPLabel" VerticalOptions="Center" />
-					<Button x:Name="OFDIP" />
-				</StackLayout>
-
-				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Label x:Name="OFDPortLabel" VerticalOptions="Center" />
-					<Button x:Name="OFDPort" />
-				</StackLayout>
-
-				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Label x:Name="OFDEmailLabel" VerticalOptions="Center" />
-					<Button x:Name="OFDEmail" />
-				</StackLayout>
-
-				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
-					<Button x:Name="OFDSite" />
-				</StackLayout>
-
-				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Label x:Name="OFDNalogSiteLabel" VerticalOptions="Center" />
-					<Button x:Name="OFDNalogSite" />
-				</StackLayout>
-			</FlexLayout>
-
-			<Label x:Name="OFDHelpLabel" />
-
-			<Label x:Name="Filler" />
-		</StackLayout>
-	</ScrollView>
+	</StackLayout>
 </ContentPage>

@@ -3,29 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.LowLevelPage">
 
-	<ScrollView>
-		<StackLayout>
-			<Label x:Name="HeaderLabel" />
+	<StackLayout>
+		<Label x:Name="HeaderLabel" />
 
-			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-				<Label x:Name="AtolLabel" />
-				<Switch x:Name="SHTRIHSwitch" />
-				<Label x:Name="ShtrihLabel" />
+		<ScrollView>
+			<StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="AtolLabel" />
+					<Switch x:Name="SHTRIHSwitch" />
+					<Label x:Name="ShtrihLabel" />
+				</StackLayout>
+
+				<Label x:Name="CommandLabel" />
+				<Button x:Name="CommandButton" />
+
+				<Label x:Name="CommandCodeLabel" />
+				<Button x:Name="CommandCodeButton" />
+
+				<Label x:Name="LowLevelHelpLabel" />
+
+				<Label x:Name="CommandDescrLabel" />
+				<Label x:Name="CommandDescr" />
+
+				<Label x:Name="Filler" />
+
 			</StackLayout>
+		</ScrollView>
 
-			<Label x:Name="CommandLabel" />
-			<Button x:Name="CommandButton" />
-
-			<Label x:Name="CommandCodeLabel" />
-			<Button x:Name="CommandCodeButton" />
-
-			<Label x:Name="LowLevelHelpLabel" />
-
-			<Label x:Name="CommandDescrLabel" />
-			<Label x:Name="CommandDescr" />
-
-			<Label x:Name="Filler" />
-		</StackLayout>
-	</ScrollView>
+	</StackLayout>
 </ContentPage>
     
