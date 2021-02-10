@@ -112,7 +112,7 @@ namespace RD_AAOW
 			// Инициализация
 			InitializeComponent ();
 			ca = new ConfigAccessor (0, 0);
-			um = new UserManuals (ca.AllowExtendedFunctions);
+			um = new UserManuals (ca.ExtendedFunctions);
 
 			#region Общая конструкция страниц приложения
 
@@ -137,7 +137,7 @@ namespace RD_AAOW
 				lowLevelMasterBackColor, headerNumber++);
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
-			lowLevelPage.IsEnabled = codesPage.IsEnabled = ca.AllowExtendedFunctions;
+			lowLevelPage.IsEnabled = codesPage.IsEnabled = ca.AllowExtendedFunctionsL1;
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
@@ -186,7 +186,7 @@ namespace RD_AAOW
 
 			#region Страница кодов
 
-			if (!ca.AllowExtendedFunctions)
+			if (!ca.AllowExtendedFunctionsL1)
 				codesFieldBackColor = codesMasterBackColor = Color.FromRgb (128, 128, 128);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
@@ -274,7 +274,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
 
-			if (!ca.AllowExtendedFunctions)
+			if (!ca.AllowExtendedFunctionsL2)
 				{
 				unlockLabel = AndroidSupport.ApplyLabelSettingsForKKT (aboutPage, "UnlockLabel",
 					ConfigAccessor.LockMessage, false);
@@ -396,7 +396,7 @@ namespace RD_AAOW
 				ca.UserINN, RNM_TextChanged);
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNCheckLabel", "", false);
 
-			if (ca.AllowExtendedFunctions)
+			if (ca.AllowExtendedFunctionsL1)
 				AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
 					"Регистрационный номер для проверки или произвольное число для генерации¹:", true);
 			else
@@ -409,9 +409,9 @@ namespace RD_AAOW
 
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать",
 				rnmFieldBackColor, RNMGenerate_Clicked);
-			rnmGenerate.IsVisible = ca.AllowExtendedFunctions;
+			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsL1;
 
-			if (ca.AllowExtendedFunctions)
+			if (ca.AllowExtendedFunctionsL1)
 				AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
 					"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
 					untoggledSwitchColor);
@@ -458,7 +458,7 @@ namespace RD_AAOW
 
 			#region Страница команд нижнего уровня
 
-			if (!ca.AllowExtendedFunctions)
+			if (!ca.AllowExtendedFunctionsL1)
 				lowLevelFieldBackColor = lowLevelMasterBackColor = Color.FromRgb (128, 128, 128);
 
 			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");

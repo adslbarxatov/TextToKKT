@@ -34,7 +34,7 @@ namespace RD_AAOW
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
-			um = new UserManuals (ca.AllowExtendedFunctions);
+			um = new UserManuals (ca.ExtendedFunctions);
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -98,11 +98,13 @@ namespace RD_AAOW
 
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = RNMTip.Visible = LowLevelTab.Enabled =
-				CodesTab.Enabled = ca.AllowExtendedFunctions;
-			if (!ca.AllowExtendedFunctions)
-				{
+				CodesTab.Enabled = ca.AllowExtendedFunctionsL1;
+
+			if (!ca.AllowExtendedFunctionsL1)
 				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
 
+			if (!ca.AllowExtendedFunctionsL2)
+				{
 				UnlockField.Visible = UnlockLabel.Visible = true;
 				UnlockLabel.Text = ConfigAccessor.LockMessage;
 				}

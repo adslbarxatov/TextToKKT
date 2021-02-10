@@ -20,6 +20,11 @@ namespace RD_AAOW
 			new List<string> (),
 			new List<string> (),
 			new List<string> (),
+
+			new List<string> (),
+			new List<string> (),
+
+			new List<string> (),
 			new List<string> (),
 			new List<string> () };
 
@@ -35,7 +40,7 @@ namespace RD_AAOW
 			}
 		private List<string> availableOperations = new List<string> ();
 
-		private static string[] operationTypes = new string[] {
+		private static string[] operationTypes1 = new string[] {
 			"Открытие смены",
 			"Продажа по коду товара",
 			"Продажа по карте",
@@ -44,20 +49,26 @@ namespace RD_AAOW
 			"Продажа с электронным чеком",
 			"Возврат",
 			"Закрытие смены" };
-		private static string[] operationTypesExt = new string[] {
+		private static string[] operationTypes2 = new string[] {
 			"Коррекция даты",
 			"Коррекция времени" };
+		private static string[] operationTypes3 = new string[] {
+			"Автотестирование / информация о ККТ",
+			"Запрос состояния ФН",
+			"Запрос реквизитов регистраций" };
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
-		/// <param name="AllowExtended">Флаг разрешает отображение расширенных инструкций</param>
-		public UserManuals (bool AllowExtended)
+		/// <param name="AllowExtended">Битовое поле разрешает отображение расширенных инструкций</param>
+		public UserManuals (byte AllowExtended)
 			{
 			// Формирование списка
-			availableOperations.AddRange (operationTypes);
-			if (AllowExtended)
-				availableOperations.AddRange (operationTypesExt);
+			availableOperations.AddRange (operationTypes1);
+			if ((AllowExtended & 0x1) != 0)
+				availableOperations.AddRange (operationTypes2);
+			if ((AllowExtended & 0x2) != 0)
+				availableOperations.AddRange (operationTypes3);
 
 			// Получение файлов
 #if !ANDROID
@@ -105,6 +116,10 @@ namespace RD_AAOW
 							operations[i][operations[i].Count - 1] =
 								"• Настоятельно рекомендуется предварительно закрыть смену;\r\n" +
 								operations[i][operations[i].Count - 1];
+
+						if (operations[i][operations[i].Count - 1].Contains ("#"))
+							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("#", "") +
+								"\r\n\r\n* Порядок действий может отличаться в разных версиях прошивок";
 						}
 					}
 				}
