@@ -44,6 +44,15 @@
 				<Label x:Name="OperationLabel10" IsVisible="false" />
 				<Label x:Name="OperationText10" IsVisible="false" />
 
+				<Label x:Name="OperationLabel11" IsVisible="false" />
+				<Label x:Name="OperationText11" IsVisible="false" />
+
+				<Label x:Name="OperationLabel12" IsVisible="false" />
+				<Label x:Name="OperationText12" IsVisible="false" />
+
+				<Label x:Name="OperationLabel13" IsVisible="false" />
+				<Label x:Name="OperationText13" IsVisible="false" />
+				
 				<Label x:Name="Filler" />
 				
 			</StackLayout>
