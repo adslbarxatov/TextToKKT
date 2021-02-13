@@ -58,6 +58,7 @@ namespace RD_AAOW
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 
 			OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
+			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsL2;
 			KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
 			ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
 

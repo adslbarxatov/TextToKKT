@@ -187,7 +187,10 @@ namespace RD_AAOW
 			#region Страница кодов
 
 			if (!ca.AllowExtendedFunctionsL1)
+				{
 				codesFieldBackColor = codesMasterBackColor = Color.FromRgb (128, 128, 128);
+				codesPage.BackgroundColor = Color.FromRgb (192, 192, 192);
+				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
 
@@ -229,8 +232,16 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "SelectionLabel", "Модель ККТ:", true);
 
 			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
-			onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
-			onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
+			if (ca.AllowExtendedFunctionsL2)
+				{
+				onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
+				onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
+				}
+			else
+				{
+				onlyNewErrors.IsToggled = true;
+				onlyNewErrors.IsEnabled = false;
+				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "OnlyNewErrorsLabel", "Только новые", false);
 
@@ -261,6 +272,7 @@ namespace RD_AAOW
 				ProgramDescription.AssemblyVersion +
 				"; " + ProgramDescription.AssemblyLastUpdate);
 			aboutLabel.FontAttributes = FontAttributes.Bold;
+			aboutLabel.HorizontalTextAlignment = TextAlignment.Center;
 
 			AndroidSupport.ApplyButtonSettings (aboutPage, "AppPage", "Страница проекта",
 				aboutFieldBackColor, AppButton_Clicked);
@@ -359,25 +371,12 @@ namespace RD_AAOW
 
 			//
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetDate", "Дата фискализации:", false);
-
-			/*fnLifeStartDate = (DatePicker)fnLifePage.FindByName ("FNLifeStartDate");
-
-			fnLifeStartDate.BackgroundColor = fnLifeFieldBackColor;
-			fnLifeStartDate.FontSize = masterFontSize;
-			fnLifeStartDate.Format = "dd.MM.yyyy";
-			fnLifeStartDate.MaximumDate = new DateTime (2025, 1, 1);
-			fnLifeStartDate.MinimumDate = new DateTime (2015, 1, 1);
-			fnLifeStartDate.TextColor = masterHeaderColor;
-			fnLifeStartDate.Margin = margin;
-
-			fnLifeStartDate.Date = DateTime.Now;
-			fnLifeStartDate.DateSelected += FnLifeStartDate_DateSelected;*/
 			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate", fnLifeFieldBackColor,
 				FnLifeStartDate_DateSelected);
 
 			//
-			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "",
-				fnLifeFieldBackColor, FNLifeResultCopy);
+			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor,
+				FNLifeResultCopy, false);
 
 			// Применение всех названий
 			FNLifeSerial_TextChanged (null, null);
@@ -459,7 +458,10 @@ namespace RD_AAOW
 			#region Страница команд нижнего уровня
 
 			if (!ca.AllowExtendedFunctionsL1)
+				{
 				lowLevelFieldBackColor = lowLevelMasterBackColor = Color.FromRgb (128, 128, 128);
+				lowLevelPage.BackgroundColor = Color.FromRgb (192, 192, 192);
+				}
 
 			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
 			lowLevelSHTRIH.IsToggled = !ca.LowLevelCommandsATOL;
