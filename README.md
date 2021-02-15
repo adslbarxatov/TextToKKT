@@ -30,7 +30,7 @@
 - Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/tag/v4.2.3r) для Android 4.x
 или устройств без Play market и на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
 для последней потребуется ОС Android 5.0 или новее. Язык интерфейса: ru_ru;
-- Подтверждена развёртка Android-версии на платформе AppGallery; она доступна для загрузки в магазине приложений
+- Android-версия доступна также на платформе AppGallery
 
 &nbsp;
 
