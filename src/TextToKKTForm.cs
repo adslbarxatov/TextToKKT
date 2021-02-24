@@ -58,7 +58,7 @@ namespace RD_AAOW
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 
 			OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
-			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsL2;
+			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsLevel2;
 			KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
 			ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
 
@@ -89,25 +89,33 @@ namespace RD_AAOW
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
 			OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
+			OnlyNewCodes.Enabled = ca.AllowExtendedFunctionsLevel2;
 			KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
 			TextToConvert.Text = ca.CodesText;
 
 			KKTListForManuals.Items.AddRange (um.GetKKTList ().ToArray ());
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
 			OperationsListForManuals.Items.AddRange (um.OperationTypes);
-			OperationsListForManuals.SelectedIndex = (int)ca.OperationForManuals;
+			try
+				{
+				OperationsListForManuals.SelectedIndex = (int)ca.OperationForManuals;
+				}
+			catch
+				{
+				OperationsListForManuals.SelectedIndex = 0;
+				}
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = RNMTip.Visible = LowLevelTab.Enabled =
-				CodesTab.Enabled = ca.AllowExtendedFunctionsL1;
+			RNMGenerate.Visible = RNMTip.Visible = LowLevelTab.Enabled = ca.AllowExtendedFunctionsLevel2;
+			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
-			if (!ca.AllowExtendedFunctionsL1)
+			if (!ca.AllowExtendedFunctionsLevel2)
 				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
 
-			if (!ca.AllowExtendedFunctionsL2)
+			if (!ca.AllowExtendedFunctionsLevel2)
 				{
 				UnlockField.Visible = UnlockLabel.Visible = true;
-				UnlockLabel.Text = ConfigAccessor.LockMessage;
+				UnlockLabel.Text = ca.LockMessage;
 				}
 			}
 

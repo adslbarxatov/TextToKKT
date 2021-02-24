@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--package="texttokkt.huawei" package="com.RD_AAOW.TextToKKT"-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionName="4.2.3" android:versionCode="600405">
+	android:installLocation="internalOnly" android:versionName="4.3" android:versionCode="600407">
 
-	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="29" />
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="29" />
 
 	<application android:label="Text to KKT" android:icon="@mipmap/icon"></application>
 </manifest>

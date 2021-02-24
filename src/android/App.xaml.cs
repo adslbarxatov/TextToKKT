@@ -135,9 +135,11 @@ namespace RD_AAOW
 
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, headerNumber++);
+			lowLevelPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
+
 			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
 				codesMasterBackColor, headerNumber++);
-			lowLevelPage.IsEnabled = codesPage.IsEnabled = ca.AllowExtendedFunctionsL1;
+			codesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
@@ -186,7 +188,7 @@ namespace RD_AAOW
 
 			#region Страница кодов
 
-			if (!ca.AllowExtendedFunctionsL1)
+			if (!ca.AllowExtendedFunctionsLevel1)
 				{
 				codesFieldBackColor = codesMasterBackColor = Color.FromRgb (128, 128, 128);
 				codesPage.BackgroundColor = Color.FromRgb (192, 192, 192);
@@ -195,8 +197,16 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
 
 			onlyNewCodes = (Switch)codesPage.FindByName ("OnlyNewCodes");
-			onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
-			onlyNewCodes.Toggled += OnlyNewCodes_Toggled;
+			if (ca.AllowExtendedFunctionsLevel2)
+				{
+				onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
+				onlyNewCodes.Toggled += OnlyNewCodes_Toggled;
+				}
+			else
+				{
+				onlyNewCodes.IsToggled = true;
+				onlyNewCodes.IsEnabled = false;
+				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "OnlyNewCodesLabel", "Только новые", false);
 
@@ -232,7 +242,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "SelectionLabel", "Модель ККТ:", true);
 
 			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
-			if (ca.AllowExtendedFunctionsL2)
+			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
 				onlyNewErrors.Toggled += OnlyNewErrors_Toggled;
@@ -286,10 +296,9 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
 
-			if (!ca.AllowExtendedFunctionsL2)
+			if (!ca.AllowExtendedFunctionsLevel2)
 				{
-				unlockLabel = AndroidSupport.ApplyLabelSettingsForKKT (aboutPage, "UnlockLabel",
-					ConfigAccessor.LockMessage, false);
+				unlockLabel = AndroidSupport.ApplyLabelSettingsForKKT (aboutPage, "UnlockLabel", ca.LockMessage, false);
 				unlockLabel.IsVisible = true;
 				unlockField = AndroidSupport.ApplyEditorSettings (aboutPage, "UnlockField", aboutFieldBackColor,
 					Keyboard.Default, 32, "", UnlockMethod);
@@ -395,7 +404,7 @@ namespace RD_AAOW
 				ca.UserINN, RNM_TextChanged);
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNCheckLabel", "", false);
 
-			if (ca.AllowExtendedFunctionsL1)
+			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
 					"Регистрационный номер для проверки или произвольное число для генерации¹:", true);
 			else
@@ -408,9 +417,9 @@ namespace RD_AAOW
 
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать",
 				rnmFieldBackColor, RNMGenerate_Clicked);
-			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsL1;
+			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
 
-			if (ca.AllowExtendedFunctionsL1)
+			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
 					"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
 					untoggledSwitchColor);
@@ -457,7 +466,7 @@ namespace RD_AAOW
 
 			#region Страница команд нижнего уровня
 
-			if (!ca.AllowExtendedFunctionsL1)
+			if (!ca.AllowExtendedFunctionsLevel2)
 				{
 				lowLevelFieldBackColor = lowLevelMasterBackColor = Color.FromRgb (128, 128, 128);
 				lowLevelPage.BackgroundColor = Color.FromRgb (192, 192, 192);
@@ -746,8 +755,6 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				/*ofdPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Ошибка обращения к буферу обмена. Попробуйте ещё раз", "OK");*/
 				}
 			}
 
