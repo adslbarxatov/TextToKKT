@@ -319,6 +319,13 @@ namespace RD_AAOW
 						}
 
 					break;
+
+				/////////////////////////////////////////////////
+				case 20:
+					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0) && TEST_SN_D (2, 0) && TEST_SN_D (3, 1))
+						return "Уникум-ФА";
+
+					break;
 				}
 
 			return "неизвестная модель ККТ";

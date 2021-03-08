@@ -11,22 +11,7 @@ namespace RD_AAOW
 		{
 		// Переменные
 		private List<string> names = new List<string> ();
-		private List<List<string>> operations = new List<List<string>> {
-			new List<string> (),
-			new List<string> (),
-			new List<string> (),
-			new List<string> (),
-			new List<string> (),
-			new List<string> (),
-			new List<string> (),
-			new List<string> (),
-
-			new List<string> (),
-			new List<string> (),
-
-			new List<string> (),
-			new List<string> (),
-			new List<string> () };
+		private List<List<string>> operations = new List<List<string>> ();
 
 		/// <summary>
 		/// Возвращает список операций, для которых доступны инструкции
@@ -81,6 +66,9 @@ namespace RD_AAOW
 			string str;
 
 			// Формирование массива 
+			while (operations.Count < (operationTypes1.Length + operationTypes2.Length + operationTypes3.Length))
+				operations.Add (new List<string> ());
+
 			try
 				{
 				// Чтение параметров

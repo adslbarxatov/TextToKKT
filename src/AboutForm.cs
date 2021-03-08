@@ -525,6 +525,7 @@ htmlError:
 				}
 			catch
 				{
+				resp.Close ();
 				e.Result = -3;
 				return;
 				}

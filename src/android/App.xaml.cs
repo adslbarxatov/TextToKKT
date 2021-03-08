@@ -395,7 +395,7 @@ namespace RD_AAOW
 			#region Страница определения корректности РНМ
 
 			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "SNLabel", "Заводской номер ККТ:", true);
-			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 16,
+			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 20,
 				ca.KKTSerial, RNM_TextChanged);
 			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "TypeLabel", "", false);
 
@@ -433,7 +433,9 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDINNLabel", "ИНН ОФД:", true);
 			ofdINN = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
 				ca.OFDINN, OFDINN_TextChanged);
-			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy", "▲", ofdFieldBackColor, OFDINNCopy_Clicked);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy", 
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Copy),
+				ofdFieldBackColor, OFDINNCopy_Clicked);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNameLabel", "Название:", true);
 			ofdNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
