@@ -394,11 +394,7 @@ namespace RD_AAOW
 				{
 				Clipboard.SetData (DataFormats.Text, Text);
 				}
-			catch
-				{
-				/*MessageBox.Show ("Ошибка обращения к буферу обмена. Попробуйте ещё раз",
-					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
-				}
+			catch { }
 			}
 
 		private void OFDNameCopy_Click (object sender, EventArgs e)
@@ -498,6 +494,35 @@ namespace RD_AAOW
 				UnlockLabel.Text = ConfigAccessor.UnlockMessage;
 				UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
 				}
+			}
+
+		// Поиск по тексту ошибки
+		private int lastErrorSearchOffset = 0;
+		private void ErrorFindButton_Click (object sender, EventArgs e)
+			{
+			List<string> codes = kkme.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
+
+			for (int i = lastErrorSearchOffset; i < codes.Count; i++)
+				if (codes[i].ToLower ().Contains (ErrorSearchText.Text.ToLower ()))
+					{
+					lastErrorSearchOffset = i + 1;
+					ErrorCodesList.SelectedIndex = i;
+					return;
+					}
+
+			for (int i = 0; i < lastErrorSearchOffset; i++)
+				if (codes[i].ToLower ().Contains (ErrorSearchText.Text.ToLower ()))
+					{
+					lastErrorSearchOffset = i + 1;
+					ErrorCodesList.SelectedIndex = i;
+					return;
+					}
+			}
+
+		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				ErrorFindButton_Click (null, null);
 			}
 		}
 	}

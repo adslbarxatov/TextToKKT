@@ -69,7 +69,7 @@ namespace RD_AAOW
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
-		private Editor codesSourceText,
+		private Editor codesSourceText, errorSearchText,
 			ofdINN, unlockField,
 			fnLifeSerial,
 			rnmKKTSN, rnmINN, rnmRNM;
@@ -271,6 +271,12 @@ namespace RD_AAOW
 				kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode), errorsFieldBackColor);
 			errorsResultText.HorizontalTextAlignment = TextAlignment.Start;
 
+			errorSearchText = AndroidSupport.ApplyEditorSettings (errorsPage, "ErrorSearchText", errorsFieldBackColor,
+				Keyboard.Default, 30, "", null);
+			AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorSearchButton",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
+				errorsFieldBackColor, Errors_Find);
+
 			#endregion
 
 			#region Страница "О программе"
@@ -433,7 +439,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDINNLabel", "ИНН ОФД:", true);
 			ofdINN = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
 				ca.OFDINN, OFDINN_TextChanged);
-			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy", 
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Copy),
 				ofdFieldBackColor, OFDINNCopy_Clicked);
 
@@ -1459,6 +1465,35 @@ namespace RD_AAOW
 				}
 			}
 
+		// Поиск по тексту ошибки
+		private int lastErrorSearchOffset = 0;
+		private void Errors_Find (object sender, EventArgs e)
+			{
+			List<string> codes = kkme.GetErrorCodesList (ca.KKTForErrors);
+
+			for (int i = lastErrorSearchOffset; i < codes.Count; i++)
+				if (codes[i].ToLower ().Contains (errorSearchText.Text.ToLower ()))
+					{
+					lastErrorSearchOffset = i + 1;
+
+					errorsCodeButton.Text = codes[i];
+					ca.ErrorCode = (uint)i;
+					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+					return;
+					}
+
+			for (int i = 0; i < lastErrorSearchOffset; i++)
+				if (codes[i].ToLower ().Contains (errorSearchText.Text.ToLower ()))
+					{
+					lastErrorSearchOffset = i + 1;
+
+					errorsCodeButton.Text = codes[i];
+					ca.ErrorCode = (uint)i;
+					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+					return;
+					}
+			}
+
 		/// <summary>
 		/// Обработчик события перехода в ждущий режим
 		/// </summary>
@@ -1491,11 +1526,9 @@ namespace RD_AAOW
 			ca.LowLevelCommandsATOL = !lowLevelSHTRIH.IsToggled;
 			//ca.LowLevelCode	// -||-
 
-#if !EVOTOR
 			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
 			//ca.KKTForCodes	// -||-
 			ca.CodesText = codesSourceText.Text;
-#endif
 			}
 		}
 	}

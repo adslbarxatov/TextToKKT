@@ -20,6 +20,10 @@
 
 				<Label x:Name="ErrorCodeLabel" />
 				<Button x:Name="ErrorCodeButton" />
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="ErrorSearchText" VerticalOptions="Center" />
+					<Button x:Name="ErrorSearchButton" VerticalOptions="Center" />
+				</StackLayout>
 
 				<Label x:Name="ResultTextLabel" />
 				<Label x:Name="ResultText" />
