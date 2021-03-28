@@ -300,7 +300,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
-				"RD AAOW Free utilities production lab", aboutFieldBackColor, CommunityButton_Clicked);
+				AndroidSupport.MasterLabName, aboutFieldBackColor, CommunityButton_Clicked);
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
@@ -1372,7 +1372,11 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
+				if (await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+						"Выберите сообщество:", "ВКонтакте", "Телеграм"))
+					Launcher.OpenAsync (AndroidSupport.CommunityFrontPage);
+				else
+					Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
 				}
 			catch
 				{
