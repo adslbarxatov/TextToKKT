@@ -1344,7 +1344,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Launcher.OpenAsync (AndroidSupport.MasterGitLink + "TextToKKT");
+				Launcher.OpenAsync (AndroidSupport.MasterGitLink + ProgramDescription.AssemblyMainName);
 				}
 			catch
 				{
