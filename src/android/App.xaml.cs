@@ -1330,7 +1330,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Launcher.OpenAsync (AndroidSupport.MasterGitLink + "FNReader");
+				await Launcher.OpenAsync (AndroidSupport.MasterGitLink + "FNReader");
 				}
 			catch
 				{
@@ -1344,7 +1344,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Launcher.OpenAsync (AndroidSupport.MasterGitLink + ProgramDescription.AssemblyMainName);
+				await Launcher.OpenAsync (AndroidSupport.MasterGitLink + ProgramDescription.AssemblyMainName);
 				}
 			catch
 				{
@@ -1358,7 +1358,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Launcher.OpenAsync (AndroidSupport.ADPLink);
+				await Launcher.OpenAsync (AndroidSupport.ADPLink);
 				}
 			catch
 				{
@@ -1374,9 +1374,9 @@ namespace RD_AAOW
 				{
 				if (await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
 						"Выберите сообщество:", "ВКонтакте", "Телеграм"))
-					Launcher.OpenAsync (AndroidSupport.CommunityFrontPage);
+					await Launcher.OpenAsync (AndroidSupport.CommunityFrontPage);
 				else
-					Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
+					await Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
 				}
 			catch
 				{

@@ -113,19 +113,46 @@ namespace RD_AAOW
 				case 10:
 					if (TEST_SN_D (0, 0))
 						{
-						if (TEST_SN_D (1, 1) && TEST_SN_D (2, 2) && TEST_SN_D (3, 8))
-							return "Пирит 2Ф";
+						if (TEST_SN_D (1, 1) && TEST_SN_D (2, 2))
+							{
+							if (TEST_SN_D (3, 6))
+								return "Пирит 1Ф";
+
+							if (TEST_SN_D (3, 8))
+								return "Пирит 2Ф";
+
+							if (TEST_SN_D (3, 9))
+								return "Пирит 2СФ";
+							}
 
 						if (TEST_SN_D (1, 4) && TEST_SN_D (2, 9))
 							{
 							if (TEST_SN_D (3, 1))
 								return "Вики Мини Ф";
 
+							if (TEST_SN_D (3, 2))
+								return "Viki Tower Ф";
+
 							if (TEST_SN_D (3, 3))
 								return "Вики Принт 57Ф";
 
+							if (TEST_SN_D (3, 4))
+								return "Вики Принт 57 плюс Ф";
+
+							if (TEST_SN_D (3, 5))
+								return "Вики Принт 80 плюс Ф";
+
 							if (TEST_SN_D (3, 6))
 								return "Дримкас Ф";
+
+							if (TEST_SN_D (3, 7))
+								return "Касса Ф";
+
+							if (TEST_SN_D (3, 8))
+								return "Пульс ФА";
+
+							if (TEST_SN_D (3, 9))
+								return "Спутник Ф";
 							}
 						}
 

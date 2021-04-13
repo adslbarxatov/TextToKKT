@@ -195,18 +195,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start ("mailto://adslbarxatov@mail.ru");
-				}
-			catch
-				{
-				}
-			}
-
-		private void OtherProjects_Click (object sender, EventArgs e)
-			{
-			try
-				{
-				Process.Start ("https://vk.com/rdaaow_fupl");
+				Process.Start ("mailto://adslbarxatov@gmail.com" + ("?subject=Request for FNReader").Replace (" ", "%20"));
 				}
 			catch
 				{
