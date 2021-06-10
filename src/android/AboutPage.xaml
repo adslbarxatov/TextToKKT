@@ -26,7 +26,7 @@
 				<Label x:Name="UnlockLabel" IsVisible="false" />
 				<Editor x:Name="UnlockField" IsVisible="false" HorizontalOptions="CenterAndExpand" />
 
-				<Label x:Name="Filler1" />
+				<Label />
 
 			</StackLayout>
 		</ScrollView>

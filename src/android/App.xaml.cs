@@ -69,7 +69,7 @@ namespace RD_AAOW
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
-		private Editor codesSourceText, errorSearchText,
+		private Editor codesSourceText, errorSearchText, commandSearchText,
 			ofdINN, unlockField,
 			fnLifeSerial,
 			rnmKKTSN, rnmINN, rnmRNM;
@@ -80,6 +80,8 @@ namespace RD_AAOW
 			keepAppState;
 
 		private DatePicker fnLifeStartDate;
+
+		private StackLayout userManualLayout;
 
 		#endregion
 
@@ -163,18 +165,34 @@ namespace RD_AAOW
 
 			#region Страница инструкций
 
-			AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "SelectionLabel", "Модель ККТ:", true);
+			Label ut = AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "SelectionLabel", "Модель ККТ:", true);
+			userManualLayout = (StackLayout)userManualsPage.FindByName ("UserManualLayout");
 
 			for (int i = 0; i < um.OperationTypes.Length; i++)
 				{
-				Label l = AndroidSupport.ApplyLabelSettingsForKKT (userManualsPage, "OperationLabel" + (i + 1).ToString ("D2"),
-					um.OperationTypes[i], true);
+				Label l = new Label ();
+				l.FontAttributes = FontAttributes.Bold;
+				l.FontSize = ut.FontSize;
+				l.HorizontalOptions = LayoutOptions.Start;
 				l.IsVisible = true;
+				l.Margin = ut.Margin;
+				l.Text = um.OperationTypes[i];
+				l.TextColor = ut.TextColor;
 
-				operationTextLabels.Add (AndroidSupport.ApplyResultLabelSettings (userManualsPage,
-					"OperationText" + (i + 1).ToString ("D2"), "   ", userManualsFieldBackColor));
-				operationTextLabels[operationTextLabels.Count - 1].HorizontalTextAlignment = TextAlignment.Start;
-				operationTextLabels[operationTextLabels.Count - 1].IsVisible = true;
+				userManualLayout.Children.Add (l);
+
+				Label l2 = new Label ();
+				l2.BackgroundColor = userManualsFieldBackColor;
+				l2.Text = "   ";
+				l2.FontAttributes = FontAttributes.None;
+				l2.FontSize = ut.FontSize;
+				l2.HorizontalOptions = LayoutOptions.Fill;
+				l2.HorizontalTextAlignment = TextAlignment.Start;
+				l2.Margin = ut.Margin;
+				l2.TextColor = ut.TextColor;
+
+				operationTextLabels.Add (l2);
+				userManualLayout.Children.Add (operationTextLabels[operationTextLabels.Count - 1]);
 				}
 
 			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "KKTButton",
@@ -511,6 +529,12 @@ namespace RD_AAOW
 			AndroidSupport.ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
 
+			commandSearchText = AndroidSupport.ApplyEditorSettings (lowLevelPage, "CommandSearchText", lowLevelFieldBackColor,
+				Keyboard.Default, 30, "", null);
+			AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandSearchButton",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
+				lowLevelFieldBackColor, Command_Find);
+
 			#endregion
 
 			// Обязательное принятие Политики и EULA
@@ -672,12 +696,12 @@ namespace RD_AAOW
 				rnmKKTTypeLabel.Text = "";
 
 			// ИНН пользователя
-			if (rnmINN.Text.Length < 10)
+			if (KKTSupport.CheckINN (rnmINN.Text) < 0)
 				{
 				rnmINNCheckLabel.TextColor = rnmINN.TextColor;
 				rnmINNCheckLabel.Text = "неполный";
 				}
-			else if (KKTSupport.CheckINN (rnmINN.Text))
+			else if (KKTSupport.CheckINN (rnmINN.Text) == 0)
 				{
 				rnmINNCheckLabel.TextColor = correctColor;
 				rnmINNCheckLabel.Text = "ОК";
@@ -1494,6 +1518,43 @@ namespace RD_AAOW
 					errorsCodeButton.Text = codes[i];
 					ca.ErrorCode = (uint)i;
 					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+					return;
+					}
+			}
+
+		// Поиск по тексту ошибки
+		private int lastCommandSearchOffset = 0;
+		private void Command_Find (object sender, EventArgs e)
+			{
+			List<string> codes = lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommandsList () : ll.GetATOLCommandsList ();
+
+			for (int i = lastCommandSearchOffset; i < codes.Count; i++)
+				if (codes[i].ToLower ().Contains (commandSearchText.Text.ToLower ()))
+					{
+					lastCommandSearchOffset = i + 1;
+
+					lowLevelCommand.Text = codes[i];
+					ca.LowLevelCode = (uint)i;
+
+					lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
+						ll.GetATOLCommand ((uint)i, false));
+					lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
+						ll.GetATOLCommand ((uint)i, true));
+					return;
+					}
+
+			for (int i = 0; i < lastCommandSearchOffset; i++)
+				if (codes[i].ToLower ().Contains (commandSearchText.Text.ToLower ()))
+					{
+					lastCommandSearchOffset = i + 1;
+
+					lowLevelCommand.Text = codes[i];
+					ca.LowLevelCode = (uint)i;
+
+					lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
+						ll.GetATOLCommand ((uint)i, false));
+					lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
+						ll.GetATOLCommand ((uint)i, true));
 					return;
 					}
 			}

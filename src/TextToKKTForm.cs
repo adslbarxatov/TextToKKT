@@ -302,12 +302,13 @@ namespace RD_AAOW
 
 			// ИНН пользователя
 			RegionLabel.Text = "";
-			if (RNMUserINN.Text.Length < 10)
+			int checkINN = KKTSupport.CheckINN (RNMUserINN.Text);
+			if (checkINN < 0)
 				{
 				RNMUserINNResult.ForeColor = Color.FromArgb (0, 0, 0);
 				RNMUserINNResult.Text = "???";
 				}
-			else if (KKTSupport.CheckINN (RNMUserINN.Text))
+			else if (checkINN == 0)
 				{
 				RNMUserINNResult.ForeColor = Color.FromArgb (0, 128, 0);
 				RNMUserINNResult.Text = "OK";
@@ -512,6 +513,35 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				ErrorFindButton_Click (null, null);
+			}
+
+		// Поиск по тексту ошибки
+		private int lastLowLevelSearchOffset = 0;
+		private void LowLevelFindButton_Click (object sender, EventArgs e)
+			{
+			List<string> codes = LowLevelCommandATOL.Checked ? ll.GetATOLCommandsList () : ll.GetSHTRIHCommandsList ();
+
+			for (int i = lastLowLevelSearchOffset; i < codes.Count; i++)
+				if (codes[i].ToLower ().Contains (LowLevelSearchText.Text.ToLower ()))
+					{
+					lastLowLevelSearchOffset = i + 1;
+					LowLevelCommand.SelectedIndex = i;
+					return;
+					}
+
+			for (int i = 0; i < lastLowLevelSearchOffset; i++)
+				if (codes[i].ToLower ().Contains (LowLevelSearchText.Text.ToLower ()))
+					{
+					lastLowLevelSearchOffset = i + 1;
+					LowLevelCommand.SelectedIndex = i;
+					return;
+					}
+			}
+
+		private void LowLevelSearchText_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				LowLevelFindButton_Click (null, null);
 			}
 		}
 	}

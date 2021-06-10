@@ -7,14 +7,14 @@
 		<Label x:Name="HeaderLabel" />
 
 		<ScrollView>
-			<StackLayout>
+			<StackLayout x:Name="UserManualLayout">
 
 				<Label x:Name="SelectionLabel" />
 				<Button x:Name="KKTButton" />
 
 				<Label x:Name="HelpLabel" />
 
-				<Label x:Name="OperationLabel01" />
+				<!--<Label x:Name="OperationLabel01" />
 				<Label x:Name="OperationText01" />
 
 				<Label x:Name="OperationLabel02" />
@@ -53,7 +53,7 @@
 				<Label x:Name="OperationLabel13" IsVisible="false" />
 				<Label x:Name="OperationText13" IsVisible="false" />
 				
-				<Label x:Name="Filler" />
+				<Label x:Name="Filler" />-->
 				
 			</StackLayout>
 		</ScrollView>

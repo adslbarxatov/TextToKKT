@@ -18,6 +18,11 @@
 				<Label x:Name="CommandLabel" />
 				<Button x:Name="CommandButton" />
 
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="CommandSearchText" VerticalOptions="Center" />
+					<Button x:Name="CommandSearchButton" VerticalOptions="Center" />
+				</StackLayout>
+
 				<Label x:Name="CommandCodeLabel" />
 				<Button x:Name="CommandCodeButton" />
 

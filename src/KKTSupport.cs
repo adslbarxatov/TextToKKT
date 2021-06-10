@@ -169,7 +169,7 @@ namespace RD_AAOW
 					if (TEST_SN_D (0, 0) && TEST_SN_D (2, 1) && TEST_SN_D (3, 7))
 						return "Орион 100Ф";
 
-					if (TEST_SN_D (0, 1) && TEST_SN_D (3, 0)) //&& TEST_SN_D (6, 0))
+					if (TEST_SN_D (0, 1) && TEST_SN_D (3, 0))
 						{
 						if (TEST_SN_D (1, 7) && TEST_SN_D (2, 7) && TEST_SN_D (4, 4) && TEST_SN_D (5, 4))
 							return "MSPOS-Е-Ф";
@@ -319,6 +319,9 @@ namespace RD_AAOW
 
 						if (TEST_SN_D (8, 2))
 							{
+							if (TEST_SN_D (9, 2))
+								return "Элвес ФР-Ф";
+
 							if (TEST_SN_D (9, 4))
 								return "Штрих-Мини-02Ф";
 
@@ -419,8 +422,8 @@ namespace RD_AAOW
 		/// Метод проверяет корректность ввода ИНН
 		/// </summary>
 		/// <param name="INN">ИНН для проверки</param>
-		/// <returns>Возвращает true, если ИНН корректен</returns>
-		public static bool CheckINN (string INN)
+		/// <returns>Возвращает 0, если ИНН корректен, 1, если ИНН имеет некорректную КС, -1, если строка не является ИНН</returns>
+		public static int CheckINN (string INN)
 			{
 			// Контроль параметра
 			UInt64 inn = 0;
@@ -430,11 +433,11 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				return false;
+				return -1;
 				}
 
 			if ((INN.Length != 10) && (INN.Length != 12))
-				return false;
+				return -1;
 
 			// Расчёт контрольной суммы
 			uint n1 = 0, n2 = 0;
@@ -451,9 +454,9 @@ namespace RD_AAOW
 					}
 
 				if ((n1 % 11) == (inn % 10))
-					return true;
+					return 0;
 
-				return false;
+				return 1;
 				}
 
 			// Для 12 цифр
@@ -465,7 +468,7 @@ namespace RD_AAOW
 				}
 
 			if ((n1 % 11) != ((inn / 10) % 10))
-				return false;
+				return 1;
 
 			d = 10;
 			for (int i = 0; i < 11; i++)
@@ -475,9 +478,9 @@ namespace RD_AAOW
 				}
 
 			if ((n2 % 11) != (inn % 10))
-				return false;
+				return 1;
 
-			return true;
+			return 0;
 			}
 
 		// Таблица полинома CRC16
@@ -546,7 +549,7 @@ namespace RD_AAOW
 				return "";
 				}
 
-			if (!CheckINN (INN) || (Serial.Length > 20) || (RNMFirstPart.Length > 10))
+			if ((CheckINN (INN) < 0) || (Serial.Length > 20) || (RNMFirstPart.Length > 10))
 				return "";
 
 			// Расчёт контрольной суммы
