@@ -79,6 +79,7 @@ namespace RD_AAOW
 			RNMSerial.Text = ca.KKTSerial;
 			RNMUserINN.Text = ca.UserINN;
 			RNMValue.Text = ca.RNMKKT;
+			RNMSerial_TextChanged (null, null); // Для протяжки пустых полей
 
 			OFDINN.Text = ca.OFDINN;
 
@@ -282,6 +283,15 @@ namespace RD_AAOW
 				fnLifeResult = res;
 				FNLifeResult.Text += res;
 				}
+
+			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
+				{
+				if (!KKTSupport.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
+					{
+					FNLifeResult.Text += "\n(выбранный ФН должен быть зарегистрирован до 6.08.21)";
+					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
+					}
+				}
 			}
 
 		// Копирование срока действия ФН
@@ -296,45 +306,50 @@ namespace RD_AAOW
 			{
 			// Заводской номер ККТ
 			if (RNMSerial.Text != "")
-				RNMSerialResult.Text = KKTSupport.GetKKTModel (RNMSerial.Text);
+				{
+				RNMSerialResult.Text = KKTSupport.GetKKTModel (RNMSerial.Text) +
+					KKTSupport.GetFFDSupportStatusForKKT (RNMSerial.Text);
+				}
 			else
+				{
 				RNMSerialResult.Text = "(введите ЗН ККТ)";
+				}
 
 			// ИНН пользователя
 			RegionLabel.Text = "";
 			int checkINN = KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
 				{
-				RNMUserINNResult.ForeColor = Color.FromArgb (0, 0, 0);
-				RNMUserINNResult.Text = "???";
+				RNMUserINN.BackColor = Color.FromArgb (200, 200, 255);
+				//RNMUserINNResult.Text = "???";
 				}
 			else if (checkINN == 0)
 				{
-				RNMUserINNResult.ForeColor = Color.FromArgb (0, 128, 0);
-				RNMUserINNResult.Text = "OK";
+				RNMUserINN.BackColor = Color.FromArgb (200, 255, 200);
+				//RNMUserINNResult.Text = "OK";
 				}
 			else
 				{
-				RNMUserINNResult.ForeColor = Color.FromArgb (255, 0, 0);
-				RNMUserINNResult.Text = "XXX";
+				RNMUserINN.BackColor = Color.FromArgb (255, 200, 200);
+				//RNMUserINNResult.Text = "XXX";
 				}
 			RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 
 			// РНМ
 			if (RNMValue.Text.Length < 10)
 				{
-				RNMValueResult.ForeColor = Color.FromArgb (0, 0, 0);
-				RNMValueResult.Text = "???";
+				RNMValue.BackColor = Color.FromArgb (200, 200, 255);
+				//RNMValueResult.Text = "???";
 				}
 			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
 				{
-				RNMValueResult.ForeColor = Color.FromArgb (0, 128, 0);
-				RNMValueResult.Text = "OK";
+				RNMValue.BackColor = Color.FromArgb (200, 255, 200);
+				//RNMValueResult.Text = "OK";
 				}
 			else
 				{
-				RNMValueResult.ForeColor = Color.FromArgb (255, 0, 0);
-				RNMValueResult.Text = "XXX";
+				RNMValue.BackColor = Color.FromArgb (255, 200, 200);
+				//RNMValueResult.Text = "XXX";
 				}
 			}
 
@@ -542,6 +557,53 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				LowLevelFindButton_Click (null, null);
+			}
+
+		// Поиск по названию ОФД
+		private int lastOFDSearchOffset = 0;
+		private void OFDFindButton_Click (object sender, EventArgs e)
+			{
+			List<string> codes = ofd.GetOFDNames ();
+
+			for (int i = lastOFDSearchOffset; i < codes.Count; i++)
+				if (codes[i].ToLower ().Contains (OFDSearchText.Text.ToLower ()))
+					{
+					lastOFDSearchOffset = i + 1;
+					OFDNamesList.SelectedIndex = i + 1;
+					return;
+					}
+
+			for (int i = 0; i < lastOFDSearchOffset; i++)
+				if (codes[i].ToLower ().Contains (OFDSearchText.Text.ToLower ()))
+					{
+					lastOFDSearchOffset = i + 1;
+					OFDNamesList.SelectedIndex = i + 1;
+					return;
+					}
+			}
+
+		private void OFDSearchText_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				OFDFindButton_Click (null, null);
+			}
+
+		// Очистка полей
+		private void RNMSerialClear_Click (object sender, EventArgs e)
+			{
+			RNMSerial.Text = "";
+			RNMUserINN.Text = "";
+			RNMValue.Text = "";
+			}
+
+		private void OFDINNClear_Click (object sender, EventArgs e)
+			{
+			OFDINN.Text = "";
+			}
+
+		private void TextToConvertClear_Click (object sender, EventArgs e)
+			{
+			TextToConvert.Text = "";
 			}
 		}
 	}

@@ -25,12 +25,15 @@
 					<Editor x:Name="RNM" />
 					<Label x:Name="RNMCheckLabel" VerticalOptions="Center" />
 				</StackLayout>
-				<Button x:Name="RNMGenerate" HorizontalOptions="Center" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Button x:Name="RNMGenerate" />
+					<Button x:Name="Clear" />
+				</StackLayout>
 
 				<Label x:Name="RNMAbout" />
 
-				<Label x:Name="Filler" />
-
+				<Label />
 			</StackLayout>
 		</ScrollView>
 

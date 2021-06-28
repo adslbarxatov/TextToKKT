@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Android.Widget;
+using System;
 using System.Collections.Generic;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -26,9 +27,6 @@ namespace RD_AAOW
 
 			fnLifeMasterBackColor = Color.FromHex ("#FFF0E0"),
 			fnLifeFieldBackColor = Color.FromHex ("#FFE0C0"),
-
-			//snMasterBackColor = Color.FromHex ("#F4E8FF"),
-			//snFieldBackColor = Color.FromHex ("#ECD8FF"),
 
 			headersMasterBackColor = Color.FromHex ("#E8E8E8"),
 			headersFieldBackColor = Color.FromHex ("#E0E0E0"),
@@ -64,22 +62,22 @@ namespace RD_AAOW
 			lowLevelCommandDescr, unlockLabel;
 		private List<Label> operationTextLabels = new List<Label> ();
 
-		private Button codesKKTButton, fnLifeResult,
+		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
-		private Editor codesSourceText, errorSearchText, commandSearchText,
+		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
 			ofdINN, unlockField,
 			fnLifeSerial,
 			rnmKKTSN, rnmINN, rnmRNM;
 
-		private Switch onlyNewCodes, onlyNewErrors,
+		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
 			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous,
 			lowLevelSHTRIH,
 			keepAppState;
 
-		private DatePicker fnLifeStartDate;
+		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
 		private StackLayout userManualLayout;
 
@@ -96,8 +94,8 @@ namespace RD_AAOW
 			// Добавление в содержание
 			if (HeaderNumber > 0)
 				{
-				Button b = AndroidSupport.ApplyButtonSettings (headersPage, "Button" + HeaderNumber.ToString ("D02"), PageTitle,
-					headersFieldBackColor, HeaderButton_Clicked);
+				Xamarin.Forms.Button b = AndroidSupport.ApplyButtonSettings (headersPage, "Button" +
+					HeaderNumber.ToString ("D02"), PageTitle, headersFieldBackColor, HeaderButton_Clicked);
 				b.Margin = b.Padding = new Thickness (1);
 				b.CommandParameter = page;
 				b.IsVisible = true;
@@ -150,7 +148,7 @@ namespace RD_AAOW
 
 			#region Страница «оглавления»
 
-			keepAppState = (Switch)headersPage.FindByName ("KeepAppState");
+			keepAppState = (Xamarin.Forms.Switch)headersPage.FindByName ("KeepAppState");
 			keepAppState.IsToggled = ca.KeepApplicationState;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", true);
@@ -214,7 +212,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
 
-			onlyNewCodes = (Switch)codesPage.FindByName ("OnlyNewCodes");
+			onlyNewCodes = (Xamarin.Forms.Switch)codesPage.FindByName ("OnlyNewCodes");
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
@@ -251,6 +249,10 @@ namespace RD_AAOW
 			codesHelpLabel = AndroidSupport.ApplyTipLabelSettings (codesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
 
+			AndroidSupport.ApplyButtonSettings (codesPage, "Clear",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
+				codesFieldBackColor, CodesClear_Clicked);
+
 			SourceText_TextChanged (null, null);    // Протягивание кодов
 
 			#endregion
@@ -259,7 +261,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "SelectionLabel", "Модель ККТ:", true);
 
-			onlyNewErrors = (Switch)errorsPage.FindByName ("OnlyNewErrors");
+			onlyNewErrors = (Xamarin.Forms.Switch)errorsPage.FindByName ("OnlyNewErrors");
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
@@ -338,7 +340,7 @@ namespace RD_AAOW
 			fnLifeSerial = AndroidSupport.ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
 				Keyboard.Numeric, 16, ca.FNSerial, FNLifeSerial_TextChanged);
 
-			fnLife13 = (Switch)fnLifePage.FindByName ("FNLife13");
+			fnLife13 = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLife13");
 			fnLife13.Toggled += FnLife13_Toggled;
 			fnLife13.ThumbColor = untoggledSwitchColor;
 			fnLife13.OnColor = fnLifeFieldBackColor;
@@ -357,7 +359,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetUserParameters", "Укажите значимые параметры:", true);
 
 			//
-			fnLifeGenericTax = (Switch)fnLifePage.FindByName ("FNLifeGenericTax");
+			fnLifeGenericTax = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeGenericTax");
 			fnLifeGenericTax.IsToggled = !ca.GenericTaxFlag;
 			fnLifeGenericTax.Toggled += FnLife13_Toggled;
 			fnLifeGenericTax.ThumbColor = untoggledSwitchColor;
@@ -366,7 +368,7 @@ namespace RD_AAOW
 			fnLifeGenericTaxLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeGenericTaxLabel", "", false);
 
 			//
-			fnLifeGoods = (Switch)fnLifePage.FindByName ("FNLifeGoods");
+			fnLifeGoods = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeGoods");
 			fnLifeGoods.IsToggled = !ca.GoodsFlag;
 			fnLifeGoods.Toggled += FnLife13_Toggled;
 			fnLifeGoods.ThumbColor = untoggledSwitchColor;
@@ -375,28 +377,28 @@ namespace RD_AAOW
 			fnLifeGoodsLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeGoodsLabel", "", false);
 
 			//
-			fnLifeSeason = (Switch)fnLifePage.FindByName ("FNLifeSeason");
+			fnLifeSeason = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeSeason");
 			fnLifeSeason.IsToggled = ca.SeasonFlag;
 			fnLifeSeason.Toggled += FnLife13_Toggled;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля", false);
 
 			//
-			fnLifeAgents = (Switch)fnLifePage.FindByName ("FNLifeAgents");
+			fnLifeAgents = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeAgents");
 			fnLifeAgents.IsToggled = ca.AgentsFlag;
 			fnLifeAgents.Toggled += FnLife13_Toggled;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент", false);
 
 			//
-			fnLifeExcise = (Switch)fnLifePage.FindByName ("FNLifeExcise");
+			fnLifeExcise = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeExcise");
 			fnLifeExcise.IsToggled = ca.ExciseFlag;
 			fnLifeExcise.Toggled += FnLife13_Toggled;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeExciseLabel", "Подакцизный товар", false);
 
 			//
-			fnLifeAutonomous = (Switch)fnLifePage.FindByName ("FNLifeAutonomous");
+			fnLifeAutonomous = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeAutonomous");
 			fnLifeAutonomous.IsToggled = ca.AutonomousFlag;
 			fnLifeAutonomous.Toggled += FnLife13_Toggled;
 
@@ -442,11 +444,16 @@ namespace RD_AAOW
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать",
 				rnmFieldBackColor, RNMGenerate_Clicked);
 			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
+			rnmGenerate.Margin = new Thickness (0);
 
 			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
 					"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
 					untoggledSwitchColor);
+
+			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
+				rnmFieldBackColor, RNMClear_Clicked);
 
 			RNM_TextChanged (null, null);   // Применение значений
 
@@ -486,6 +493,16 @@ namespace RD_AAOW
 			AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
 
+			AndroidSupport.ApplyButtonSettings (ofdPage, "Clear",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
+				ofdFieldBackColor, OFDClear_Clicked);
+
+			ofdSearchText = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDSearchText", ofdFieldBackColor,
+				Keyboard.Default, 30, "", null);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSearchButton",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
+				ofdFieldBackColor, OFD_Find);
+
 			OFDINN_TextChanged (null, null); // Протягивание значений
 
 			#endregion
@@ -498,7 +515,7 @@ namespace RD_AAOW
 				lowLevelPage.BackgroundColor = Color.FromRgb (192, 192, 192);
 				}
 
-			lowLevelSHTRIH = (Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
+			lowLevelSHTRIH = (Xamarin.Forms.Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
 			lowLevelSHTRIH.IsToggled = !ca.LowLevelCommandsATOL;
 			lowLevelSHTRIH.Toggled += LowLevelSHTRIH_Toggled;
 			lowLevelSHTRIH.ThumbColor = untoggledSwitchColor;
@@ -547,14 +564,14 @@ namespace RD_AAOW
 			if (Preferences.Get (firstStartRegKey, "") != "")
 				return;
 
-			while (await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+			while (!await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
 					"Перед началом работы с этим инструментом Вы должны принять Политику разработки приложений и " +
 					"Пользовательское соглашение. Хотите открыть их тексты в браузере?\r\n\r\n" +
 					"• Нажмите «Принять», если Вы уже ознакомились и полностью приняли их;\r\n" +
 					"• Нажмите «Читать», если хотите открыть их в браузере;\r\n" +
 					"• Чтобы отклонить их, закройте приложение",
 
-					"Читать", "Принять"))
+					"Принять", "Читать"))
 				{
 				ADPButton_Clicked (null, null);
 				}
@@ -684,6 +701,15 @@ namespace RD_AAOW
 				fnLifeResultDate = res;
 				fnLifeResult.Text += res;
 				}
+
+			if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН
+				{
+				if (!KKTSupport.IsFNCompatibleWithFFD12 (fnLifeSerial.Text))
+					{
+					fnLifeResult.Text += "\n(выбранный ФН должен быть зарегистрирован до 6.08.21)";
+					fnLifeResult.TextColor = errorColor;
+					}
+				}
 			}
 
 		// Изменение ИНН ОФД и РНМ ККТ
@@ -691,7 +717,8 @@ namespace RD_AAOW
 			{
 			// ЗН ККТ
 			if (rnmKKTSN.Text != "")
-				rnmKKTTypeLabel.Text = KKTSupport.GetKKTModel (rnmKKTSN.Text);
+				rnmKKTTypeLabel.Text = KKTSupport.GetKKTModel (rnmKKTSN.Text) +
+					KKTSupport.GetFFDSupportStatusForKKT (rnmKKTSN.Text);
 			else
 				rnmKKTTypeLabel.Text = "";
 
@@ -765,7 +792,7 @@ namespace RD_AAOW
 		// Отправка значения в буфер обмена
 		private void Field_Clicked (object sender, EventArgs e)
 			{
-			SendToClipboard (((Button)sender).Text);
+			SendToClipboard (((Xamarin.Forms.Button)sender).Text);
 			}
 
 		private void OFDINNCopy_Clicked (object sender, EventArgs e)
@@ -1372,8 +1399,8 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Веб-браузер отсутствует на этом устройстве", "OK");
+				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
+					ToastLength.Long).Show ();
 				}
 			}
 
@@ -1386,26 +1413,31 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Веб-браузер отсутствует на этом устройстве", "OK");
+				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
+					ToastLength.Long).Show ();
 				}
 			}
 
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
+			List<string> comm = new List<string> { "ВКонтакте", "Телеграм" };
+			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm.ToArray ());
+
+			if (!comm.Contains (res))
+				return;
+
 			try
 				{
-				if (await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-						"Выберите сообщество:", "ВКонтакте", "Телеграм"))
-					await Launcher.OpenAsync (AndroidSupport.CommunityFrontPage);
+				if (comm.IndexOf (res) == 0)
+					await Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
 				else
 					await Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
 				}
 			catch
 				{
-				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Веб-браузер отсутствует на этом устройстве", "OK");
+				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
+					ToastLength.Long).Show ();
 				}
 			}
 
@@ -1424,15 +1456,15 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				await aboutPage.DisplayAlert (ProgramDescription.AssemblyTitle,
-					"Почтовый агент отсутствует на этом устройстве", "ОК");
+				Toast.MakeText (Android.App.Application.Context, "Почтовый агент отсутствует на этом устройстве",
+					ToastLength.Long).Show ();
 				}
 			}
 
 		// Выбор элемента содержания
 		private void HeaderButton_Clicked (object sender, EventArgs e)
 			{
-			Button b = (Button)sender;
+			Xamarin.Forms.Button b = (Xamarin.Forms.Button)sender;
 			ContentPage p = (ContentPage)b.CommandParameter;
 			((CarouselPage)MainPage).CurrentPage = p;
 			}
@@ -1522,7 +1554,7 @@ namespace RD_AAOW
 					}
 			}
 
-		// Поиск по тексту ошибки
+		// Поиск по названию команды нижнего уровня
 		private int lastCommandSearchOffset = 0;
 		private void Command_Find (object sender, EventArgs e)
 			{
@@ -1557,6 +1589,56 @@ namespace RD_AAOW
 						ll.GetATOLCommand ((uint)i, true));
 					return;
 					}
+			}
+
+		// Поиск по названию ОФД
+		private int lastOFDSearchOffset = 0;
+		private void OFD_Find (object sender, EventArgs e)
+			{
+			List<string> codes = ofd.GetOFDNames ();
+
+			for (int i = lastOFDSearchOffset; i < codes.Count; i++)
+				if (codes[i].ToLower ().Contains (ofdSearchText.Text.ToLower ()))
+					{
+					lastOFDSearchOffset = i + 1;
+
+					ofdNameButton.Text = codes[i];
+					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
+					if (s != "")
+						ca.OFDINN = ofdINN.Text = s;
+
+					return;
+					}
+
+			for (int i = 0; i < lastCommandSearchOffset; i++)
+				if (codes[i].ToLower ().Contains (ofdSearchText.Text.ToLower ()))
+					{
+					lastOFDSearchOffset = i + 1;
+
+					ofdNameButton.Text = codes[i];
+					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
+					if (s != "")
+						ca.OFDINN = ofdINN.Text = s;
+					return;
+					}
+			}
+
+		// Очистка полей
+		private void RNMClear_Clicked (object sender, EventArgs e)
+			{
+			rnmKKTSN.Text = "";
+			rnmINN.Text = "";
+			rnmRNM.Text = "";
+			}
+
+		private void OFDClear_Clicked (object sender, EventArgs e)
+			{
+			ofdINN.Text = "";
+			}
+
+		private void CodesClear_Clicked (object sender, EventArgs e)
+			{
+			codesSourceText.Text = "";
 			}
 
 		/// <summary>

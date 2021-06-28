@@ -19,7 +19,10 @@
 
 				<Button x:Name="KKTButton" />
 
-				<Label x:Name="SourceTextLabel" />
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="SourceTextLabel" VerticalOptions="Center" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
+				</StackLayout>
 				<Editor x:Name="SourceText" />
 
 				<Label x:Name="ResultTextLabel" />
