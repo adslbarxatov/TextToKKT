@@ -73,7 +73,7 @@ namespace RD_AAOW
 			rnmKKTSN, rnmINN, rnmRNM;
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
-			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous,
+			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeDeFacto,
 			lowLevelSHTRIH,
 			keepAppState;
 
@@ -84,6 +84,7 @@ namespace RD_AAOW
 		#endregion
 
 		private ConfigAccessor ca;
+		private KKTSupport.FNLifeFlags fnlf;
 
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
@@ -339,6 +340,7 @@ namespace RD_AAOW
 				true);
 			fnLifeSerial = AndroidSupport.ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
 				Keyboard.Numeric, 16, ca.FNSerial, FNLifeSerial_TextChanged);
+			fnLifeSerial.Margin = new Thickness (0);
 
 			fnLife13 = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLife13");
 			fnLife13.Toggled += FnLife13_Toggled;
@@ -412,6 +414,25 @@ namespace RD_AAOW
 			//
 			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor,
 				FNLifeResultCopy, false);
+
+			//
+			fnLifeDeFacto = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeDeFacto");
+			if (ca.AllowExtendedFunctionsLevel2)
+				{
+				fnLifeDeFacto.IsToggled = ca.FNLifeDeFacto;
+				fnLifeDeFacto.Toggled += FnLife13_Toggled;
+				}
+			else
+				{
+				fnLifeDeFacto.IsToggled = fnLifeDeFacto.IsEnabled = false;
+				}
+
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "По факту", false);
+
+			//
+			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
+				fnLifeFieldBackColor, FNLifeClear_Clicked);
 
 			// Применение всех названий
 			FNLifeSerial_TextChanged (null, null);
@@ -684,9 +705,16 @@ namespace RD_AAOW
 				fnLifeGoodsLabel.Text = "товары";
 
 			// Расчёт срока
-			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, !fnLife13.IsToggled,
-				fnLifeModelLabel.Text.Contains ("(13)"), !fnLifeGenericTax.IsToggled, !fnLifeGoods.IsToggled,
-				fnLifeSeason.IsToggled || fnLifeAgents.IsToggled, fnLifeExcise.IsToggled, fnLifeAutonomous.IsToggled);
+			fnlf.FN15 = !fnLife13.IsToggled;
+			fnlf.FNExactly13 = fnLifeModelLabel.Text.Contains ("(13)");
+			fnlf.GenericTax = !fnLifeGenericTax.IsToggled;
+			fnlf.Goods = !fnLifeGoods.IsToggled;
+			fnlf.SeasonOrAgents = fnLifeSeason.IsToggled || fnLifeAgents.IsToggled;
+			fnlf.Excise = fnLifeExcise.IsToggled;
+			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
+			fnlf.DeFacto = fnLifeDeFacto.IsToggled;
+
+			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, fnlf);
 
 			fnLifeResult.Text = "ФН прекратит работу ";
 			if (res.Contains ("!"))
@@ -1641,6 +1669,11 @@ namespace RD_AAOW
 			codesSourceText.Text = "";
 			}
 
+		private void FNLifeClear_Clicked (object sender, EventArgs e)
+			{
+			fnLifeSerial.Text = "";
+			}
+
 		/// <summary>
 		/// Обработчик события перехода в ждущий режим
 		/// </summary>
@@ -1663,6 +1696,7 @@ namespace RD_AAOW
 			ca.AgentsFlag = fnLifeAgents.IsToggled;
 			ca.ExciseFlag = fnLifeExcise.IsToggled;
 			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
+			ca.FNLifeDeFacto = fnLifeDeFacto.IsToggled;
 
 			ca.KKTSerial = rnmKKTSN.Text;
 			ca.UserINN = rnmINN.Text;

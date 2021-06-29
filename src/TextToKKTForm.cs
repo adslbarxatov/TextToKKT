@@ -19,6 +19,7 @@ namespace RD_AAOW
 		private LowLevel ll = null;
 		private UserManuals um = null;
 		private ConfigAccessor ca = null;
+		private KKTSupport.FNLifeFlags fnlf;
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -75,6 +76,8 @@ namespace RD_AAOW
 			AgentsFlag.Checked = ca.AgentsFlag;
 			ExciseFlag.Checked = ca.ExciseFlag;
 			AutonomousFlag.Checked = ca.AutonomousFlag;
+			FNLifeDeFacto.Checked = ca.FNLifeDeFacto;
+			FNLifeDeFacto.Enabled = ca.AllowExtendedFunctionsLevel2;
 
 			RNMSerial.Text = ca.KKTSerial;
 			RNMUserINN.Text = ca.UserINN;
@@ -266,9 +269,16 @@ namespace RD_AAOW
 		// Изменение параметров, влияющих на срок жизни ФН
 		private void FNLifeStartDate_ValueChanged (object sender, EventArgs e)
 			{
-			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLife13.Checked,
-				FNLifeName.Text.Contains ("(13)"), GenericTaxFlag.Checked, GoodsFlag.Checked,
-				SeasonFlag.Checked || AgentsFlag.Checked, ExciseFlag.Checked, AutonomousFlag.Checked);
+			fnlf.FN15 = FNLife13.Checked;
+			fnlf.FNExactly13 = FNLifeName.Text.Contains ("(13)");
+			fnlf.GenericTax = GenericTaxFlag.Checked;
+			fnlf.Goods = GoodsFlag.Checked;
+			fnlf.SeasonOrAgents = SeasonFlag.Checked || AgentsFlag.Checked;
+			fnlf.Excise = ExciseFlag.Checked;
+			fnlf.Autonomous = AutonomousFlag.Checked;
+			fnlf.DeFacto = FNLifeDeFacto.Checked;
+
+			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
 
 			FNLifeResult.Text = "ФН прекратит работу ";
 			if (res.Contains ("!"))
@@ -284,13 +294,11 @@ namespace RD_AAOW
 				FNLifeResult.Text += res;
 				}
 
-			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
+			if (!(FNLife13.Enabled && FNLife36.Enabled) && // Признак корректно заданного ЗН ФН
+				!KKTSupport.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
 				{
-				if (!KKTSupport.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
-					{
-					FNLifeResult.Text += "\n(выбранный ФН должен быть зарегистрирован до 6.08.21)";
-					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
-					}
+				FNLifeResult.Text += "\n(выбранный ФН должен быть зарегистрирован до 6.08.21)";
+				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 				}
 			}
 
@@ -472,6 +480,7 @@ namespace RD_AAOW
 			ca.AgentsFlag = AgentsFlag.Checked;
 			ca.ExciseFlag = ExciseFlag.Checked;
 			ca.AutonomousFlag = AutonomousFlag.Checked;
+			ca.FNLifeDeFacto = FNLifeDeFacto.Checked;
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -604,6 +613,11 @@ namespace RD_AAOW
 		private void TextToConvertClear_Click (object sender, EventArgs e)
 			{
 			TextToConvert.Text = "";
+			}
+
+		private void FNLifeSNClear_Click (object sender, EventArgs e)
+			{
+			FNLifeSN.Text = "";
 			}
 		}
 	}

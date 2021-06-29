@@ -405,26 +405,67 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Структура используется для передачи списка параметров определения срока жизни ФН
+		/// </summary>
+		public struct FNLifeFlags
+			{
+			/// <summary>
+			/// Флаг указывает на выбор ФН на 13/15 месяцев вместо 36
+			/// </summary>
+			public bool FN15;
+
+			/// <summary>
+			/// Флаг указывает на выбор ФН на 13 месяцев вместо 15
+			/// </summary>
+			public bool FNExactly13;
+
+			/// <summary>
+			/// Флаг указыввает на применение ОСН
+			/// </summary>
+			public bool GenericTax;
+
+			/// <summary>
+			/// Флаг указывает на режим товаров вместо услуг
+			/// </summary>
+			public bool Goods;
+
+			/// <summary>
+			/// Флаг указывает на агентскую схему или сезонный режим работы
+			/// </summary>
+			public bool SeasonOrAgents;
+
+			/// <summary>
+			/// Флаг указывает на наличие подакцизных товаров
+			/// </summary>
+			public bool Excise;
+
+			/// <summary>
+			/// Флаг указывает на работу без передачи данных
+			/// </summary>
+			public bool Autonomous;
+
+			/// <summary>
+			/// Флаг, указывающий на расчёт срока жизни ФН без учёта некоторых недействующих по факту ограничений
+			/// </summary>
+			public bool DeFacto;
+			}
+
+		/// <summary>
 		/// Метод формирует дату истечения срока эксплуатации ФН с указанными параметрами
 		/// </summary>
 		/// <param name="StartDate">Дата фискализации</param>
-		/// <param name="FN15">Флаг указывает на выбор ФН на 15 месяцев вместо 36</param>
-		/// <param name="FNExactly13">Флаг указывает на выбор ФН на 13 месяцев вместо 15</param>
-		/// <param name="GenericTax">Флаг указыввает на применение ОСН</param>
-		/// <param name="Goods">Флаг указывает на режим товаров вместо услуг</param>
-		/// <param name="SeasonOrAgents">Флаг указывает на агентскую схему или сезонный режим работы</param>
-		/// <param name="Excise">Флаг указывает на наличие подакцизных товаров</param>
-		/// <param name="Autonomous">Флаг указывает на работу без передачи данных</param>
+		/// <param name="Flags">Параметры расчёта срока действия</param>
 		/// <returns>Возвращает строку с датой или пустую строку, если указанная модель ФН
 		/// не может быть использована с указанными режимами и параметрами</returns>
-		public static string GetFNLifeEndDate (DateTime StartDate, bool FN15, bool FNExactly13,
-			bool GenericTax, bool Goods, bool SeasonOrAgents, bool Excise, bool Autonomous)
+		public static string GetFNLifeEndDate (DateTime StartDate, FNLifeFlags Flags)
 			{
 			string res = "";
 
 			// Отсечение недопустимых вариантов
-			if (GenericTax && !FN15 && Goods ||
-				!GenericTax && FN15 && !SeasonOrAgents && !Excise && !Autonomous)
+			if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||               // Нельзя игнорировать
+
+				!Flags.DeFacto && !Flags.GenericTax && Flags.FN15 &&
+				!Flags.SeasonOrAgents && !Flags.Excise && !Flags.Autonomous)    // Можно игнорировать (флаг де-факто)
 				{
 				res = "!";
 				}
@@ -432,24 +473,24 @@ namespace RD_AAOW
 			// Определение срока жизни
 			int length = 1110;
 
-			if (Excise)
+			if (Flags.Excise && !Flags.DeFacto)     // Можно игнорировать (флаг де-факто)
 				{
 				length = 410;
 				}
-			else if (Autonomous)
+			else if (Flags.Autonomous)
 				{
-				if (FN15)
+				if (Flags.FN15)
 					length = 410;
 				else
 					length = 560;
 				}
-			else if (FN15)
+			else if (Flags.FN15)
 				{
-				length = FNExactly13 ? 410 : 470;
+				length = Flags.FNExactly13 ? 410 : 470;
 				}
 
 			// Результат
-			return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");
+			return (res + StartDate.AddDays (length).ToString ("dd.MM.yyyy"));
 			}
 
 		// Контрольная последовательность для определения корректности ИНН

@@ -11,7 +11,11 @@
 				<!-- Поле ввода ЗН ФН и указания номинала -->
 				<Label x:Name="SetModelLabel" />
 				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-					<Editor x:Name="FNLifeSerial" HorizontalOptions="StartAndExpand" VerticalOptions="Center" />
+					<Label />
+					<Editor x:Name="FNLifeSerial" VerticalOptions="Center" />
+					<Button x:Name="Clear" />
+
+					<Label HorizontalOptions="StartAndExpand" />
 					<Switch x:Name="FNLife13" VerticalOptions="Center" />
 					<Label x:Name="FNLifeLabel" VerticalOptions="Center" />
 				</StackLayout>
@@ -61,7 +65,13 @@
 				<!-- Результат -->
 				<Button x:Name="FNLifeResult" />
 
-				<Label x:Name="Filler4" />
+				<StackLayout Orientation="Horizontal">
+					<Switch x:Name="FNLifeDeFacto" VerticalOptions="Center" />
+					<Label x:Name="FNLifeDeFactoLabel" VerticalOptions="Center" />
+				</StackLayout>
+
+
+				<Label />
 
 			</StackLayout>
 		</ScrollView>
