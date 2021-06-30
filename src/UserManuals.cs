@@ -90,11 +90,8 @@ namespace RD_AAOW
 								"Повторить предыдущие действия для всех позиций чека");
 						if (i == 3)
 							{
-							if (operations[i][operations[i].Count - 1] == "• -")
-								operations[i][operations[i].Count - 1] = "(не предусмотрена)";
-							else
-								operations[i][operations[i].Count - 1] +=
-									" (отдельно для каждой позиции в чеке);\r\n• Закрыть чек в зависимости от способа оплаты";
+							operations[i][operations[i].Count - 1] +=
+								" (отдельно для каждой позиции в чеке);\r\n• Закрыть чек в зависимости от способа оплаты";
 							}
 						if (i == 6)
 							operations[i][operations[i].Count - 1] +=
@@ -106,6 +103,8 @@ namespace RD_AAOW
 								"• Настоятельно рекомендуется предварительно закрыть смену;\r\n" +
 								operations[i][operations[i].Count - 1];
 
+						if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
+							operations[i][operations[i].Count - 1] = "(не предусмотрено)";
 						if (operations[i][operations[i].Count - 1].Contains ("#"))
 							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("#", "") +
 								"\r\n\r\n* Порядок действий может отличаться в разных версиях прошивок";
