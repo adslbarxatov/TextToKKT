@@ -167,7 +167,7 @@ namespace RD_AAOW
 			return res;
 			}
 
-		// Выбор ККМ
+		// Выбор ККТ
 		private void KKTListForCodes_SelectedIndexChanged (object sender, EventArgs e)
 			{
 			TextToConvert_TextChanged (null, null);
@@ -309,7 +309,7 @@ namespace RD_AAOW
 			SendToClipboard (fnLifeResult);
 			}
 
-		// Ввод номеров в разделе РНМ
+		// Ввод номеров в разделе РН
 		private void RNMSerial_TextChanged (object sender, EventArgs e)
 			{
 			// Заводской номер ККТ
@@ -327,38 +327,20 @@ namespace RD_AAOW
 			RegionLabel.Text = "";
 			int checkINN = KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
-				{
 				RNMUserINN.BackColor = Color.FromArgb (200, 200, 255);
-				//RNMUserINNResult.Text = "???";
-				}
 			else if (checkINN == 0)
-				{
 				RNMUserINN.BackColor = Color.FromArgb (200, 255, 200);
-				//RNMUserINNResult.Text = "OK";
-				}
 			else
-				{
 				RNMUserINN.BackColor = Color.FromArgb (255, 200, 200);
-				//RNMUserINNResult.Text = "XXX";
-				}
 			RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 
-			// РНМ
+			// РН
 			if (RNMValue.Text.Length < 10)
-				{
 				RNMValue.BackColor = Color.FromArgb (200, 200, 255);
-				//RNMValueResult.Text = "???";
-				}
 			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
-				{
 				RNMValue.BackColor = Color.FromArgb (200, 255, 200);
-				//RNMValueResult.Text = "OK";
-				}
 			else
-				{
 				RNMValue.BackColor = Color.FromArgb (255, 200, 200);
-				//RNMValueResult.Text = "XXX";
-				}
 			}
 
 		// Генерация регистрационного номера

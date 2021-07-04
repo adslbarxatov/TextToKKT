@@ -6,7 +6,7 @@ using System.Text;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс обеспечивает доступ к сообщениям об ошибках ККМ
+	/// Класс обеспечивает доступ к сообщениям об ошибках ККТ
 	/// </summary>
 	public class KKTErrorsList
 		{
@@ -42,7 +42,7 @@ namespace RD_AAOW
 
 			try
 				{
-				// Чтение количества новых ККМ
+				// Чтение количества новых ККТ
 				newKKTCount = int.Parse (SR.ReadLine ());
 
 				// Чтение кодов

@@ -125,20 +125,20 @@ namespace RD_AAOW
 
 			userManualsPage = ApplyPageSettings ("UserManualsPage", "Инструкции по работе с ККТ",
 				userManualsMasterBackColor, headerNumber++);
-			errorsPage = ApplyPageSettings ("ErrorsPage", "Расшифровать код ошибки ККТ",
+			errorsPage = ApplyPageSettings ("ErrorsPage", "Коды ошибок ККТ",
 				errorsMasterBackColor, headerNumber++);
-			fnLifePage = ApplyPageSettings ("FNLifePage", "Определить срок жизни ФН",
+			fnLifePage = ApplyPageSettings ("FNLifePage", "Срок жизни ФН",
 				fnLifeMasterBackColor, headerNumber++);
-			rnmPage = ApplyPageSettings ("RNMPage", "Проверить / сгенерировать РНМ",
+			rnmPage = ApplyPageSettings ("RNMPage", "Проверка / генерация регистрационного номера",
 				rnmMasterBackColor, headerNumber++);
-			ofdPage = ApplyPageSettings ("OFDPage", "Запросить параметры ОФД",
+			ofdPage = ApplyPageSettings ("OFDPage", "Параметры ОФД",
 				ofdMasterBackColor, headerNumber++);
 
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, headerNumber++);
 			lowLevelPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
-			codesPage = ApplyPageSettings ("CodesPage", "Перевести текст в коды ККТ",
+			codesPage = ApplyPageSettings ("CodesPage", "Перевод текста в коды ККТ",
 				codesMasterBackColor, headerNumber++);
 			codesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
 
@@ -317,6 +317,8 @@ namespace RD_AAOW
 				aboutFieldBackColor, ADPButton_Clicked);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "DevPage", "Спросить разработчика",
 				aboutFieldBackColor, DevButton_Clicked);
+			AndroidSupport.ApplyButtonSettings (aboutPage, "ManualPage", "Видеоруководство пользователя",
+				aboutFieldBackColor, ManualButton_Clicked);
 
 			AndroidSupport.ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
@@ -414,6 +416,8 @@ namespace RD_AAOW
 			//
 			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor,
 				FNLifeResultCopy, false);
+			AndroidSupport.ApplyTipLabelSettings (fnLifePage, "FNLifeHelpLabel",
+				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", untoggledSwitchColor);
 
 			//
 			fnLifeDeFacto = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeDeFacto");
@@ -427,7 +431,7 @@ namespace RD_AAOW
 				fnLifeDeFacto.IsToggled = fnLifeDeFacto.IsEnabled = false;
 				}
 
-			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "По факту", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "Фактический", false);
 
 			//
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
@@ -439,7 +443,7 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница определения корректности РНМ
+			#region Страница определения корректности РН
 
 			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "SNLabel", "Заводской номер ККТ:", true);
 			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 20,
@@ -469,7 +473,7 @@ namespace RD_AAOW
 
 			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
-					"¹ Первые 10 цифр РНМ являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
+					"¹ Первые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
 					untoggledSwitchColor);
 
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
@@ -740,7 +744,7 @@ namespace RD_AAOW
 				}
 			}
 
-		// Изменение ИНН ОФД и РНМ ККТ
+		// Изменение ИНН ОФД и РН ККТ
 		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			// ЗН ККТ
@@ -768,7 +772,7 @@ namespace RD_AAOW
 				}
 			rnmINNCheckLabel.Text += (" (" + KKTSupport.GetRegionName (rnmINN.Text) + ")");
 
-			// РНМ
+			// РН
 			if (rnmRNM.Text.Length < 10)
 				{
 				rnmRNMCheckLabel.TextColor = rnmRNM.TextColor;
@@ -839,6 +843,8 @@ namespace RD_AAOW
 			try
 				{
 				Clipboard.SetTextAsync (Text);
+				Toast.MakeText (Android.App.Application.Context, "Скопировано в буфер обмена",
+					ToastLength.Short).Show ();
 				}
 			catch
 				{
@@ -1438,6 +1444,20 @@ namespace RD_AAOW
 			try
 				{
 				await Launcher.OpenAsync (AndroidSupport.ADPLink);
+				}
+			catch
+				{
+				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
+					ToastLength.Long).Show ();
+				}
+			}
+
+		// Видеоруководство пользователя
+		private async void ManualButton_Clicked (object sender, EventArgs e)
+			{
+			try
+				{
+				await Launcher.OpenAsync (ProgramDescription.AssemblyVideoManualLink);
 				}
 			catch
 				{

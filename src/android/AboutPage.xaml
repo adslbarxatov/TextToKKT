@@ -15,6 +15,7 @@
 					<Button x:Name="DevPage" HorizontalOptions="Center" />
 				</StackLayout>
 
+				<Button x:Name="ManualPage" HorizontalOptions="Center" />
 				<Button x:Name="ADPPage" HorizontalOptions="Center" />
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
