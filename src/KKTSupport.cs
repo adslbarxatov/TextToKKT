@@ -83,24 +83,60 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Доступные статусы поддержки ФФД
+		/// </summary>
+		public enum FFDSupportStatuses
+			{
+			/// <summary>
+			/// Поддерживается
+			/// </summary>
+			Supported,
+
+			/// <summary>
+			/// Не поддерживается
+			/// </summary>
+			Unsupported,
+
+			/// <summary>
+			/// На данный момент не определён
+			/// </summary>
+			Unknown,
+
+			/// <summary>
+			/// Запланирован
+			/// </summary>
+			Planned
+			}
+
+		/// <summary>
 		/// Метод возвращает статус поддержки ФФД для ККТ по её заводскому номеру
 		/// </summary>
 		/// <param name="KKTSerialNumber">Заводской номер ККТ</param>
-		public static string GetFFDSupportStatusForKKT (string KKTSerialNumber)
+		/// <returns>Возвращает вектор из трёх состояний для ФФД 1.05, 1.1 и 1.2</returns>
+		public static FFDSupportStatuses[] GetFFDSupportStatus (string KKTSerialNumber)
 			{
 			string status = GetKKTModelData (KKTSerialNumber).Substring (0, 3);
-			if (status == "000")
-				return "";
+			FFDSupportStatuses[] res = new FFDSupportStatuses[]
+				{
+				FFDSupportStatuses.Unknown, // 1.05
+				FFDSupportStatuses.Unknown, // 1.1
+				FFDSupportStatuses.Unknown	// 1.2
+				};
 
-			string result = "\n(ФФД ";
-			if (status[0] == '1')
-				result += "1.05";
-			if (status[1] == '1')
-				result += ", 1.1";
-			if (status[2] == '1')
-				result += ", 1.2";
+			if (status == "???")
+				return res;
 
-			return result + ")";
+			for (int i = 0; i < 3; i++)
+				{
+				if (status[i] == '1')
+					res[i] = FFDSupportStatuses.Supported;
+				else if (status[i] == '0')
+					res[i] = FFDSupportStatuses.Unsupported;
+				else if (status[i] == '+')
+					res[i] = FFDSupportStatuses.Planned;
+				}
+
+			return res;
 			}
 
 		private static string GetKKTModelData (string KKTSerialNumber)
@@ -112,13 +148,13 @@ namespace RD_AAOW
 				{
 				case 7:
 					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0))
-						return "100|ЭКР 2102 / Миника 1102";
+						return "1?+|ЭКР 2102 / Миника 1102";
 
 					if (TEST_SN_D (0, 1) && TEST_SN_D (1, 6))
-						return "100|ПРИМ 07Ф";
+						return "1?0|ПРИМ 07Ф";
 
 					if (TEST_SN_D (0, 1) && TEST_SN_D (1, 7))
-						return "100|ПРИМ 08Ф, 21Ф";
+						return "1?+|ПРИМ 08Ф, 21ФА";
 					break;
 
 				/////////////////////////////////////////////////
@@ -126,23 +162,23 @@ namespace RD_AAOW
 					if (TEST_SN_D (0, 0))
 						{
 						if (TEST_SN_D (1, 0))
-							return "100|Меркурий 115Ф";
+							return "1?+|Меркурий 115Ф";
 
 						if (TEST_SN_D (1, 2))
-							return "100|Меркурий 119Ф";
+							return "1?+|Меркурий 119Ф";
 
 						if (TEST_SN_D (1, 4))
-							return "100|Меркурий 185Ф";
+							return "1?+|Меркурий 185Ф";
 
 						if (TEST_SN_D (1, 6))
-							return "100|Меркурий 130Ф";
+							return "1?+|Меркурий 130Ф";
 
 						if (TEST_SN_D (1, 8))
-							return "100|Меркурий 180Ф";
+							return "1?+|Меркурий 180Ф";
 						}
 
 					if (TEST_SN_D (0, 1) && TEST_SN_D (1, 8))
-						return "100|Нева 01Ф / Мещера 01Ф";
+						return "1?+|Нева 01Ф / Мещера 01Ф";
 
 					break;
 
@@ -153,40 +189,40 @@ namespace RD_AAOW
 						if (TEST_SN_D (1, 1) && TEST_SN_D (2, 2))
 							{
 							if (TEST_SN_D (3, 6))
-								return "100|Пирит 1Ф";
+								return "1?0|Пирит 1Ф";
 
 							if (TEST_SN_D (3, 8))
-								return "100|Пирит 2Ф";
+								return "1?+|Пирит 2Ф";
 
 							if (TEST_SN_D (3, 9))
-								return "110|Пирит 2СФ";
+								return "11+|Пирит 2СФ";
 							}
 
 						if (TEST_SN_D (1, 4) && TEST_SN_D (2, 9))
 							{
 							if (TEST_SN_D (3, 1))
-								return "100|Вики Мини Ф";
+								return "1?+|Вики Мини Ф";
 
 							if (TEST_SN_D (3, 2))
-								return "100|Viki Tower Ф";
+								return "1?+|Viki Tower Ф";
 
 							if (TEST_SN_D (3, 3))
-								return "100|Вики Принт 57Ф";
+								return "1?+|Вики Принт 57Ф";
 
 							if (TEST_SN_D (3, 4))
-								return "100|Вики Принт 57 плюс Ф";
+								return "1?+|Вики Принт 57 плюс Ф";
 
 							if (TEST_SN_D (3, 5))
-								return "100|Вики Принт 80 плюс Ф";
+								return "1?+|Вики Принт 80 плюс Ф";
 
 							if (TEST_SN_D (3, 6))
-								return "100|Дримкас Ф";
+								return "1?+|Дримкас Ф";
 
 							if (TEST_SN_D (3, 7))
-								return "100|Касса Ф";
+								return "1?+|Касса Ф";
 
 							if (TEST_SN_D (3, 8))
-								return "100|Пульс ФА";
+								return "1?+|Пульс ФА";
 
 							if (TEST_SN_D (3, 9))
 								return "110|Спутник Ф";
@@ -194,30 +230,30 @@ namespace RD_AAOW
 						}
 
 					if (TEST_SN_D (0, 5) && TEST_SN_D (1, 0) && TEST_SN_D (2, 1))
-						return "100|Пионер 114Ф";
+						return "1?+|Пионер 114Ф";
 
 					break;
 
 				/////////////////////////////////////////////////
 				case 12:
 					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0) && TEST_SN_D (2, 2))
-						return "100|АМС 100Ф";
+						return "1?0|АМС 100Ф";
 
 					if (TEST_SN_D (0, 0) && TEST_SN_D (2, 1) && TEST_SN_D (3, 7))
-						return "100|Орион 100Ф";
+						return "1?0|Орион 100Ф";
 
 					if (TEST_SN_D (0, 1) && TEST_SN_D (3, 0))
 						{
 						if (TEST_SN_D (1, 7) && TEST_SN_D (2, 7) && TEST_SN_D (4, 4) && TEST_SN_D (5, 4))
-							return "100|MSPOS-Е-Ф";
+							return "1?+|MSPOS-Е-Ф";
 
 						if (TEST_SN_D (1, 9) && TEST_SN_D (2, 9) && TEST_SN_D (4, 3))
 							{
 							if (TEST_SN_D (5, 1))
-								return "100|ПТК MSTAR-TK";
+								return "1?+|ПТК MSTAR-TK";
 
 							if (TEST_SN_D (5, 6))
-								return "100|MSPOS-K";
+								return "1?+|MSPOS-K";
 							}
 						}
 
@@ -228,82 +264,82 @@ namespace RD_AAOW
 					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0) && TEST_SN_D (2, 1) && TEST_SN_D (3, 0))
 						{
 						if (TEST_SN_D (4, 5) && TEST_SN_D (5, 7))
-							return "110|Атол 25Ф";
+							return "11+|Атол 25Ф";
 
 						if (TEST_SN_D (4, 6))
 							{
 							if (TEST_SN_D (5, 1))
-								return "110|Атол 30Ф";
+								return "11+|Атол 30Ф";
 
 							if (TEST_SN_D (5, 2))
-								return "110|Атол 55Ф";
+								return "11+|Атол 55Ф";
 
 							if (TEST_SN_D (5, 3))
-								return "110|Атол 22Ф";
+								return "11+|Атол 22Ф";
 
 							if (TEST_SN_D (5, 4))
-								return "100|Атол 52Ф";
+								return "1?0|Атол 52Ф";
 
 							if (TEST_SN_D (5, 7))
-								return "110|Атол 11Ф";
+								return "11+|Атол 11Ф";
 
 							if (TEST_SN_D (5, 9))
-								return "110|Атол 77Ф";
+								return "11+|Атол 77Ф";
 							}
 
 						if (TEST_SN_D (4, 7))
 							{
 							if (TEST_SN_D (5, 2))
-								return "100|Атол 90Ф";
+								return "1?0|Атол 90Ф";
 
 							if (TEST_SN_D (5, 5))
-								return "100|Атол 60Ф";
+								return "1?0|Атол 60Ф";
 
 							if (TEST_SN_D (5, 6))
-								return "110|Казначей ФА";
+								return "11+|Казначей ФА";
 
 							if (TEST_SN_D (5, 8))
-								return "100|Атол 15Ф";
+								return "1?+|Атол 15Ф";
 							}
 
 						if (TEST_SN_D (4, 8))
 							{
 							if (TEST_SN_D (5, 0))
-								return "110|Атол 50Ф";
+								return "11+|Атол 50Ф";
 
 							if (TEST_SN_D (5, 1))
-								return "110|Атол 20Ф";
+								return "11+|Атол 20Ф";
 
 							if (TEST_SN_D (5, 2))
-								return "110|Атол 91Ф";
+								return "11+|Атол 91Ф";
 
 							if (TEST_SN_D (5, 4))
-								return "100|Атол 92Ф";
+								return "1?+|Атол 92Ф";
 
 							if (TEST_SN_D (5, 6))
-								return "110|Атол Sigma 10 (150Ф)";
+								return "11+|Атол Sigma 10 (150Ф)";
 							}
 
 						if (TEST_SN_D (4, 9))
 							{
 							if (TEST_SN_D (5, 0))
-								return "110|Атол Sigma 7Ф";
+								return "11+|Атол Sigma 7Ф";
 
 							if (TEST_SN_D (5, 1))
-								return "110|Атол Sigma 8Ф";
+								return "11+|Атол Sigma 8Ф";
 							}
 						}
 
 					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0) && TEST_SN_D (2, 3) && TEST_SN_D (3, 0))
 						{
 						if (TEST_SN_D (4, 7) && TEST_SN_D (5, 4))
-							return "110|Эвотор СТ2Ф (7.2)";
+							return "11+|Эвотор СТ2Ф (7.2)";
 
 						if (TEST_SN_D (4, 7) && TEST_SN_D (5, 9))
-							return "110|Эвотор СТ3Ф (7.3 / 10)";
+							return "11+|Эвотор СТ3Ф (7.3 / 10)";
 
 						if (TEST_SN_D (4, 8) && TEST_SN_D (5, 3))
-							return "110|Эвотор СТ5Ф (5)";
+							return "11+|Эвотор СТ5Ф (5)";
 						}
 
 					break;
@@ -315,73 +351,79 @@ namespace RD_AAOW
 						if (TEST_SN_D (8, 0))
 							{
 							if (TEST_SN_D (9, 1))
-								return "100|Штрих-Мини-01Ф";
+								return "1?+|Штрих-Мини-01Ф";
 
 							if (TEST_SN_D (9, 2))
-								return "100|Штрих-ФР-01Ф";
+								return "1?+|Штрих-ФР-01Ф";
+
+							if (TEST_SN_D (9, 3))
+								return "1?+|РР-01Ф";
 
 							if (TEST_SN_D (9, 4))
-								return "100|Штрих-Online";
+								return "1?+|Штрих-Online";
 
 							if (TEST_SN_D (9, 5))
-								return "100|PayOnline-01 ФА";
+								return "1?+|PayOnline-01 ФА";
 
 							if (TEST_SN_D (9, 6))
-								return "110|Штрих-М-01Ф";
+								return "11+|Штрих-М-01Ф";
 
 							if (TEST_SN_D (9, 7))
-								return "110|Штрих-Лайт-01Ф";
+								return "11+|Штрих-Лайт-01Ф";
 
 							if (TEST_SN_D (9, 8))
-								return "100|Штрих-М-02Ф";
+								return "1?+|Штрих-М-02Ф";
 
 							if (TEST_SN_D (9, 9))
-								return "100|Штрих-Лайт-02Ф";
+								return "1?+|Штрих-Лайт-02Ф";
 							}
 
 						if (TEST_SN_D (8, 1))
 							{
 							if (TEST_SN_D (9, 2))
-								return "100|Ритейл-01Ф / АЗУР-01Ф";
+								return "1?+|Ритейл-01Ф";
+
+							if (TEST_SN_D (9, 3))
+								return "1?+|РР-02Ф";
 
 							if (TEST_SN_D (9, 4))
-								return "100|РР-03Ф";
+								return "1?+|РР-03Ф";
 
 							if (TEST_SN_D (9, 5))
-								return "100|РР-04Ф";
+								return "1?+|РР-04Ф";
 
 							if (TEST_SN_D (9, 9))
-								return "100|Штрих-ФР-02Ф";
+								return "1?0|Штрих-ФР-02Ф";
 							}
 
 						if (TEST_SN_D (8, 2))
 							{
 							if (TEST_SN_D (9, 2))
-								return "100|Элвес ФР-Ф";
+								return "1?+|Элвес ФР-Ф";
 
 							if (TEST_SN_D (9, 4))
-								return "100|Штрих-Мини-02Ф";
+								return "1?0|Штрих-Мини-02Ф";
 
 							if (TEST_SN_D (9, 7))
-								return "100|PayVKP-80 ФА";
+								return "1?0|PayVKP-80 ФА";
 							}
 
 						if (TEST_SN_D (8, 3))
 							{
 							if (TEST_SN_D (9, 0))
-								return "100|Элвес-МФ";
+								return "1?0|Элвес-МФ";
 
 							if (TEST_SN_D (9, 3))
-								return "100|Штрих-СМАРТПОС-Ф v 1";
+								return "1?+|Штрих-СМАРТПОС-Ф v 1";
 							}
 
 						if (TEST_SN_D (8, 4))
 							{
 							if (TEST_SN_D (9, 0))
-								return "100|Элвес-МФ (ФР)";
+								return "1?0|Элвес-МФ (ФР)";
 
 							if (TEST_SN_D (9, 3))
-								return "100|Штрих-СМАРТПОС-Ф v 2";
+								return "1?+|Штрих-СМАРТПОС-Ф v 2";
 							}
 						}
 
@@ -390,12 +432,12 @@ namespace RD_AAOW
 				/////////////////////////////////////////////////
 				case 20:
 					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0) && TEST_SN_D (2, 0) && TEST_SN_D (3, 1))
-						return "100|Уникум-ФА";
+						return "1?0|Уникум-ФА";
 
 					break;
 				}
 
-			return "000|неизвестная модель ККТ";
+			return "???|неизвестная модель ККТ";
 			}
 
 		private static string kktSerialNumber;

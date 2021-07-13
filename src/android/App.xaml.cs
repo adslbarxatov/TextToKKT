@@ -58,13 +58,13 @@ namespace RD_AAOW
 			errorsResultText,
 			aboutLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
-			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
+			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel;
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
-			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
+			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
 			lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -85,6 +85,7 @@ namespace RD_AAOW
 
 		private ConfigAccessor ca;
 		private KKTSupport.FNLifeFlags fnlf;
+		private double fontSizeMultiplier = 1.2;
 
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
@@ -129,7 +130,7 @@ namespace RD_AAOW
 				errorsMasterBackColor, headerNumber++);
 			fnLifePage = ApplyPageSettings ("FNLifePage", "Срок жизни ФН",
 				fnLifeMasterBackColor, headerNumber++);
-			rnmPage = ApplyPageSettings ("RNMPage", "Проверка / генерация регистрационного номера",
+			rnmPage = ApplyPageSettings ("RNMPage", "Заводской и регистрационный номер ККТ",
 				rnmMasterBackColor, headerNumber++);
 			ofdPage = ApplyPageSettings ("OFDPage", "Параметры ОФД",
 				ofdMasterBackColor, headerNumber++);
@@ -171,7 +172,7 @@ namespace RD_AAOW
 				{
 				Label l = new Label ();
 				l.FontAttributes = FontAttributes.Bold;
-				l.FontSize = ut.FontSize;
+				l.FontSize = ut.FontSize * fontSizeMultiplier;
 				l.HorizontalOptions = LayoutOptions.Start;
 				l.IsVisible = true;
 				l.Margin = ut.Margin;
@@ -184,7 +185,7 @@ namespace RD_AAOW
 				l2.BackgroundColor = userManualsFieldBackColor;
 				l2.Text = "   ";
 				l2.FontAttributes = FontAttributes.None;
-				l2.FontSize = ut.FontSize;
+				l2.FontSize = ut.FontSize * fontSizeMultiplier;
 				l2.HorizontalOptions = LayoutOptions.Fill;
 				l2.HorizontalTextAlignment = TextAlignment.Start;
 				l2.Margin = ut.Margin;
@@ -196,6 +197,8 @@ namespace RD_AAOW
 
 			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "KKTButton",
 				"   ", userManualsFieldBackColor, UserManualsKKTButton_Clicked);
+			userManualsKKTButton.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyTipLabelSettings (userManualsPage, "HelpLabel",
 				"<...> – индикация на экране, [...] – клавиши ККТ", untoggledSwitchColor);
 
@@ -230,6 +233,7 @@ namespace RD_AAOW
 			codesKKTButton = AndroidSupport.ApplyButtonSettings (codesPage, "KKTButton",
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes],
 				codesFieldBackColor, CodesKKTButton_Clicked);
+			codesKKTButton.FontSize *= fontSizeMultiplier;
 
 			codesSourceTextLabel = AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SourceTextLabel",
 				"Исходный текст:", true);
@@ -237,6 +241,7 @@ namespace RD_AAOW
 			codesSourceText = AndroidSupport.ApplyEditorSettings (codesPage, "SourceText",
 				codesFieldBackColor, Keyboard.Default, 72, ca.CodesText, SourceText_TextChanged);
 			codesSourceText.HorizontalOptions = LayoutOptions.Fill;
+			codesSourceText.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "ResultTextLabel", "Коды ККТ:", true);
 
@@ -246,6 +251,7 @@ namespace RD_AAOW
 
 			codesResultText = AndroidSupport.ApplyResultLabelSettings (codesPage, "ResultText", "", codesFieldBackColor);
 			codesResultText.HorizontalTextAlignment = TextAlignment.Start;
+			codesResultText.FontSize *= fontSizeMultiplier;
 
 			codesHelpLabel = AndroidSupport.ApplyTipLabelSettings (codesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
@@ -279,21 +285,26 @@ namespace RD_AAOW
 			errorsKKTButton = AndroidSupport.ApplyButtonSettings (errorsPage, "KKTButton",
 				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
+			errorsKKTButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ErrorCodeLabel", "Код / сообщение:", true);
 
 			errorsCodeButton = AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorCodeButton",
 				kkme.GetErrorCodesList (ca.KKTForErrors)[(int)ca.ErrorCode],
 				errorsFieldBackColor, ErrorsCodeButton_Clicked);
+			errorsCodeButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ResultTextLabel", "Расшифровка:", true);
 
 			errorsResultText = AndroidSupport.ApplyResultLabelSettings (errorsPage, "ResultText",
 				kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode), errorsFieldBackColor);
 			errorsResultText.HorizontalTextAlignment = TextAlignment.Start;
+			errorsResultText.FontSize *= fontSizeMultiplier;
 
 			errorSearchText = AndroidSupport.ApplyEditorSettings (errorsPage, "ErrorSearchText", errorsFieldBackColor,
 				Keyboard.Default, 30, "", null);
+			errorSearchText.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorSearchButton",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
 				errorsFieldBackColor, Errors_Find);
@@ -329,9 +340,12 @@ namespace RD_AAOW
 				{
 				unlockLabel = AndroidSupport.ApplyLabelSettingsForKKT (aboutPage, "UnlockLabel", ca.LockMessage, false);
 				unlockLabel.IsVisible = true;
+				unlockLabel.FontSize *= fontSizeMultiplier;
+
 				unlockField = AndroidSupport.ApplyEditorSettings (aboutPage, "UnlockField", aboutFieldBackColor,
 					Keyboard.Default, 32, "", UnlockMethod);
 				unlockField.IsVisible = true;
+				unlockField.FontSize *= fontSizeMultiplier;
 				}
 
 			#endregion
@@ -343,6 +357,7 @@ namespace RD_AAOW
 			fnLifeSerial = AndroidSupport.ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
 				Keyboard.Numeric, 16, ca.FNSerial, FNLifeSerial_TextChanged);
 			fnLifeSerial.Margin = new Thickness (0);
+			fnLifeSerial.FontSize *= fontSizeMultiplier;
 
 			fnLife13 = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLife13");
 			fnLife13.Toggled += FnLife13_Toggled;
@@ -353,9 +368,8 @@ namespace RD_AAOW
 
 			//
 			fnLifeModelLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeModelLabel", "", false);
-
 			fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
-			fnLifeModelLabel.FontFamily = "Serif";
+			fnLifeModelLabel.FontSize *= fontSizeMultiplier;
 			fnLifeModelLabel.HorizontalOptions = LayoutOptions.Fill;
 			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
 
@@ -412,10 +426,13 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetDate", "Дата фискализации:", false);
 			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate", fnLifeFieldBackColor,
 				FnLifeStartDate_DateSelected);
+			fnLifeStartDate.FontSize *= fontSizeMultiplier;
 
 			//
 			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor,
 				FNLifeResultCopy, false);
+			fnLifeResult.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyTipLabelSettings (fnLifePage, "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", untoggledSwitchColor);
 
@@ -443,27 +460,33 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница определения корректности РН
+			#region Страница заводских и рег. номеров
 
 			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "SNLabel", "Заводской номер ККТ:", true);
 			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 20,
 				ca.KKTSerial, RNM_TextChanged);
+			rnmKKTSN.FontSize *= fontSizeMultiplier;
+
 			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "TypeLabel", "", false);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNLabel", "ИНН пользователя:", true);
 			rnmINN = AndroidSupport.ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12,
 				ca.UserINN, RNM_TextChanged);
+			rnmINN.FontSize *= fontSizeMultiplier;
+
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "INNCheckLabel", "", false);
 
 			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
-					"Регистрационный номер для проверки или произвольное число для генерации¹:", true);
+					"Регистрационный номер для проверки или произвольное число для генерации:", true);
 			else
 				AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMLabel",
 					"Регистрационный номер для проверки:", true);
 
 			rnmRNM = AndroidSupport.ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16,
 				ca.RNMKKT, RNM_TextChanged);
+			rnmRNM.FontSize *= fontSizeMultiplier;
+
 			rnmRNMCheckLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMCheckLabel", "", false);
 
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate", "Сгенерировать",
@@ -471,14 +494,21 @@ namespace RD_AAOW
 			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
 			rnmGenerate.Margin = new Thickness (0);
 
+			string rnmAbout = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
+				"жёлтый – планируется; синий – нет сведений (на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
-				AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout",
-					"¹ Первые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны вручную при генерации",
-					untoggledSwitchColor);
+				rnmAbout += ("\n\nПервые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
+					"вручную при генерации");
+			AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout", rnmAbout, untoggledSwitchColor);
 
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
 				rnmFieldBackColor, RNMClear_Clicked);
+
+			rnmSupport105 = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMSupport105", "ФФД 1.05", false);
+			rnmSupport11 = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMSupport11", "ФФД 1.1", false);
+			rnmSupport12 = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMSupport12", "ФФД 1.2", false);
+			rnmSupport105.Padding = rnmSupport11.Padding = rnmSupport12.Padding = new Thickness (6);
 
 			RNM_TextChanged (null, null);   // Применение значений
 
@@ -489,6 +519,8 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDINNLabel", "ИНН ОФД:", true);
 			ofdINN = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDINN", ofdFieldBackColor, Keyboard.Numeric, 10,
 				ca.OFDINN, OFDINN_TextChanged);
+			ofdINN.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINNCopy",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Copy),
 				ofdFieldBackColor, OFDINNCopy_Clicked);
@@ -496,24 +528,32 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNameLabel", "Название:", true);
 			ofdNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
 				ofdFieldBackColor, OFDName_Clicked);
+			ofdNameButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameLabel", "Адрес:", true);
 			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
+			ofdDNSNameButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDIPLabel", "IP:", true);
 			ofdIPButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor, Field_Clicked);
+			ofdIPButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDPortLabel", "Порт:", true);
 			ofdPortButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPort", "", ofdFieldBackColor, Field_Clicked);
+			ofdPortButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail:", true);
 			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
+			ofdEmailButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDSiteLabel", "Сайт:", true);
 			ofdSiteButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
+			ofdSiteButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", true);
-			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", "www.nalog.ru", ofdFieldBackColor, Field_Clicked);
+			ofdFNSButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", "www.nalog.ru",
+				ofdFieldBackColor, Field_Clicked);
+			ofdFNSButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
@@ -524,6 +564,8 @@ namespace RD_AAOW
 
 			ofdSearchText = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDSearchText", ofdFieldBackColor,
 				Keyboard.Default, 30, "", null);
+			ofdSearchText.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSearchButton",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
 				ofdFieldBackColor, OFD_Find);
@@ -554,12 +596,14 @@ namespace RD_AAOW
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommandsList ()[(int)ca.LowLevelCode] :
 				ll.GetSHTRIHCommandsList ()[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
+			lowLevelCommand.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandCodeLabel", "Код команды:", true);
 			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, false) :
 				ll.GetSHTRIHCommand (ca.LowLevelCode, false),
 				lowLevelFieldBackColor, Field_Clicked);
+			lowLevelCommandCode.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandDescrLabel", "Описание:", true);
 
@@ -567,12 +611,15 @@ namespace RD_AAOW
 				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, true) :
 				ll.GetSHTRIHCommand (ca.LowLevelCode, true), lowLevelFieldBackColor);
 			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
+			lowLevelCommandDescr.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
 
 			commandSearchText = AndroidSupport.ApplyEditorSettings (lowLevelPage, "CommandSearchText", lowLevelFieldBackColor,
 				Keyboard.Default, 30, "", null);
+			commandSearchText.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandSearchButton",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
 				lowLevelFieldBackColor, Command_Find);
@@ -749,10 +796,20 @@ namespace RD_AAOW
 			{
 			// ЗН ККТ
 			if (rnmKKTSN.Text != "")
-				rnmKKTTypeLabel.Text = KKTSupport.GetKKTModel (rnmKKTSN.Text) +
-					KKTSupport.GetFFDSupportStatusForKKT (rnmKKTSN.Text);
+				{
+				rnmKKTTypeLabel.Text = KKTSupport.GetKKTModel (rnmKKTSN.Text);
+
+				KKTSupport.FFDSupportStatuses[] statuses = KKTSupport.GetFFDSupportStatus (rnmKKTSN.Text);
+				rnmSupport105.BackgroundColor = StatusToColor (statuses[0]);
+				rnmSupport11.BackgroundColor = StatusToColor (statuses[1]);
+				rnmSupport12.BackgroundColor = StatusToColor (statuses[2]);
+				}
 			else
+				{
 				rnmKKTTypeLabel.Text = "";
+				rnmSupport105.BackgroundColor = rnmSupport11.BackgroundColor = rnmSupport12.BackgroundColor =
+					StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+				}
 
 			// ИНН пользователя
 			if (KKTSupport.CheckINN (rnmINN.Text) < 0)
@@ -768,7 +825,7 @@ namespace RD_AAOW
 			else
 				{
 				rnmINNCheckLabel.TextColor = errorColor;
-				rnmINNCheckLabel.Text = "некорректный";
+				rnmINNCheckLabel.Text = "возможно, некорректный";
 				}
 			rnmINNCheckLabel.Text += (" (" + KKTSupport.GetRegionName (rnmINN.Text) + ")");
 
@@ -788,6 +845,22 @@ namespace RD_AAOW
 				rnmRNMCheckLabel.TextColor = errorColor;
 				rnmRNMCheckLabel.Text = "некорректный";
 				}
+			}
+
+		// Запрос цвета, соответствующего статусу поддержки
+		private Color StatusToColor (KKTSupport.FFDSupportStatuses Status)
+			{
+			if (Status == KKTSupport.FFDSupportStatuses.Planned)
+				return Color.FromHex ("#FFFFC8");
+
+			if (Status == KKTSupport.FFDSupportStatuses.Supported)
+				return Color.FromHex ("#C8FFC8");
+
+			if (Status == KKTSupport.FFDSupportStatuses.Unsupported)
+				return Color.FromHex ("#FFC8C8");
+
+			// Остальные
+			return Color.FromHex ("#C8C8FF");
 			}
 
 		private readonly OFD ofd = new OFD ();

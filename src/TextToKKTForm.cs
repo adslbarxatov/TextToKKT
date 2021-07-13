@@ -110,8 +110,14 @@ namespace RD_AAOW
 				}
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = RNMTip.Visible = LowLevelTab.Enabled = ca.AllowExtendedFunctionsLevel2;
+			RNMGenerate.Visible = LowLevelTab.Enabled = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
+
+			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
+				"жёлтый – планируется; синий – нет сведений\n(на момент релиза этой версии приложения)";
+			if (ca.AllowExtendedFunctionsLevel2)
+				RNMTip.Text += ("\n\nПервые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
+					"вручную при генерации");
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
@@ -315,32 +321,54 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (RNMSerial.Text != "")
 				{
-				RNMSerialResult.Text = KKTSupport.GetKKTModel (RNMSerial.Text) +
-					KKTSupport.GetFFDSupportStatusForKKT (RNMSerial.Text);
+				RNMSerialResult.Text = KKTSupport.GetKKTModel (RNMSerial.Text);
+
+				KKTSupport.FFDSupportStatuses[] statuses = KKTSupport.GetFFDSupportStatus (RNMSerial.Text);
+				RNMSupport105.BackColor = StatusToColor (statuses[0]);
+				RNMSupport11.BackColor = StatusToColor (statuses[1]);
+				RNMSupport12.BackColor = StatusToColor (statuses[2]);
 				}
 			else
 				{
 				RNMSerialResult.Text = "(введите ЗН ККТ)";
+				RNMSupport105.BackColor = RNMSupport11.BackColor = RNMSupport12.BackColor =
+					StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
 				}
 
 			// ИНН пользователя
 			RegionLabel.Text = "";
 			int checkINN = KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
-				RNMUserINN.BackColor = Color.FromArgb (200, 200, 255);
+				RNMUserINN.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
 			else if (checkINN == 0)
-				RNMUserINN.BackColor = Color.FromArgb (200, 255, 200);
+				RNMUserINN.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
 			else
-				RNMUserINN.BackColor = Color.FromArgb (255, 200, 200);
+				RNMUserINN.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Planned);   // Не ошибка
 			RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 
 			// РН
 			if (RNMValue.Text.Length < 10)
-				RNMValue.BackColor = Color.FromArgb (200, 200, 255);
+				RNMValue.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
 			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
-				RNMValue.BackColor = Color.FromArgb (200, 255, 200);
+				RNMValue.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
 			else
-				RNMValue.BackColor = Color.FromArgb (255, 200, 200);
+				RNMValue.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
+			}
+
+		// Запрос цвета, соответствующего статусу поддержки
+		private Color StatusToColor (KKTSupport.FFDSupportStatuses Status)
+			{
+			if (Status == KKTSupport.FFDSupportStatuses.Planned)
+				return Color.FromArgb (255, 255, 200);
+
+			if (Status == KKTSupport.FFDSupportStatuses.Supported)
+				return Color.FromArgb (200, 255, 200);
+
+			if (Status == KKTSupport.FFDSupportStatuses.Unsupported)
+				return Color.FromArgb (255, 200, 200);
+
+			// Остальные
+			return Color.FromArgb (200, 200, 255);
 			}
 
 		// Генерация регистрационного номера

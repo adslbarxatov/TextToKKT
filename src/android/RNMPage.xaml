@@ -8,10 +8,17 @@
 
 		<ScrollView>
 			<StackLayout>
-				<Label x:Name="SNLabel" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="SN" />
+					<Label x:Name="SNLabel" VerticalOptions="Center" />
+					<Editor x:Name="SN" VerticalOptions="Center" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Label x:Name="TypeLabel" VerticalOptions="Center" />
+
+					<Label x:Name="RNMSupport105" HorizontalTextAlignment="Center" />
+					<Label x:Name="RNMSupport11" HorizontalTextAlignment="Center" />
+					<Label x:Name="RNMSupport12" HorizontalTextAlignment="Center" />
 				</StackLayout>
 
 				<Label x:Name="INNLabel" />
