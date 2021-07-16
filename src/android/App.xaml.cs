@@ -87,6 +87,8 @@ namespace RD_AAOW
 		private KKTSupport.FNLifeFlags fnlf;
 		private double fontSizeMultiplier = 1.2;
 
+		private DateTime fnDeadline = new DateTime (2021, 8, 6, 0, 0, 0);
+
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
 			{
@@ -368,7 +370,7 @@ namespace RD_AAOW
 
 			//
 			fnLifeModelLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeModelLabel", "", false);
-			fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
+			//fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
 			fnLifeModelLabel.FontSize *= fontSizeMultiplier;
 			fnLifeModelLabel.HorizontalOptions = LayoutOptions.Fill;
 			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
@@ -654,9 +656,10 @@ namespace RD_AAOW
 		// Сброс списков ККТ и ошибок
 		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
 			{
+			lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки
 			ca.KKTForErrors = ca.ErrorCode = 0;
-			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
 
+			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
 			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
 			errorsCodeButton.Text = list[(int)ca.ErrorCode];
 			list.Clear ();
@@ -698,6 +701,7 @@ namespace RD_AAOW
 		// Выбор списка команд
 		private void LowLevelSHTRIH_Toggled (object sender, ToggledEventArgs e)
 			{
+			lastCommandSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
 			ca.LowLevelCommandsATOL = !lowLevelSHTRIH.IsToggled;
 			LowLevelCommandCodeButton_Clicked (sender, null);
 			}
@@ -785,9 +789,28 @@ namespace RD_AAOW
 				{
 				if (!KKTSupport.IsFNCompatibleWithFFD12 (fnLifeSerial.Text))
 					{
-					fnLifeResult.Text += "\n(выбранный ФН должен быть зарегистрирован до 6.08.21)";
 					fnLifeResult.TextColor = errorColor;
+
+					string deadLine = fnDeadline.ToString ("d.MM.yy");
+					if (DateTime.Now >= fnDeadline)
+						{
+						fnLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
+						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
+						}
+					else
+						{
+						fnLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
+						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Planned);
+						}
 					}
+				else
+					{
+					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
+					}
+				}
+			else
+				{
+				fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
 				}
 			}
 

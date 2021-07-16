@@ -21,6 +21,8 @@ namespace RD_AAOW
 		private ConfigAccessor ca = null;
 		private KKTSupport.FNLifeFlags fnlf;
 
+		private DateTime fnDeadline = new DateTime (2021, 8, 6, 0, 0, 0);
+
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
@@ -236,6 +238,7 @@ namespace RD_AAOW
 			KKTListForErrors.Items.Clear ();
 			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
+			lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки
 			}
 
 		// Ввод номера ФН в разделе срока жизни
@@ -300,11 +303,32 @@ namespace RD_AAOW
 				FNLifeResult.Text += res;
 				}
 
-			if (!(FNLife13.Enabled && FNLife36.Enabled) && // Признак корректно заданного ЗН ФН
-				!KKTSupport.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
+			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
 				{
-				FNLifeResult.Text += "\n(выбранный ФН должен быть зарегистрирован до 6.08.21)";
-				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
+				if (!KKTSupport.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
+					{
+					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
+
+					string deadLine = fnDeadline.ToString ("d.MM.yy");
+					if (DateTime.Now >= fnDeadline)
+						{
+						FNLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
+						FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
+						}
+					else
+						{
+						FNLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
+						FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Planned);
+						}
+					}
+				else
+					{
+					FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
+					}
+				}
+			else
+				{
+				FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
 				}
 			}
 
@@ -436,6 +460,7 @@ namespace RD_AAOW
 			LowLevelCommand.Items.Clear ();
 			LowLevelCommand.Items.AddRange (ll.GetATOLCommandsList ().ToArray ());
 			LowLevelCommand.SelectedIndex = 0;
+			lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
 			}
 
 		private void LowLevelCommandSHTRIH_CheckedChanged (object sender, EventArgs e)
@@ -443,6 +468,7 @@ namespace RD_AAOW
 			LowLevelCommand.Items.Clear ();
 			LowLevelCommand.Items.AddRange (ll.GetSHTRIHCommandsList ().ToArray ());
 			LowLevelCommand.SelectedIndex = 0;
+			lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
 			}
 
 		// Выбор команды

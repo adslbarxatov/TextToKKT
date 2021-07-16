@@ -260,6 +260,19 @@ namespace RD_AAOW
 					break;
 
 				/////////////////////////////////////////////////
+				case 13:
+					if (TEST_SN_D (4, 1) && TEST_SN_D (5, 0))
+						{
+						if (TEST_SN_D (3, 4))
+							return "1??|POSprint FP410-Ф";
+
+						if (TEST_SN_D (3, 5))
+							return "1??|POSprint FP510-Ф";
+						}
+
+					break;
+
+				/////////////////////////////////////////////////
 				case 14:
 					if (TEST_SN_D (0, 0) && TEST_SN_D (1, 0) && TEST_SN_D (2, 1) && TEST_SN_D (3, 0))
 						{
