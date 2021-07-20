@@ -31,8 +31,8 @@ namespace RD_AAOW
 			headersMasterBackColor = Color.FromHex ("#E8E8E8"),
 			headersFieldBackColor = Color.FromHex ("#E0E0E0"),
 
-			rnmMasterBackColor = Color.FromHex ("#F0FFFF"),
-			rnmFieldBackColor = Color.FromHex ("#C8FFFF"),
+			rnmMasterBackColor = Color.FromHex ("#E0F0FF"),
+			rnmFieldBackColor = Color.FromHex ("#C0E0FF"),
 
 			ofdMasterBackColor = Color.FromHex ("#F0F0FF"),
 			ofdFieldBackColor = Color.FromHex ("#C8C8FF"),
@@ -65,7 +65,7 @@ namespace RD_AAOW
 		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
-			lowLevelCommand, lowLevelCommandCode, rnmGenerate;
+			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
 			ofdINN, unlockField,
@@ -74,7 +74,6 @@ namespace RD_AAOW
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
 			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeDeFacto,
-			lowLevelSHTRIH,
 			keepAppState;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
@@ -87,8 +86,6 @@ namespace RD_AAOW
 		private KKTSupport.FNLifeFlags fnlf;
 		private double fontSizeMultiplier = 1.2;
 
-		private DateTime fnDeadline = new DateTime (2021, 8, 6, 0, 0, 0);
-
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
 			{
@@ -99,7 +96,7 @@ namespace RD_AAOW
 			if (HeaderNumber > 0)
 				{
 				Xamarin.Forms.Button b = AndroidSupport.ApplyButtonSettings (headersPage, "Button" +
-					HeaderNumber.ToString ("D02"), PageTitle, headersFieldBackColor, HeaderButton_Clicked);
+					HeaderNumber.ToString ("D02"), PageTitle, PageBackColor, HeaderButton_Clicked);
 				b.Margin = b.Padding = new Thickness (1);
 				b.CommandParameter = page;
 				b.IsVisible = true;
@@ -584,34 +581,27 @@ namespace RD_AAOW
 				lowLevelPage.BackgroundColor = Color.FromRgb (192, 192, 192);
 				}
 
-			lowLevelSHTRIH = (Xamarin.Forms.Switch)lowLevelPage.FindByName ("SHTRIHSwitch");
-			lowLevelSHTRIH.IsToggled = !ca.LowLevelCommandsATOL;
-			lowLevelSHTRIH.Toggled += LowLevelSHTRIH_Toggled;
-			lowLevelSHTRIH.ThumbColor = untoggledSwitchColor;
-			lowLevelSHTRIH.OnColor = fnLifeFieldBackColor;
-
-			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "AtolLabel", "АТОЛ", false);
-			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ShtrihLabel", "ШТРИХ", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ProtocolLabel", "Протокол:", true);
+			lowLevelProtocol = AndroidSupport.ApplyButtonSettings (lowLevelPage, "ProtocolButton",
+				ll.GetProtocolsNames ()[(int)ca.LowLevelProtocol], lowLevelFieldBackColor, LowLevelProtocol_Clicked);
+			lowLevelProtocol.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandLabel", "Команда:", true);
 			lowLevelCommand = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandButton",
-				ca.LowLevelCommandsATOL ? ll.GetATOLCommandsList ()[(int)ca.LowLevelCode] :
-				ll.GetSHTRIHCommandsList ()[(int)ca.LowLevelCode],
+				ll.GetCommandsList (ca.LowLevelProtocol)[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
 			lowLevelCommand.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandCodeLabel", "Код команды:", true);
 			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
-				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, false) :
-				ll.GetSHTRIHCommand (ca.LowLevelCode, false),
+				ll.GetCommand (ca.LowLevelProtocol, ca.LowLevelCode, false),
 				lowLevelFieldBackColor, Field_Clicked);
 			lowLevelCommandCode.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandDescrLabel", "Описание:", true);
 
 			lowLevelCommandDescr = AndroidSupport.ApplyResultLabelSettings (lowLevelPage, "CommandDescr",
-				ca.LowLevelCommandsATOL ? ll.GetATOLCommand (ca.LowLevelCode, true) :
-				ll.GetSHTRIHCommand (ca.LowLevelCode, true), lowLevelFieldBackColor);
+				ll.GetCommand (ca.LowLevelProtocol, ca.LowLevelCode, true), lowLevelFieldBackColor);
 			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
 			lowLevelCommandDescr.FontSize *= fontSizeMultiplier;
 
@@ -676,7 +666,7 @@ namespace RD_AAOW
 		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос кода ошибки
-			List<string> list = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommandsList () : ll.GetATOLCommandsList ());
+			List<string> list = ll.GetCommandsList (ca.LowLevelProtocol);
 			string res = list[0];
 			if (e != null)
 				res = await lowLevelPage.DisplayActionSheet ("Выберите команду:", "Отмена", null,
@@ -689,21 +679,34 @@ namespace RD_AAOW
 				ca.LowLevelCode = (uint)i;
 				lowLevelCommand.Text = res;
 
-				lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
-					ll.GetATOLCommand ((uint)i, false));
-				lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
-					ll.GetATOLCommand ((uint)i, true));
+				lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
+				lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
 				}
 
 			list.Clear ();
 			}
 
 		// Выбор списка команд
-		private void LowLevelSHTRIH_Toggled (object sender, ToggledEventArgs e)
+		private async void LowLevelProtocol_Clicked (object sender, EventArgs e)
 			{
-			lastCommandSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
-			ca.LowLevelCommandsATOL = !lowLevelSHTRIH.IsToggled;
-			LowLevelCommandCodeButton_Clicked (sender, null);
+			// Запрос кода ошибки
+			List<string> list = ll.GetProtocolsNames ();
+			string res = list[0];
+			res = await lowLevelPage.DisplayActionSheet ("Выберите протокол:", "Отмена", null, list.ToArray ());
+
+			// Установка результата
+			int i = 0;
+			if ((i = list.IndexOf (res)) >= 0)
+				{
+				ca.LowLevelProtocol = (uint)i;
+				lowLevelProtocol.Text = res;
+
+				// Вызов вложенного обработчика
+				lastCommandSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
+				LowLevelCommandCodeButton_Clicked (sender, null);
+				}
+
+			//list.Clear ();
 			}
 
 		// Ввод ЗН ФН в разделе определения срока жизни
@@ -791,8 +794,8 @@ namespace RD_AAOW
 					{
 					fnLifeResult.TextColor = errorColor;
 
-					string deadLine = fnDeadline.ToString ("d.MM.yy");
-					if (DateTime.Now >= fnDeadline)
+					string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
+					if (DateTime.Now >= KKTSupport.OldFNDeadline)
 						{
 						fnLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
 						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
@@ -1469,22 +1472,23 @@ namespace RD_AAOW
 		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
+			List<string> list = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled);
 			string res = await errorsPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).ToArray ());
+				list.ToArray ());
 
 			// Установка модели
-			if (kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).IndexOf (res) < 0)
+			if (list.IndexOf (res) < 0)
 				return;
 
 			errorsKKTButton.Text = res;
-			ca.KKTForErrors = (uint)kkme.GetKKTTypeNames (onlyNewErrors.IsToggled).IndexOf (res);
+			ca.KKTForErrors = (uint)list.IndexOf (res);
 
-			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
-			errorsCodeButton.Text = list[0];
+			List<string> list2 = kkme.GetErrorCodesList (ca.KKTForErrors);
+			errorsCodeButton.Text = list2[0];
 
 			ca.ErrorCode = 0;
 			errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
-			list.Clear ();
+			list2.Clear ();
 			}
 
 		// Выбор кода ошибки
@@ -1492,7 +1496,7 @@ namespace RD_AAOW
 			{
 			// Запрос кода ошибки
 			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
-			string res = await errorsPage.DisplayActionSheet ("Выберите код/сообщение ошибки:", "Отмена", null,
+			string res = await errorsPage.DisplayActionSheet ("Выберите код/текст ошибки:", "Отмена", null,
 				list.ToArray ());
 
 			// Установка результата
@@ -1702,7 +1706,7 @@ namespace RD_AAOW
 		private int lastCommandSearchOffset = 0;
 		private void Command_Find (object sender, EventArgs e)
 			{
-			List<string> codes = lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommandsList () : ll.GetATOLCommandsList ();
+			List<string> codes = ll.GetCommandsList (ca.LowLevelProtocol);
 
 			for (int i = lastCommandSearchOffset; i < codes.Count; i++)
 				if (codes[i].ToLower ().Contains (commandSearchText.Text.ToLower ()))
@@ -1712,10 +1716,8 @@ namespace RD_AAOW
 					lowLevelCommand.Text = codes[i];
 					ca.LowLevelCode = (uint)i;
 
-					lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
-						ll.GetATOLCommand ((uint)i, false));
-					lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
-						ll.GetATOLCommand ((uint)i, true));
+					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
+					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
 					return;
 					}
 
@@ -1727,10 +1729,8 @@ namespace RD_AAOW
 					lowLevelCommand.Text = codes[i];
 					ca.LowLevelCode = (uint)i;
 
-					lowLevelCommandCode.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, false) :
-						ll.GetATOLCommand ((uint)i, false));
-					lowLevelCommandDescr.Text = (lowLevelSHTRIH.IsToggled ? ll.GetSHTRIHCommand ((uint)i, true) :
-						ll.GetATOLCommand ((uint)i, true));
+					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
+					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
 					return;
 					}
 			}
@@ -1820,8 +1820,8 @@ namespace RD_AAOW
 
 			ca.OFDINN = ofdINN.Text;
 
-			ca.LowLevelCommandsATOL = !lowLevelSHTRIH.IsToggled;
-			//ca.LowLevelCode	// -||-
+			//ca.LowLevelProtocol	// -||-
+			//ca.LowLevelCode		// -||-
 
 			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
 			//ca.KKTForCodes	// -||-

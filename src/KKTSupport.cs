@@ -9,6 +9,18 @@ namespace RD_AAOW
 	public static class KKTSupport
 		{
 		/// <summary>
+		/// Возвращает дату ограничения регистрации ФН, не поддерживающих ФФД 1.2
+		/// </summary>
+		public static DateTime OldFNDeadline
+			{
+			get
+				{
+				return fnDeadline;
+				}
+			}
+		private static DateTime fnDeadline = new DateTime (2021, 8, 6, 0, 0, 0);
+
+		/// <summary>
 		/// Метод возвращает модель ФН по его заводскому номеру
 		/// </summary>
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
@@ -555,7 +567,8 @@ namespace RD_AAOW
 		/// Метод проверяет корректность ввода ИНН
 		/// </summary>
 		/// <param name="INN">ИНН для проверки</param>
-		/// <returns>Возвращает 0, если ИНН корректен, 1, если ИНН имеет некорректную КС, -1, если строка не является ИНН</returns>
+		/// <returns>Возвращает 0, если ИНН корректен, 1, если ИНН имеет некорректную КС, 
+		/// -1, если строка не является ИНН</returns>
 		public static int CheckINN (string INN)
 			{
 			// Контроль параметра

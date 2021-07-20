@@ -14,6 +14,7 @@ namespace RD_AAOW
 		private List<List<string>> names = new List<List<string>> (),
 			commands = new List<List<string>> (),
 			descriptions = new List<List<string>> ();
+		private List<string> protocols = new List<string> ();
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -22,101 +23,84 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.TextToKKMResources.LowLevelAtol,
-				s2 = Properties.TextToKKMResources.LowLevelShtrih;
+			byte[] s1 = Properties.TextToKKMResources.LowLevel;
 #else
-			byte[] s1 = Properties.Resources.LowLevelAtol,
-				s2 = Properties.Resources.LowLevelShtrih;
+			byte[] s1 = Properties.Resources.LowLevel;
 #endif
-			string[] buf = new string[] {
-				Encoding.UTF8.GetString (s1),
-				Encoding.UTF8.GetString (s2)
-				};
-			StringReader SR;
+			string buf = Encoding.UTF8.GetString (s1);
+			StringReader SR = new StringReader (buf);
+
+			// Формирование массива 
 			string str;
 			char[] splitters = new char[] { ';' };
 
-			// Формирование массива 
-			for (int i = 0; i < buf.Length; i++)
+			try
 				{
-				SR = new StringReader (buf[i]);
-				names.Add (new List<string> ());
-				commands.Add (new List<string> ());
-				descriptions.Add (new List<string> ());
-
-				try
+				// Чтение параметров
+				while ((str = SR.ReadLine ()) != null)
 					{
-					// Чтение параметров
-					while ((str = SR.ReadLine ()) != null)
-						{
-						string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-						if (values.Length != 3)
-							continue;
+					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
-						names[i].Add (values[0]);
-						commands[i].Add (values[1]);
-						descriptions[i].Add (values[2].Replace ("|", "\r\n"));
+					// Имя протокола
+					if (values.Length == 1)
+						{
+						names.Add (new List<string> ());
+						commands.Add (new List<string> ());
+						descriptions.Add (new List<string> ());
+
+						protocols.Add (values[0]);
+						}
+
+					// Список команд
+					else if (values.Length == 3)
+						{
+						names[names.Count - 1].Add (values[0]);
+						commands[commands.Count - 1].Add (values[1]);
+						descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", "\r\n"));
 						}
 					}
-				catch
-					{
-					}
-
-				// Первая часть завершена
-				SR.Close ();
+				}
+			catch
+				{
 				}
 
 			// Завершено
+			SR.Close ();
 			}
 
 		/// <summary>
-		/// Метод возвращает список команд АТОЛ
+		/// Метод возвращает список команд
 		/// </summary>
-		public List<string> GetATOLCommandsList ()
+		/// <param name="ArrayNumber">Номер списка команд</param>
+		public List<string> GetCommandsList (uint ArrayNumber)
 			{
-			return GetCommandsList (0);
+			if (ArrayNumber < names.Count)
+				return new List<string> (names[(int)ArrayNumber]);
+
+			return null;
 			}
 
 		/// <summary>
-		/// Метод возвращает список команд ШТРИХ
-		/// </summary>
-		public List<string> GetSHTRIHCommandsList ()
-			{
-			return GetCommandsList (1);
-			}
-
-		private List<string> GetCommandsList (uint ArrayNumber)
-			{
-			return new List<string> (names[(int)ArrayNumber]);
-			}
-
-		/// <summary>
-		/// Метод возвращает содержимое команды АТОЛ
+		/// Метод возвращает содержимое команды
 		/// </summary>
 		/// <param name="CommandNumber">Номер команды из списка</param>
 		/// <param name="ReturnDescription">Флаг указывает на возврат описания вместо команды</param>
-		public string GetATOLCommand (uint CommandNumber, bool ReturnDescription)
+		/// <param name="ArrayNumber">Номер списка команд</param>
+		public string GetCommand (uint ArrayNumber, uint CommandNumber, bool ReturnDescription)
 			{
-			return GetCommand (0, CommandNumber, ReturnDescription);
-			}
-
-		/// <summary>
-		/// Метод возвращает содержимое команды ШТРИХ
-		/// </summary>
-		/// <param name="CommandNumber">Номер команды из списка</param>
-		/// <param name="ReturnDescription">Флаг указывает на возврат описания вместо команды</param>
-		public string GetSHTRIHCommand (uint CommandNumber, bool ReturnDescription)
-			{
-			return GetCommand (1, CommandNumber, ReturnDescription);
-			}
-
-		private string GetCommand (uint ArrayNumber, uint CommandNumber, bool ReturnDescription)
-			{
-			if (CommandNumber >= names[(int)ArrayNumber].Count)
+			if ((ArrayNumber >= names.Count) || (CommandNumber >= names[(int)ArrayNumber].Count))
 				return "";
 
 			return (ReturnDescription ? descriptions[(int)ArrayNumber][(int)CommandNumber] :
 				commands[(int)ArrayNumber][(int)CommandNumber]);
+			}
+
+		/// <summary>
+		/// Метод возвращает список поддерживаемых протоколов
+		/// </summary>
+		public List<string> GetProtocolsNames ()
+			{
+			return protocols;
 			}
 		}
 	}

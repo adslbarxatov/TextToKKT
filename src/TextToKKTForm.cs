@@ -21,8 +21,6 @@ namespace RD_AAOW
 		private ConfigAccessor ca = null;
 		private KKTSupport.FNLifeFlags fnlf;
 
-		private DateTime fnDeadline = new DateTime (2021, 8, 6, 0, 0, 0);
-
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
@@ -42,7 +40,10 @@ namespace RD_AAOW
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
 			OnlyNewErrors_CheckedChanged (null, null);
-			LowLevelCommandATOL_CheckedChanged (null, null);
+
+			LowLevelProtocol.Items.AddRange (ll.GetProtocolsNames ().ToArray ());
+			LowLevelProtocol.SelectedIndex = (int)ca.LowLevelProtocol;
+			LowLevelProtocol_CheckedChanged (null, null);
 
 			FNLifeStartDate.Value = DateTime.Now;
 
@@ -88,10 +89,6 @@ namespace RD_AAOW
 
 			OFDINN.Text = ca.OFDINN;
 
-			if (ca.LowLevelCommandsATOL)
-				LowLevelCommandATOL.Checked = true;
-			else
-				LowLevelCommandSHTRIH.Checked = true;
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
 			OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
@@ -309,8 +306,8 @@ namespace RD_AAOW
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
-					string deadLine = fnDeadline.ToString ("d.MM.yy");
-					if (DateTime.Now >= fnDeadline)
+					string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
+					if (DateTime.Now >= KKTSupport.OldFNDeadline)
 						{
 						FNLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
 						FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
@@ -455,18 +452,10 @@ namespace RD_AAOW
 			}
 
 		// Выбор списка команд нижнего уровня
-		private void LowLevelCommandATOL_CheckedChanged (object sender, EventArgs e)
+		private void LowLevelProtocol_CheckedChanged (object sender, EventArgs e)
 			{
 			LowLevelCommand.Items.Clear ();
-			LowLevelCommand.Items.AddRange (ll.GetATOLCommandsList ().ToArray ());
-			LowLevelCommand.SelectedIndex = 0;
-			lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
-			}
-
-		private void LowLevelCommandSHTRIH_CheckedChanged (object sender, EventArgs e)
-			{
-			LowLevelCommand.Items.Clear ();
-			LowLevelCommand.Items.AddRange (ll.GetSHTRIHCommandsList ().ToArray ());
+			LowLevelCommand.Items.AddRange (ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
 			LowLevelCommand.SelectedIndex = 0;
 			lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
 			}
@@ -474,16 +463,10 @@ namespace RD_AAOW
 		// Выбор команды
 		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			if (LowLevelCommandATOL.Checked)
-				{
-				LowLevelCommandCode.Text = ll.GetATOLCommand ((uint)LowLevelCommand.SelectedIndex, false);
-				LowLevelCommandDescr.Text = ll.GetATOLCommand ((uint)LowLevelCommand.SelectedIndex, true);
-				}
-			else
-				{
-				LowLevelCommandCode.Text = ll.GetSHTRIHCommand ((uint)LowLevelCommand.SelectedIndex, false);
-				LowLevelCommandDescr.Text = ll.GetSHTRIHCommand ((uint)LowLevelCommand.SelectedIndex, true);
-				}
+			LowLevelCommandCode.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex, false);
+			LowLevelCommandDescr.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex, true);
 			}
 
 		// Выбор модели аппарата
@@ -524,7 +507,7 @@ namespace RD_AAOW
 
 			ca.OFDINN = OFDINN.Text;
 
-			ca.LowLevelCommandsATOL = LowLevelCommandATOL.Checked;
+			ca.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
 			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
 
 			ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;
@@ -579,7 +562,7 @@ namespace RD_AAOW
 		private int lastLowLevelSearchOffset = 0;
 		private void LowLevelFindButton_Click (object sender, EventArgs e)
 			{
-			List<string> codes = LowLevelCommandATOL.Checked ? ll.GetATOLCommandsList () : ll.GetSHTRIHCommandsList ();
+			List<string> codes = ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
 
 			for (int i = lastLowLevelSearchOffset; i < codes.Count; i++)
 				if (codes[i].ToLower ().Contains (LowLevelSearchText.Text.ToLower ()))

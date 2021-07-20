@@ -1,5 +1,5 @@
-# TextToKKT v 4.7.2
-> PCC: 00066049C5D1D12C
+# TextToKKT v 4.8
+> PCC: 000674478377443D
 
 
 Утилита сервис-инженера ККТ (контрольно-кассовая техника, 54-ФЗ)
@@ -29,7 +29,7 @@
 для неё потребуется ОС Windows XP или новее, Framework 4.0 или новее. Язык интерфейса: ru_ru;
 - Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
 для неё потребуется ОС Android 5.0 или новее. Язык интерфейса: ru_ru;
-- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/tag/v4.7) для Android 4.x
+- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/tag/v4.8) для Android 4.x
 или устройств без Play market. Язык интерфейса: ru_ru;
 - Android-версия доступна также на платформе AppGallery
 

@@ -9,10 +9,9 @@
 		<ScrollView>
 			<StackLayout>
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Label x:Name="AtolLabel" />
-					<Switch x:Name="SHTRIHSwitch" />
-					<Label x:Name="ShtrihLabel" />
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="ProtocolLabel" VerticalOptions="Center" />
+					<Button x:Name="ProtocolButton" VerticalOptions="Center" />
 				</StackLayout>
 
 				<Label x:Name="CommandLabel" />
