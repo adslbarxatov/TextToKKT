@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -19,12 +21,21 @@ namespace RD_AAOW
 		private LowLevel ll = null;
 		private UserManuals um = null;
 		private ConfigAccessor ca = null;
+		private KKTSerial kkts = null;
+		private FNSerial fns = null;
+
+		private NotifyIcon ni = new NotifyIcon ();
+		private bool allowExit = false;
+
 		private KKTSupport.FNLifeFlags fnlf;
+		private string startupLink = Environment.GetFolderPath (Environment.SpecialFolder.CommonStartup) + "\\" +
+			ProgramDescription.AssemblyMainName + ".lnk";
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		public TextToKKTForm ()
+		/// <param name="DumpFileForFNReader">Путь к файлу дампа для FNReader</param>
+		public TextToKKTForm (string DumpFileForFNReader)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -36,6 +47,8 @@ namespace RD_AAOW
 			ofd = new OFD ();
 			ll = new LowLevel ();
 			um = new UserManuals (ca.ExtendedFunctions);
+			kkts = new KKTSerial ();
+			fns = new FNSerial ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -125,13 +138,115 @@ namespace RD_AAOW
 				{
 				UnlockField.Visible = UnlockLabel.Visible = true;
 				UnlockLabel.Text = ca.LockMessage;
+				FNReader.Enabled = false;
 				}
+
+			// Настройка иконки в трее
+			ni.Icon = Properties.TextToKKMResources.TextToKKTTray;
+			ni.Visible = true;
+
+			ni.ContextMenu = new ContextMenu ();
+
+			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
+			ni.DoubleClick += ReturnWindow;
+			ni.ContextMenu.MenuItems[0].DefaultItem = true;
+
+			if (!File.Exists (startupLink))
+				ni.ContextMenu.MenuItems.Add (new MenuItem ("Добавить в &автозапуск", AddToStartup));
+
+			// Запуск файла дампа, если представлен
+			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != ""))
+				CallFNReader (DumpFileForFNReader);
+			}
+
+		// Добавление в автозапуск
+		private void AddToStartup (object sender, EventArgs e)
+			{
+			// Попытка создания
+			WindowsShortcut.CreateStartupShortcut (Application.ExecutablePath, ProgramDescription.AssemblyMainName, "");
+
+			// Контроль
+			ni.ContextMenu.MenuItems[ni.ContextMenu.MenuItems.Count - 1].Enabled = !File.Exists (startupLink);
+			}
+
+		// Возврат окна приложения
+		private void ReturnWindow (object sender, EventArgs e)
+			{
+			this.Show ();
 			}
 
 		// Завершение работы
+		private void CloseService (object sender, EventArgs e)
+			{
+			allowExit = true;
+			this.Close ();
+			}
+
 		private void BExit_Click (object sender, EventArgs e)
 			{
 			this.Close ();
+			}
+
+		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
+			{
+			// Контроль
+			if (!allowExit)
+				{
+				this.Hide ();
+				e.Cancel = true;
+				return;
+				}
+
+			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
+				{
+				MessageBox.Show ("Завершите работу с модулем FNReader, чтобы выйти из приложения",
+					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				e.Cancel = true;
+				allowExit = false;
+				return;
+				}
+
+			// Сохранение параметров
+			ca.WindowLeft = this.Left;
+			ca.WindowTop = this.Top;
+
+			ca.KeepApplicationState = KeepAppState.Checked;
+			if (!ca.KeepApplicationState)
+				return;
+
+			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
+
+			ca.OnlyNewKKTErrors = OnlyNewErrors.Checked;
+			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
+			ca.ErrorCode = (uint)ErrorCodesList.SelectedIndex;
+
+			ca.FNSerial = FNLifeSN.Text;
+			ca.GenericTaxFlag = GenericTaxFlag.Checked;
+			ca.GoodsFlag = GoodsFlag.Checked;
+			ca.SeasonFlag = SeasonFlag.Checked;
+			ca.AgentsFlag = AgentsFlag.Checked;
+			ca.ExciseFlag = ExciseFlag.Checked;
+			ca.AutonomousFlag = AutonomousFlag.Checked;
+			ca.FNLifeDeFacto = FNLifeDeFacto.Checked;
+
+			ca.KKTSerial = RNMSerial.Text;
+			ca.UserINN = RNMUserINN.Text;
+			ca.RNMKKT = RNMValue.Text;
+
+			ca.OFDINN = OFDINN.Text;
+
+			ca.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
+			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
+
+			ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;
+			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
+			ca.CodesText = TextToConvert.Text;
+
+			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
+			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
+
+			// Завершение
+			ni.Visible = false;
 			}
 
 		// Изменение текста и его кодировка
@@ -200,22 +315,11 @@ namespace RD_AAOW
 			}
 
 		// Дополнительные функции
-		private void GetFNReader_Click (object sender, EventArgs e)
-			{
-			try
-				{
-				Process.Start ("mailto://adslbarxatov@gmail.com" + ("?subject=Request for FNReader").Replace (" ", "%20"));
-				}
-			catch
-				{
-				}
-			}
-
 		private void FNReaderUserManual_Click (object sender, EventArgs e)
 			{
 			try
 				{
-				Process.Start ("https://github.com/adslbarxatov/FNReader/blob/master/FNReader.pdf");
+				Process.Start ("https://github.com/adslbarxatov/TextToKKT/blob/master/FNReader.pdf");
 				}
 			catch
 				{
@@ -243,7 +347,7 @@ namespace RD_AAOW
 			{
 			// Получение описания
 			if (FNLifeSN.Text != "")
-				FNLifeName.Text = KKTSupport.GetFNName (FNLifeSN.Text);
+				FNLifeName.Text = fns.GetFNName (FNLifeSN.Text);
 			else
 				FNLifeName.Text = "(введите ЗН ФН)";
 
@@ -302,7 +406,7 @@ namespace RD_AAOW
 
 			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
 				{
-				if (!KKTSupport.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
+				if (!fns.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
@@ -310,22 +414,22 @@ namespace RD_AAOW
 					if (DateTime.Now >= KKTSupport.OldFNDeadline)
 						{
 						FNLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
-						FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
+						FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 						}
 					else
 						{
 						FNLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
-						FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Planned);
+						FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
 						}
 					}
 				else
 					{
-					FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
+					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 					}
 				}
 			else
 				{
-				FNLifeName.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+				FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
 				}
 			}
 
@@ -342,9 +446,9 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (RNMSerial.Text != "")
 				{
-				RNMSerialResult.Text = KKTSupport.GetKKTModel (RNMSerial.Text);
+				RNMSerialResult.Text = kkts.GetKKTModel (RNMSerial.Text);
 
-				KKTSupport.FFDSupportStatuses[] statuses = KKTSupport.GetFFDSupportStatus (RNMSerial.Text);
+				KKTSerial.FFDSupportStatuses[] statuses = kkts.GetFFDSupportStatus (RNMSerial.Text);
 				RNMSupport105.BackColor = StatusToColor (statuses[0]);
 				RNMSupport11.BackColor = StatusToColor (statuses[1]);
 				RNMSupport12.BackColor = StatusToColor (statuses[2]);
@@ -353,39 +457,39 @@ namespace RD_AAOW
 				{
 				RNMSerialResult.Text = "(введите ЗН ККТ)";
 				RNMSupport105.BackColor = RNMSupport11.BackColor = RNMSupport12.BackColor =
-					StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
 				}
 
 			// ИНН пользователя
 			RegionLabel.Text = "";
 			int checkINN = KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
-				RNMUserINN.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
 			else if (checkINN == 0)
-				RNMUserINN.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
+				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 			else
-				RNMUserINN.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Planned);   // Не ошибка
+				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);   // Не ошибка
 			RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
 
 			// РН
 			if (RNMValue.Text.Length < 10)
-				RNMValue.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
 			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
-				RNMValue.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
+				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 			else
-				RNMValue.BackColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
+				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
-		private Color StatusToColor (KKTSupport.FFDSupportStatuses Status)
+		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
 			{
-			if (Status == KKTSupport.FFDSupportStatuses.Planned)
+			if (Status == KKTSerial.FFDSupportStatuses.Planned)
 				return Color.FromArgb (255, 255, 200);
 
-			if (Status == KKTSupport.FFDSupportStatuses.Supported)
+			if (Status == KKTSerial.FFDSupportStatuses.Supported)
 				return Color.FromArgb (200, 255, 200);
 
-			if (Status == KKTSupport.FFDSupportStatuses.Unsupported)
+			if (Status == KKTSerial.FFDSupportStatuses.Unsupported)
 				return Color.FromArgb (255, 200, 200);
 
 			// Остальные
@@ -474,48 +578,6 @@ namespace RD_AAOW
 			{
 			UMOperationText.Text = um.GetManual ((uint)KKTListForManuals.SelectedIndex,
 				(uint)OperationsListForManuals.SelectedIndex);
-			}
-
-		// Сохранение настроек приложения
-		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
-			{
-			ca.WindowLeft = this.Left;
-			ca.WindowTop = this.Top;
-
-			ca.KeepApplicationState = KeepAppState.Checked;
-			if (!ca.KeepApplicationState)
-				return;
-
-			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
-
-			ca.OnlyNewKKTErrors = OnlyNewErrors.Checked;
-			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
-			ca.ErrorCode = (uint)ErrorCodesList.SelectedIndex;
-
-			ca.FNSerial = FNLifeSN.Text;
-			ca.GenericTaxFlag = GenericTaxFlag.Checked;
-			ca.GoodsFlag = GoodsFlag.Checked;
-			ca.SeasonFlag = SeasonFlag.Checked;
-			ca.AgentsFlag = AgentsFlag.Checked;
-			ca.ExciseFlag = ExciseFlag.Checked;
-			ca.AutonomousFlag = AutonomousFlag.Checked;
-			ca.FNLifeDeFacto = FNLifeDeFacto.Checked;
-
-			ca.KKTSerial = RNMSerial.Text;
-			ca.UserINN = RNMUserINN.Text;
-			ca.RNMKKT = RNMValue.Text;
-
-			ca.OFDINN = OFDINN.Text;
-
-			ca.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
-			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
-
-			ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;
-			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
-			ca.CodesText = TextToConvert.Text;
-
-			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
-			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
 			}
 
 		// Разблокировка функционала
@@ -637,6 +699,57 @@ namespace RD_AAOW
 		private void FNLifeSNClear_Click (object sender, EventArgs e)
 			{
 			FNLifeSN.Text = "";
+			}
+
+		// Вызов библиотеки FNReader
+		private const string fnReaderDLL = "FNReader.dll";
+		private void FNReader_Click (object sender, EventArgs e)
+			{
+			CallFNReader ("");
+			}
+
+		private Assembly FNReaderDLL;
+		private Type FNReaderProgram;
+		private dynamic FNReaderInstance;
+		private void CallFNReader (string DumpPath)
+			{
+			// Контроль
+			if (FNReaderDLL == null)
+				{
+				try
+					{
+					FNReaderDLL = Assembly.LoadFile (AboutForm.AppStartupPath + fnReaderDLL);
+					FNReaderProgram = FNReaderDLL.GetType ("RD_AAOW.Program");
+					FNReaderInstance = Activator.CreateInstance (FNReaderProgram);
+					}
+				catch
+					{
+					if (MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
+						"Запросить доступ?", ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo,
+						MessageBoxIcon.Question) == DialogResult.Yes)
+						{
+						try
+							{
+							Process.Start ("mailto://adslbarxatov@gmail.com" + ("?subject=Запрос на доступ к модулю FNReader&" +
+								"body=Запрашиваем доступ к модулю FNReader для работы с данными ФН. Спасибо!").Replace (" ",
+								"%20"));
+							}
+						catch
+							{
+							MessageBox.Show ("Почтовый агент не найден", ProgramDescription.AssemblyTitle,
+								MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+							}
+						}
+
+					return;
+					}
+				}
+
+			// Запуск
+			if (FNReaderDLL != null)
+				{
+				FNReaderInstance.FNReaderEx (DumpPath);
+				}
 			}
 		}
 	}

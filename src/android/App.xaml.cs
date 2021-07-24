@@ -710,11 +710,12 @@ namespace RD_AAOW
 			}
 
 		// Ввод ЗН ФН в разделе определения срока жизни
+		private FNSerial fns = new FNSerial ();
 		private void FNLifeSerial_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			// Получение описания
 			if (fnLifeSerial.Text != "")
-				fnLifeModelLabel.Text = KKTSupport.GetFNName (fnLifeSerial.Text);
+				fnLifeModelLabel.Text = fns.GetFNName (fnLifeSerial.Text);
 			else
 				fnLifeModelLabel.Text = "(введите ЗН ФН)";
 
@@ -790,7 +791,7 @@ namespace RD_AAOW
 
 			if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН
 				{
-				if (!KKTSupport.IsFNCompatibleWithFFD12 (fnLifeSerial.Text))
+				if (!fns.IsFNCompatibleWithFFD12 (fnLifeSerial.Text))
 					{
 					fnLifeResult.TextColor = errorColor;
 
@@ -798,34 +799,35 @@ namespace RD_AAOW
 					if (DateTime.Now >= KKTSupport.OldFNDeadline)
 						{
 						fnLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
-						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unsupported);
+						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 						}
 					else
 						{
 						fnLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
-						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Planned);
+						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
 						}
 					}
 				else
 					{
-					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Supported);
+					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 					}
 				}
 			else
 				{
-				fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+				fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
 				}
 			}
 
 		// Изменение ИНН ОФД и РН ККТ
+		private KKTSerial kkts = new KKTSerial ();
 		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			// ЗН ККТ
 			if (rnmKKTSN.Text != "")
 				{
-				rnmKKTTypeLabel.Text = KKTSupport.GetKKTModel (rnmKKTSN.Text);
+				rnmKKTTypeLabel.Text = kkts.GetKKTModel (rnmKKTSN.Text);
 
-				KKTSupport.FFDSupportStatuses[] statuses = KKTSupport.GetFFDSupportStatus (rnmKKTSN.Text);
+				KKTSerial.FFDSupportStatuses[] statuses = kkts.GetFFDSupportStatus (rnmKKTSN.Text);
 				rnmSupport105.BackgroundColor = StatusToColor (statuses[0]);
 				rnmSupport11.BackgroundColor = StatusToColor (statuses[1]);
 				rnmSupport12.BackgroundColor = StatusToColor (statuses[2]);
@@ -834,7 +836,7 @@ namespace RD_AAOW
 				{
 				rnmKKTTypeLabel.Text = "";
 				rnmSupport105.BackgroundColor = rnmSupport11.BackgroundColor = rnmSupport12.BackgroundColor =
-					StatusToColor (KKTSupport.FFDSupportStatuses.Unknown);
+					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
 				}
 
 			// ИНН пользователя
@@ -874,15 +876,15 @@ namespace RD_AAOW
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
-		private Color StatusToColor (KKTSupport.FFDSupportStatuses Status)
+		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
 			{
-			if (Status == KKTSupport.FFDSupportStatuses.Planned)
+			if (Status == KKTSerial.FFDSupportStatuses.Planned)
 				return Color.FromHex ("#FFFFC8");
 
-			if (Status == KKTSupport.FFDSupportStatuses.Supported)
+			if (Status == KKTSerial.FFDSupportStatuses.Supported)
 				return Color.FromHex ("#C8FFC8");
 
-			if (Status == KKTSupport.FFDSupportStatuses.Unsupported)
+			if (Status == KKTSerial.FFDSupportStatuses.Unsupported)
 				return Color.FromHex ("#FFC8C8");
 
 			// Остальные

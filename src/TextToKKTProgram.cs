@@ -10,10 +10,10 @@ namespace RD_AAOW
 	public static class TextToKKTProgram
 		{
 		/// <summary>
-		/// Главная точка входа для приложения.
+		/// Главная точка входа для приложения
 		/// </summary>
 		[STAThread]
-		public static void Main ()
+		public static void Main (string[] args)
 			{
 			// Инициализация
 			Application.EnableVisualStyles ();
@@ -35,7 +35,10 @@ namespace RD_AAOW
 			ProgramDescription.ShowAbout (true);
 
 			// Запуск
-			Application.Run (new TextToKKTForm ());
+			if (args.Length > 0)
+				Application.Run (new TextToKKTForm (args[0]));
+			else
+				Application.Run (new TextToKKTForm (""));
 			}
 		}
 	}
