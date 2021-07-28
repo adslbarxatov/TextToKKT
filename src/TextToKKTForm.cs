@@ -25,7 +25,7 @@ namespace RD_AAOW
 		private FNSerial fns = null;
 
 		private NotifyIcon ni = new NotifyIcon ();
-		private bool allowExit = false;
+		private bool confirmExit = true;
 
 		private KKTSupport.FNLifeFlags fnlf;
 		private string startupLink = Environment.GetFolderPath (Environment.SpecialFolder.CommonStartup) + "\\" +
@@ -178,21 +178,22 @@ namespace RD_AAOW
 		// Завершение работы
 		private void CloseService (object sender, EventArgs e)
 			{
-			allowExit = true;
+			confirmExit = false;
 			this.Close ();
 			}
 
 		private void BExit_Click (object sender, EventArgs e)
 			{
-			this.Close ();
+			SaveAppSettings ();
+			this.Hide ();
 			}
 
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
 			// Контроль
-			if (!allowExit)
+			if (confirmExit && (MessageBox.Show ("Завершить работу с приложением?", ProgramDescription.AssemblyTitle,
+				MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes))
 				{
-				this.Hide ();
 				e.Cancel = true;
 				return;
 				}
@@ -202,11 +203,19 @@ namespace RD_AAOW
 				MessageBox.Show ("Завершите работу с модулем FNReader, чтобы выйти из приложения",
 					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				e.Cancel = true;
-				allowExit = false;
+				confirmExit = true;
 				return;
 				}
 
 			// Сохранение параметров
+			SaveAppSettings ();
+
+			// Завершение
+			ni.Visible = false;
+			}
+
+		private void SaveAppSettings ()
+			{
 			ca.WindowLeft = this.Left;
 			ca.WindowTop = this.Top;
 
@@ -244,9 +253,6 @@ namespace RD_AAOW
 
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
-
-			// Завершение
-			ni.Visible = false;
 			}
 
 		// Изменение текста и его кодировка
@@ -750,6 +756,35 @@ namespace RD_AAOW
 				{
 				FNReaderInstance.FNReaderEx (DumpPath);
 				}
+			}
+
+		/// <summary>
+		/// Ручная обработка сообщения для окна по спецкоду
+		/// </summary>
+		protected override void WndProc (ref Message m)
+			{
+			if ((m.Msg == ConfigAccessor.NextDumpPathMsg) && (ConfigAccessor.NextDumpPath != ""))
+				{
+				// Вывод на передний план
+				//this.TopMost = true;
+
+				// Делается для защиты от непредвиденных сбросов состояния приложения
+				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
+					{
+					ConfigAccessor.NextDumpPath = "";
+					MessageBox.Show ("Завершите работу с модулем FNReader, чтобы открыть новый файл",
+						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					}
+				else
+					{
+					CallFNReader (ConfigAccessor.NextDumpPath);
+					ConfigAccessor.NextDumpPath = "";
+					}
+
+				//this.TopMost = false;
+				}
+
+			base.WndProc (ref m);
 			}
 		}
 	}
