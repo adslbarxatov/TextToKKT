@@ -11,6 +11,7 @@
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Label x:Name="SNLabel" VerticalOptions="Center" />
 					<Editor x:Name="SN" VerticalOptions="Center" />
+					<Button x:Name="Find" VerticalOptions="Center" />
 				</StackLayout>
 
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">

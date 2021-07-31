@@ -367,7 +367,6 @@ namespace RD_AAOW
 
 			//
 			fnLifeModelLabel = AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeModelLabel", "", false);
-			//fnLifeModelLabel.BackgroundColor = fnLifeFieldBackColor;
 			fnLifeModelLabel.FontSize *= fontSizeMultiplier;
 			fnLifeModelLabel.HorizontalOptions = LayoutOptions.Fill;
 			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
@@ -453,6 +452,9 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
 				fnLifeFieldBackColor, FNLifeClear_Clicked);
+			AndroidSupport.ApplyButtonSettings (fnLifePage, "Find",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
+				fnLifeFieldBackColor, FNLifeFind_Clicked);
 
 			// Применение всех названий
 			FNLifeSerial_TextChanged (null, null);
@@ -503,6 +505,9 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
 				rnmFieldBackColor, RNMClear_Clicked);
+			AndroidSupport.ApplyButtonSettings (rnmPage, "Find",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
+				rnmFieldBackColor, RNMFind_Clicked);
 
 			rnmSupport105 = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMSupport105", "ФФД 1.05", false);
 			rnmSupport11 = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "RNMSupport11", "ФФД 1.1", false);
@@ -1790,6 +1795,20 @@ namespace RD_AAOW
 		private void FNLifeClear_Clicked (object sender, EventArgs e)
 			{
 			fnLifeSerial.Text = "";
+			}
+
+		private void FNLifeFind_Clicked (object sender, EventArgs e)
+			{
+			string sig = fns.FindSignatureByName (fnLifeSerial.Text);
+			if (sig != "")
+				fnLifeSerial.Text = sig;
+			}
+
+		private void RNMFind_Clicked (object sender, EventArgs e)
+			{
+			string sig = kkts.FindSignatureByName (rnmKKTSN.Text);
+			if (sig != "")
+				rnmKKTSN.Text = sig;
 			}
 
 		/// <summary>

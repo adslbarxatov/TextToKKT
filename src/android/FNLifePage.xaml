@@ -13,7 +13,8 @@
 				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
 					<Label />
 					<Editor x:Name="FNLifeSerial" VerticalOptions="Center" />
-					<Button x:Name="Clear" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
+					<Button x:Name="Find" VerticalOptions="Center" />
 
 					<Label HorizontalOptions="StartAndExpand" />
 					<Switch x:Name="FNLife13" VerticalOptions="Center" />

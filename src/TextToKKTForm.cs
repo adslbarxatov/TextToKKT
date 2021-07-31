@@ -191,12 +191,12 @@ namespace RD_AAOW
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
 			// Контроль
-			if (confirmExit && (MessageBox.Show ("Завершить работу с приложением?", ProgramDescription.AssemblyTitle,
+			/*if (confirmExit && (MessageBox.Show ("Завершить работу с приложением?", ProgramDescription.AssemblyTitle,
 				MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes))
 				{
 				e.Cancel = true;
 				return;
-				}
+				}*/
 
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
@@ -785,6 +785,34 @@ namespace RD_AAOW
 				}
 
 			base.WndProc (ref m);
+			}
+
+		// Поиск сигнатуры ЗН ККТ по части названия
+		private void RNMSerialFind_Click (object sender, EventArgs e)
+			{
+			string sig = kkts.FindSignatureByName (RNMSerial.Text);
+			if (sig != "")
+				RNMSerial.Text = sig;
+			}
+
+		private void RNMSerial_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				RNMSerialFind_Click (null, null);
+			}
+
+		// Поиск сигнатуры ЗН ФН по части названия
+		private void FNFindSN_Click (object sender, EventArgs e)
+			{
+			string sig = fns.FindSignatureByName (FNLifeSN.Text);
+			if (sig != "")
+				FNLifeSN.Text = sig;
+			}
+
+		private void FNLifeSN_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				FNFindSN_Click (null, null);
 			}
 		}
 	}
