@@ -95,6 +95,7 @@ namespace RD_AAOW
 			FNLifeDeFacto.Checked = ca.FNLifeDeFacto;
 			FNLifeDeFacto.Enabled = ca.AllowExtendedFunctionsLevel2;
 
+			RNMSerial.MaxLength = (int)kkts.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
 			RNMUserINN.Text = ca.UserINN;
 			RNMValue.Text = ca.RNMKKT;
@@ -143,6 +144,7 @@ namespace RD_AAOW
 
 			// Настройка иконки в трее
 			ni.Icon = Properties.TextToKKMResources.TextToKKTTray;
+			ni.Text = ProgramDescription.AssemblyTitle;
 			ni.Visible = true;
 
 			ni.ContextMenu = new ContextMenu ();

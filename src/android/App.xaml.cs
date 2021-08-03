@@ -351,10 +351,10 @@ namespace RD_AAOW
 
 			#region Страница определения срока жизни ФН
 
-			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetModelLabel", "Укажите ЗН ФН или его номинал:",
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetModelLabel", "ЗН, номинал или модель ФН:",
 				true);
 			fnLifeSerial = AndroidSupport.ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
-				Keyboard.Numeric, 16, ca.FNSerial, FNLifeSerial_TextChanged);
+				Keyboard.Default, 16, ca.FNSerial, FNLifeSerial_TextChanged);
 			fnLifeSerial.Margin = new Thickness (0);
 			fnLifeSerial.FontSize *= fontSizeMultiplier;
 
@@ -372,7 +372,7 @@ namespace RD_AAOW
 			fnLifeModelLabel.HorizontalTextAlignment = TextAlignment.Center;
 
 			//
-			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetUserParameters", "Укажите значимые параметры:", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetUserParameters", "Значимые параметры:", true);
 
 			//
 			fnLifeGenericTax = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeGenericTax");
@@ -463,9 +463,9 @@ namespace RD_AAOW
 
 			#region Страница заводских и рег. номеров
 
-			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "SNLabel", "Заводской номер ККТ:", true);
-			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Numeric, 20,
-				ca.KKTSerial, RNM_TextChanged);
+			AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "SNLabel", "ЗН или модель ККТ:", true);
+			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Default,
+				kkts.MaxSerialNumberLength, ca.KKTSerial, RNM_TextChanged);
 			rnmKKTSN.FontSize *= fontSizeMultiplier;
 
 			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettingsForKKT (rnmPage, "TypeLabel", "", false);
