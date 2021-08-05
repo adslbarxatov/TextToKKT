@@ -25,7 +25,6 @@ namespace RD_AAOW
 		private FNSerial fns = null;
 
 		private NotifyIcon ni = new NotifyIcon ();
-		private bool confirmExit = true;
 
 		private KKTSupport.FNLifeFlags fnlf;
 		private string startupLink = Environment.GetFolderPath (Environment.SpecialFolder.CommonStartup) + "\\" +
@@ -150,7 +149,7 @@ namespace RD_AAOW
 			ni.ContextMenu = new ContextMenu ();
 
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
-			ni.DoubleClick += ReturnWindow;
+			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[0].DefaultItem = true;
 
 			if (!File.Exists (startupLink))
@@ -172,15 +171,26 @@ namespace RD_AAOW
 			}
 
 		// Возврат окна приложения
-		private void ReturnWindow (object sender, EventArgs e)
+		private void ReturnWindow (object sender, MouseEventArgs e)
 			{
-			this.Show ();
+			if (e.Button != MouseButtons.Left)
+				return;
+
+			if (this.Visible)
+				{
+				BExit_Click (null, null);
+				}
+			else
+				{
+				this.Show ();
+				this.TopMost = true;
+				this.TopMost = false;
+				}
 			}
 
 		// Завершение работы
 		private void CloseService (object sender, EventArgs e)
 			{
-			confirmExit = false;
 			this.Close ();
 			}
 
@@ -193,19 +203,11 @@ namespace RD_AAOW
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
 			// Контроль
-			/*if (confirmExit && (MessageBox.Show ("Завершить работу с приложением?", ProgramDescription.AssemblyTitle,
-				MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes))
-				{
-				e.Cancel = true;
-				return;
-				}*/
-
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
 				MessageBox.Show ("Завершите работу с модулем FNReader, чтобы выйти из приложения",
 					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				e.Cancel = true;
-				confirmExit = true;
 				return;
 				}
 
