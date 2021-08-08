@@ -23,6 +23,7 @@ namespace RD_AAOW
 		private ConfigAccessor ca = null;
 		private KKTSerial kkts = null;
 		private FNSerial fns = null;
+		private TLVTags tlvt = null;
 
 		private NotifyIcon ni = new NotifyIcon ();
 
@@ -48,6 +49,7 @@ namespace RD_AAOW
 			um = new UserManuals (ca.ExtendedFunctions);
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
+			tlvt = new TLVTags ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -122,7 +124,7 @@ namespace RD_AAOW
 				}
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = LowLevelTab.Enabled = ca.AllowExtendedFunctionsLevel2;
+			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
@@ -349,7 +351,7 @@ namespace RD_AAOW
 			KKTListForErrors.Items.Clear ();
 			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
-			lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки
+			/*lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки*/
 			}
 
 		// Ввод номера ФН в разделе срока жизни
@@ -420,17 +422,18 @@ namespace RD_AAOW
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
-					string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
+					/*string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
 					if (DateTime.Now >= KKTSupport.OldFNDeadline)
-						{
-						FNLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
-						FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
-						}
-					else
-						{
-						FNLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
-						FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
-						}
+						{*/
+					FNLifeResult.Text += ("\n(выбранный ФН с " + KKTSupport.OldFNDeadline.ToString ("d.MM.yy") +
+						" не может быть зарегистрирован)");
+					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+					/*}
+				else
+					{
+					FNLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
+					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
+					}*/
 					}
 				else
 					{
@@ -571,7 +574,7 @@ namespace RD_AAOW
 			LowLevelCommand.Items.Clear ();
 			LowLevelCommand.Items.AddRange (ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
 			LowLevelCommand.SelectedIndex = 0;
-			lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
+			/*lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды*/
 			}
 
 		// Выбор команды
@@ -606,22 +609,23 @@ namespace RD_AAOW
 		private void ErrorFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = kkme.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
+			string text = ErrorSearchText.Text.ToLower ();
 
-			for (int i = lastErrorSearchOffset; i < codes.Count; i++)
+			lastErrorSearchOffset++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastErrorSearchOffset) % codes.Count].ToLower ().Contains (text))
+					{
+					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = (i + lastErrorSearchOffset) % codes.Count;
+					return;
+					}
+
+			/*for (int i = 0; i < lastErrorSearchOffset; i++)
 				if (codes[i].ToLower ().Contains (ErrorSearchText.Text.ToLower ()))
 					{
 					lastErrorSearchOffset = i + 1;
 					ErrorCodesList.SelectedIndex = i;
 					return;
-					}
-
-			for (int i = 0; i < lastErrorSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (ErrorSearchText.Text.ToLower ()))
-					{
-					lastErrorSearchOffset = i + 1;
-					ErrorCodesList.SelectedIndex = i;
-					return;
-					}
+					}*/
 			}
 
 		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
@@ -635,22 +639,23 @@ namespace RD_AAOW
 		private void LowLevelFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
+			string text = LowLevelSearchText.Text.ToLower ();
 
-			for (int i = lastLowLevelSearchOffset; i < codes.Count; i++)
+			lastLowLevelSearchOffset++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastLowLevelSearchOffset) % codes.Count].ToLower ().Contains (text))
+					{
+					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex = (i + lastLowLevelSearchOffset) % codes.Count;
+					return;
+					}
+
+			/*for (int i = 0; i < lastLowLevelSearchOffset; i++)
 				if (codes[i].ToLower ().Contains (LowLevelSearchText.Text.ToLower ()))
 					{
 					lastLowLevelSearchOffset = i + 1;
 					LowLevelCommand.SelectedIndex = i;
 					return;
-					}
-
-			for (int i = 0; i < lastLowLevelSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (LowLevelSearchText.Text.ToLower ()))
-					{
-					lastLowLevelSearchOffset = i + 1;
-					LowLevelCommand.SelectedIndex = i;
-					return;
-					}
+					}*/
 			}
 
 		private void LowLevelSearchText_KeyDown (object sender, KeyEventArgs e)
@@ -664,22 +669,24 @@ namespace RD_AAOW
 		private void OFDFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = ofd.GetOFDNames ();
+			string text = OFDSearchText.Text.ToLower ();
 
-			for (int i = lastOFDSearchOffset; i < codes.Count; i++)
+			lastOFDSearchOffset++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (text))
+					{
+					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
+					OFDNamesList.SelectedIndex = lastOFDSearchOffset + 1;
+					return;
+					}
+
+			/*for (int i = 0; i < lastOFDSearchOffset; i++)
 				if (codes[i].ToLower ().Contains (OFDSearchText.Text.ToLower ()))
 					{
 					lastOFDSearchOffset = i + 1;
 					OFDNamesList.SelectedIndex = i + 1;
 					return;
-					}
-
-			for (int i = 0; i < lastOFDSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (OFDSearchText.Text.ToLower ()))
-					{
-					lastOFDSearchOffset = i + 1;
-					OFDNamesList.SelectedIndex = i + 1;
-					return;
-					}
+					}*/
 			}
 
 		private void OFDSearchText_KeyDown (object sender, KeyEventArgs e)
@@ -817,6 +824,22 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				FNFindSN_Click (null, null);
+			}
+
+		// Поиск TLV-тега
+		private void TLVButton_Click (object sender, EventArgs e)
+			{
+			if (tlvt.FindTag (TLVFind.Text))
+				{
+				TLVDescription.Text = tlvt.LastDescription;
+				TLVType.Text = tlvt.LastType;
+				}
+			}
+
+		private void TLVFind_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				TLVButton_Click (null, null);
 			}
 		}
 	}

@@ -11,6 +11,7 @@
 	<mypages:FNLifePage x:Name="FNLifePage" />
 	<mypages:RNMPage x:Name="RNMPage" />
 	<mypages:OFDPage x:Name="OFDPage" />
+	<mypages:TagsPage x:Name="TagsPage" />
 	<mypages:LowLevelPage x:Name="LowLevelPage" />
 	<mypages:CodesPage x:Name="CodesPage" />
 

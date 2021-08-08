@@ -40,6 +40,9 @@ namespace RD_AAOW
 			lowLevelMasterBackColor = Color.FromHex ("#FFF0FF"),
 			lowLevelFieldBackColor = Color.FromHex ("#FFC8FF"),
 
+			tagsMasterBackColor = Color.FromHex ("#E0FFF0"),
+			tagsFieldBackColor = Color.FromHex ("#C8FFE4"),
+
 			userManualsMasterBackColor = Color.FromHex ("#F4E8FF"),
 			userManualsFieldBackColor = Color.FromHex ("#ECD8FF"),
 
@@ -52,14 +55,15 @@ namespace RD_AAOW
 
 		#region Переменные страниц
 		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
-			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage;
+			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage;
 
 		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
 			errorsResultText,
 			aboutLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
-			lowLevelCommandDescr, unlockLabel;
+			lowLevelCommandDescr, unlockLabel,
+			tlvDescriptionLabel, tlvTypeLabel;
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
@@ -69,7 +73,7 @@ namespace RD_AAOW
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
 			ofdINN, unlockField,
-			fnLifeSerial,
+			fnLifeSerial, tlvTag,
 			rnmKKTSN, rnmINN, rnmRNM;
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
@@ -133,6 +137,9 @@ namespace RD_AAOW
 				rnmMasterBackColor, headerNumber++);
 			ofdPage = ApplyPageSettings ("OFDPage", "Параметры ОФД",
 				ofdMasterBackColor, headerNumber++);
+
+			tagsPage = ApplyPageSettings ("TagsPage", "TLV-теги", tagsMasterBackColor, headerNumber++);
+			tagsPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, headerNumber++);
@@ -578,6 +585,40 @@ namespace RD_AAOW
 
 			#endregion
 
+			#region Страница TLV-тегов
+
+			if (!ca.AllowExtendedFunctionsLevel2)
+				{
+				tagsFieldBackColor = tagsMasterBackColor = Color.FromRgb (128, 128, 128);
+				tagsPage.BackgroundColor = Color.FromRgb (192, 192, 192);
+				}
+
+			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVSearchLabel", "Номер или часть описания:", true);
+			tlvTag = AndroidSupport.ApplyEditorSettings (tagsPage, "TLVSearchText", tagsFieldBackColor,
+				Keyboard.Default, 20, "", null);
+			tlvTag.FontSize *= fontSizeMultiplier;
+
+			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVSearchButton",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
+				tagsFieldBackColor, TLVFind_Clicked);
+			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVClearButton",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
+				tagsFieldBackColor, TLVClear_Clicked);
+
+			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVDescriptionLabel", "Описание тега:", true);
+			tlvDescriptionLabel = AndroidSupport.ApplyResultLabelSettings (tagsPage, "TLVDescription", "",
+				tagsFieldBackColor);
+			tlvDescriptionLabel.HorizontalTextAlignment = TextAlignment.Start;
+			tlvDescriptionLabel.FontSize *= fontSizeMultiplier;
+
+			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVTypeLabel", "Тип тега:", true);
+			tlvTypeLabel = AndroidSupport.ApplyResultLabelSettings (tagsPage, "TLVType", "",
+				tagsFieldBackColor);
+			tlvTypeLabel.HorizontalTextAlignment = TextAlignment.Start;
+			tlvTypeLabel.FontSize *= fontSizeMultiplier;
+
+			#endregion
+
 			#region Страница команд нижнего уровня
 
 			if (!ca.AllowExtendedFunctionsLevel2)
@@ -651,7 +692,7 @@ namespace RD_AAOW
 		// Сброс списков ККТ и ошибок
 		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
 			{
-			lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки
+			/*lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки*/
 			ca.KKTForErrors = ca.ErrorCode = 0;
 
 			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
@@ -707,7 +748,7 @@ namespace RD_AAOW
 				lowLevelProtocol.Text = res;
 
 				// Вызов вложенного обработчика
-				lastCommandSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды
+				/*lastCommandSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды*/
 				LowLevelCommandCodeButton_Clicked (sender, null);
 				}
 
@@ -800,17 +841,18 @@ namespace RD_AAOW
 					{
 					fnLifeResult.TextColor = errorColor;
 
-					string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
+					/*string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
 					if (DateTime.Now >= KKTSupport.OldFNDeadline)
-						{
-						fnLifeResult.Text += ("\n(выбранный ФН с " + deadLine + " не может быть зарегистрирован)");
-						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
-						}
-					else
-						{
-						fnLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
-						fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
-						}
+						{*/
+					fnLifeResult.Text += ("\n(выбранный ФН с " + KKTSupport.OldFNDeadline.ToString ("d.MM.yy") +
+						" не может быть зарегистрирован в ФНС)");
+					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+					/*}
+				else
+					{
+					fnLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
+					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
+					}*/
 					}
 				else
 					{
@@ -896,7 +938,7 @@ namespace RD_AAOW
 			return Color.FromHex ("#C8C8FF");
 			}
 
-		private readonly OFD ofd = new OFD ();
+		private OFD ofd = new OFD ();
 		private void OFDINN_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			List<string> parameters = ofd.GetOFDParameters (ofdINN.Text);
@@ -967,7 +1009,7 @@ namespace RD_AAOW
 			}
 
 		// Выбор модели ККТ
-		private readonly KKTCodes kkmc = new KKTCodes ();
+		private KKTCodes kkmc = new KKTCodes ();
 		private async void CodesKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
@@ -1475,7 +1517,7 @@ namespace RD_AAOW
 			}
 
 		// Выбор модели ККТ
-		private readonly KKTErrorsList kkme = new KKTErrorsList ();
+		private KKTErrorsList kkme = new KKTErrorsList ();
 		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
@@ -1644,7 +1686,7 @@ namespace RD_AAOW
 			}
 
 		// Выбор модели ККТ
-		private readonly UserManuals um;
+		private UserManuals um;
 		private async void UserManualsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			int idx = (int)ca.KKTForManuals;
@@ -1681,12 +1723,25 @@ namespace RD_AAOW
 			}
 
 		// Поиск по тексту ошибки
-		private int lastErrorSearchOffset = 0;
+		private int lastErrorSearchOffset2 = 0;
 		private void Errors_Find (object sender, EventArgs e)
 			{
 			List<string> codes = kkme.GetErrorCodesList (ca.KKTForErrors);
+			string text = errorSearchText.Text.ToLower ();
 
-			for (int i = lastErrorSearchOffset; i < codes.Count; i++)
+			lastErrorSearchOffset2++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastErrorSearchOffset2) % codes.Count].ToLower ().Contains (text))
+					{
+					lastErrorSearchOffset2 = (i + lastErrorSearchOffset2) % codes.Count;
+
+					errorsCodeButton.Text = codes[lastErrorSearchOffset2];
+					ca.ErrorCode = (uint)lastErrorSearchOffset2;
+					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+					return;
+					}
+
+			/*for (int i = 0; i < lastErrorSearchOffset; i++)
 				if (codes[i].ToLower ().Contains (errorSearchText.Text.ToLower ()))
 					{
 					lastErrorSearchOffset = i + 1;
@@ -1695,27 +1750,33 @@ namespace RD_AAOW
 					ca.ErrorCode = (uint)i;
 					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
 					return;
-					}
-
-			for (int i = 0; i < lastErrorSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (errorSearchText.Text.ToLower ()))
-					{
-					lastErrorSearchOffset = i + 1;
-
-					errorsCodeButton.Text = codes[i];
-					ca.ErrorCode = (uint)i;
-					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
-					return;
-					}
+					}*/
 			}
 
 		// Поиск по названию команды нижнего уровня
-		private int lastCommandSearchOffset = 0;
+		private int lastCommandSearchOffset2 = 0;
 		private void Command_Find (object sender, EventArgs e)
 			{
 			List<string> codes = ll.GetCommandsList (ca.LowLevelProtocol);
+			string text = commandSearchText.Text.ToLower ();
 
-			for (int i = lastCommandSearchOffset; i < codes.Count; i++)
+			lastCommandSearchOffset2++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastCommandSearchOffset2) % codes.Count].ToLower ().Contains (text))
+					{
+					lastCommandSearchOffset2 = (i + lastCommandSearchOffset2) % codes.Count;
+
+					lowLevelCommand.Text = codes[lastCommandSearchOffset2];
+					ca.LowLevelCode = (uint)lastCommandSearchOffset2;
+
+					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol,
+						(uint)lastCommandSearchOffset2, false);
+					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol,
+						(uint)lastCommandSearchOffset2, true);
+					return;
+					}
+
+			/*for (int i = 0; i < lastCommandSearchOffset; i++)
 				if (codes[i].ToLower ().Contains (commandSearchText.Text.ToLower ()))
 					{
 					lastCommandSearchOffset = i + 1;
@@ -1726,29 +1787,31 @@ namespace RD_AAOW
 					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
 					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
 					return;
-					}
-
-			for (int i = 0; i < lastCommandSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (commandSearchText.Text.ToLower ()))
-					{
-					lastCommandSearchOffset = i + 1;
-
-					lowLevelCommand.Text = codes[i];
-					ca.LowLevelCode = (uint)i;
-
-					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
-					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
-					return;
-					}
+					}*/
 			}
 
 		// Поиск по названию ОФД
-		private int lastOFDSearchOffset = 0;
+		private int lastOFDSearchOffset2 = 0;
 		private void OFD_Find (object sender, EventArgs e)
 			{
 			List<string> codes = ofd.GetOFDNames ();
+			string text = ofdSearchText.Text.ToLower ();
 
-			for (int i = lastOFDSearchOffset; i < codes.Count; i++)
+			lastOFDSearchOffset2++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastOFDSearchOffset2) % codes.Count].ToLower ().Contains (text))
+					{
+					lastOFDSearchOffset2 = (i + lastOFDSearchOffset2) % codes.Count;
+					ofdNameButton.Text = codes[lastOFDSearchOffset2];
+
+					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
+					if (s != "")
+						ca.OFDINN = ofdINN.Text = s;
+
+					return;
+					}
+
+			/*for (int i = 0; i < lastCommandSearchOffset; i++)
 				if (codes[i].ToLower ().Contains (ofdSearchText.Text.ToLower ()))
 					{
 					lastOFDSearchOffset = i + 1;
@@ -1757,21 +1820,8 @@ namespace RD_AAOW
 					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
 					if (s != "")
 						ca.OFDINN = ofdINN.Text = s;
-
 					return;
-					}
-
-			for (int i = 0; i < lastCommandSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (ofdSearchText.Text.ToLower ()))
-					{
-					lastOFDSearchOffset = i + 1;
-
-					ofdNameButton.Text = codes[i];
-					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
-					if (s != "")
-						ca.OFDINN = ofdINN.Text = s;
-					return;
-					}
+					}*/
 			}
 
 		// Очистка полей
@@ -1809,6 +1859,21 @@ namespace RD_AAOW
 			string sig = kkts.FindSignatureByName (rnmKKTSN.Text);
 			if (sig != "")
 				rnmKKTSN.Text = sig;
+			}
+
+		private TLVTags tlvt = new TLVTags ();
+		private void TLVFind_Clicked (object sender, EventArgs e)
+			{
+			if (tlvt.FindTag (tlvTag.Text))
+				{
+				tlvDescriptionLabel.Text = tlvt.LastDescription;
+				tlvTypeLabel.Text = tlvt.LastType;
+				}
+			}
+
+		private void TLVClear_Clicked (object sender, EventArgs e)
+			{
+			tlvTag.Text = "";
 			}
 
 		/// <summary>
