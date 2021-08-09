@@ -63,12 +63,13 @@ namespace RD_AAOW
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel,
-			tlvDescriptionLabel, tlvTypeLabel;
+			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel;
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
+			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -541,23 +542,27 @@ namespace RD_AAOW
 				ofdFieldBackColor, OFDName_Clicked);
 			ofdNameButton.FontSize *= fontSizeMultiplier;
 
-			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameLabel", "Адрес:", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameLabel", "Адрес ОФД:", true);
 			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
 			ofdDNSNameButton.FontSize *= fontSizeMultiplier;
-
-			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDIPLabel", "IP:", true);
 			ofdIPButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor, Field_Clicked);
 			ofdIPButton.FontSize *= fontSizeMultiplier;
-
-			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDPortLabel", "Порт:", true);
 			ofdPortButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPort", "", ofdFieldBackColor, Field_Clicked);
 			ofdPortButton.FontSize *= fontSizeMultiplier;
 
-			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail:", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameMLabel", "Адрес ИСМ:", true);
+			ofdDNSNameMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameM", "", ofdFieldBackColor, Field_Clicked);
+			ofdDNSNameMButton.FontSize *= fontSizeMultiplier;
+			ofdIPMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPM", "", ofdFieldBackColor, Field_Clicked);
+			ofdIPMButton.FontSize *= fontSizeMultiplier;
+			ofdPortMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortM", "", ofdFieldBackColor, Field_Clicked);
+			ofdPortMButton.FontSize *= fontSizeMultiplier;
+
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail ОФД:", true);
 			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
 			ofdEmailButton.FontSize *= fontSizeMultiplier;
 
-			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDSiteLabel", "Сайт:", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDSiteLabel", "Сайт ОФД:", true);
 			ofdSiteButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
 			ofdSiteButton.FontSize *= fontSizeMultiplier;
 
@@ -616,6 +621,12 @@ namespace RD_AAOW
 				tagsFieldBackColor);
 			tlvTypeLabel.HorizontalTextAlignment = TextAlignment.Start;
 			tlvTypeLabel.FontSize *= fontSizeMultiplier;
+
+			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVValuesLabel", "Возможные значения тега:", true);
+			tlvValuesLabel = AndroidSupport.ApplyResultLabelSettings (tagsPage, "TLVValues", "",
+				tagsFieldBackColor);
+			tlvValuesLabel.HorizontalTextAlignment = TextAlignment.Start;
+			tlvValuesLabel.FontSize *= fontSizeMultiplier;
 
 			#endregion
 
@@ -944,11 +955,18 @@ namespace RD_AAOW
 			List<string> parameters = ofd.GetOFDParameters (ofdINN.Text);
 
 			ofdNameButton.Text = parameters[1];
+
 			ofdDNSNameButton.Text = parameters[2];
 			ofdIPButton.Text = parameters[3];
 			ofdPortButton.Text = parameters[4];
+
 			ofdEmailButton.Text = parameters[5];
 			ofdSiteButton.Text = parameters[6];
+
+			ofdDNSNameMButton.Text = parameters[7];
+			ofdIPMButton.Text = parameters[8];
+			ofdPortMButton.Text = parameters[9];
+
 			}
 
 		private async void OFDName_Clicked (object sender, EventArgs e)

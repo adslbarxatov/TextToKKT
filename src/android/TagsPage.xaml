@@ -23,6 +23,9 @@
 				<Label x:Name="TLVTypeLabel" />
 				<Label x:Name="TLVType" />
 
+				<Label x:Name="TLVValuesLabel" />
+				<Label x:Name="TLVValues" />
+
 				<Label />
 
 			</StackLayout>

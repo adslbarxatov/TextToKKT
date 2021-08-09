@@ -534,11 +534,16 @@ namespace RD_AAOW
 			List<string> parameters = ofd.GetOFDParameters (OFDINN.Text);
 
 			OFDNamesList.Text = parameters[1];
+
 			OFDDNSName.Text = parameters[2];
 			OFDIP.Text = parameters[3];
 			OFDPort.Text = parameters[4];
 			OFDEmail.Text = parameters[5];
 			OFDSite.Text = parameters[6];
+
+			OFDDNSNameM.Text = parameters[7];
+			OFDIPM.Text = parameters[8];
+			OFDPortM.Text = parameters[9];
 
 			OFDNalogSite.Text = "www.nalog.ru";
 			}
@@ -716,6 +721,11 @@ namespace RD_AAOW
 		private void FNLifeSNClear_Click (object sender, EventArgs e)
 			{
 			FNLifeSN.Text = "";
+			}
+
+		private void TLVClearButton_Click (object sender, EventArgs e)
+			{
+			TLVFind.Text = "";
 			}
 
 		// Вызов библиотеки FNReader

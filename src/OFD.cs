@@ -12,11 +12,19 @@ namespace RD_AAOW
 		// Переменные
 		private List<string> names = new List<string> (),
 			inn = new List<string> (),
+
 			dnsNames = new List<string> (),
 			ip = new List<string> (),
 			ports = new List<string> (),
 			emails = new List<string> (),
-			links = new List<string> ();
+			links = new List<string> (),
+
+			dnsNamesM = new List<string> (),
+			ipM = new List<string> (),
+			portsM = new List<string> ();
+		private const string notFound = "[не найдено]";
+		private const string notFoundFlag = "?";
+		private const string equivalentFlag = "=";
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу ОФД
@@ -39,16 +47,38 @@ namespace RD_AAOW
 					{
 					line++;
 					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-					if (values.Length != 7)
+					if (values.Length != 10)
 						continue;
 
 					inn.Add (values[0]);
 					names.Add (values[1]);
-					dnsNames.Add (values[2]);
-					ip.Add (values[3]);
-					ports.Add (values[4]);
-					emails.Add (values[5]);
-					links.Add (values[6]);
+
+					dnsNames.Add (values[2] == notFoundFlag ? notFound : values[2]);
+					ip.Add (values[3] == notFoundFlag ? notFound : values[3]);
+					ports.Add (values[4] == notFoundFlag ? "[???]" : values[4]);
+					emails.Add (values[5] == notFoundFlag ? notFound : values[5]);
+					links.Add (values[6] == notFoundFlag ? notFound : values[6]);
+
+					if (values[7] == notFoundFlag)
+						dnsNamesM.Add (notFound);
+					else if (values[7] == equivalentFlag)
+						dnsNamesM.Add (dnsNames[dnsNames.Count - 1]);
+					else
+						dnsNamesM.Add (values[7]);
+
+					if (values[8] == notFoundFlag)
+						ipM.Add (notFound);
+					else if (values[8] == equivalentFlag)
+						ipM.Add (ip[ip.Count - 1]);
+					else
+						ipM.Add (values[8]);
+
+					if (values[9] == notFoundFlag)
+						portsM.Add ("[???]");
+					else if (values[9] == equivalentFlag)
+						portsM.Add (ports[ports.Count - 1]);
+					else
+						portsM.Add (values[9]);
 					}
 				}
 			catch
@@ -83,7 +113,11 @@ namespace RD_AAOW
 
 			// Возврат
 			int i = inn.IndexOf (INN);
-			return new List<string> { inn[i], names[i], dnsNames[i], ip[i], ports[i], emails[i], links[i] };
+			return new List<string> {
+				inn[i], names[i],
+				dnsNames[i], ip[i], ports[i], emails[i], links[i],
+				dnsNamesM[i], ipM[i], portsM[i]
+				};
 			}
 
 		/// <summary>
