@@ -106,10 +106,10 @@ namespace RD_AAOW
 			{
 			// Защита
 			if (INN.Contains ("0000000000"))
-				return new List<string> { "?", "Без ОФД", "", "", "", "", "" };
+				return new List<string> { "?", "Без ОФД", "", "", "", "", "", "", "", "" };
 
 			if (!inn.Contains (INN))
-				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "" };
+				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "", "", "", "" };
 
 			// Возврат
 			int i = inn.IndexOf (INN);

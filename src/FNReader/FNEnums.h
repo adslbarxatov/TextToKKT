@@ -148,12 +148,8 @@ enum TLVTags
 	// Заводской номер ККТ (1013)
 	RegisterSerialNumber = 0x03F5,
 
-	//#define PROC_REGISTERSERIALNUMBER	"%s  Заводской номер ККТ: %s (ККТ %s)\r\n"
-
 	// ИНН ОФД (1017)
 	OFD_INN = 0x03F9,
-
-	//#define PROC_OFDINN	"%s  ИНН ОФД: %s"
 
 	// ИНН пользователя (1018)
 	UserINN = 0x03FA,
@@ -206,8 +202,9 @@ enum TLVTags
 	// Заводской номер ФН (1041)
 	FNSerialNumber = 0x0411,
 
-	//#define PROC_FNSERIALNUMBER	"%s  Заводской номер ФН: %s (%s)\r\n"
-
+	// Стоимость товарной позиции (1043)
+	ItemResult = 0x0413,
+		
 	// Имя пользователя (1048)
 	UserName = 0x0418,
 
@@ -231,6 +228,9 @@ enum TLVTags
 	// Название предмета расчёта (1059)
 	PaymentObject = 0x0423,
 
+	// Адрес сайта ФНС (1060)
+	TaxServiceAddress = 0x0424,
+		
 	// Флаги систем налогообложения (1062)
 	TaxFlags = 0x0426,
 

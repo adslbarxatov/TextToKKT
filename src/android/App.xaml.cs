@@ -1886,6 +1886,7 @@ namespace RD_AAOW
 				{
 				tlvDescriptionLabel.Text = tlvt.LastDescription;
 				tlvTypeLabel.Text = tlvt.LastType;
+				tlvValuesLabel.Text = tlvt.LastValuesSet;
 				}
 			}
 

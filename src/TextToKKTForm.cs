@@ -843,6 +843,7 @@ namespace RD_AAOW
 				{
 				TLVDescription.Text = tlvt.LastDescription;
 				TLVType.Text = tlvt.LastType;
+				TLVValues.Text = tlvt.LastValuesSet;
 				}
 			}
 
