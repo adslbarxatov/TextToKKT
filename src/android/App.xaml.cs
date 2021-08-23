@@ -69,7 +69,7 @@ namespace RD_AAOW
 		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
-			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton,
+			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdDNSNameKButton, ofdPortKButton,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -558,6 +558,14 @@ namespace RD_AAOW
 			ofdPortMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortM", "", ofdFieldBackColor, Field_Clicked);
 			ofdPortMButton.FontSize *= fontSizeMultiplier;
 
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameKLabel", "Адрес ОКП:", true);
+			ofdDNSNameKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
+				ofdFieldBackColor, Field_Clicked);
+			ofdDNSNameKButton.FontSize *= fontSizeMultiplier;
+			ofdPortKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
+				ofdFieldBackColor, Field_Clicked);
+			ofdPortKButton.FontSize *= fontSizeMultiplier;
+
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail ОФД:", true);
 			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
 			ofdEmailButton.FontSize *= fontSizeMultiplier;
@@ -567,7 +575,7 @@ namespace RD_AAOW
 			ofdSiteButton.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", true);
-			ofdFNSButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", "www.nalog.ru",
+			ofdFNSButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
 				ofdFieldBackColor, Field_Clicked);
 			ofdFNSButton.FontSize *= fontSizeMultiplier;
 

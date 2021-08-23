@@ -49,6 +49,14 @@
 
 				<Label />
 
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="OFDDNSNameKLabel" VerticalOptions="Center" />
+					<Button x:Name="OFDDNSNameK" VerticalOptions="Center" />
+					<Button x:Name="OFDPortK" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label />
+
 				<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
 					<Label x:Name="OFDEmailLabel" VerticalOptions="Center" />
 					<Button x:Name="OFDEmail" />

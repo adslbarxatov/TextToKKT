@@ -103,6 +103,9 @@ namespace RD_AAOW
 			RNMSerial_TextChanged (null, null); // Для протяжки пустых полей
 
 			OFDINN.Text = ca.OFDINN;
+			OFDNalogSite.Text = OFD.FNSSite;
+			OFDDNSNameK.Text = OFD.OKPSite;
+			OFDPortK.Text = OFD.OKPPort;
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
@@ -544,8 +547,6 @@ namespace RD_AAOW
 			OFDDNSNameM.Text = parameters[7];
 			OFDIPM.Text = parameters[8];
 			OFDPortM.Text = parameters[9];
-
-			OFDNalogSite.Text = "www.nalog.ru";
 			}
 
 		// Копирование в буфер обмена

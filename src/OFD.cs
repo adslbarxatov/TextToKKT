@@ -27,6 +27,21 @@ namespace RD_AAOW
 		private const string equivalentFlag = "=";
 
 		/// <summary>
+		/// Общий адрес сайта ФНС
+		/// </summary>
+		public const string FNSSite = "www.nalog.ru";
+
+		/// <summary>
+		/// Общий адрес сервера обновления ключей проверки кодов маркировки
+		/// </summary>
+		public const string OKPSite = "prod01.okp-fn.ru";
+
+		/// <summary>
+		/// Общий порт сервера обновления ключей проверки кодов маркировки
+		/// </summary>
+		public const string OKPPort = "26101";
+
+		/// <summary>
 		/// Конструктор. Инициализирует таблицу ОФД
 		/// </summary>
 		public OFD ()
