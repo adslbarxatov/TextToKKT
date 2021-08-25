@@ -79,7 +79,7 @@ namespace RD_AAOW
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
 			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeDeFacto,
-			keepAppState;
+			keepAppState, allowService;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
@@ -120,6 +120,9 @@ namespace RD_AAOW
 			ca = new ConfigAccessor (0, 0);
 			um = new UserManuals (ca.ExtendedFunctions);
 
+			// Переход в статус запуска для отмены вызова из оповещения
+			AndroidSupport.AppIsRunning = true;
+
 			#region Общая конструкция страниц приложения
 
 			MainPage = new MasterPage ();
@@ -157,10 +160,16 @@ namespace RD_AAOW
 
 			#region Страница «оглавления»
 
+			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "KeepAppStateLabel",
+				"Помнить настройки приложения", false);
 			keepAppState = (Xamarin.Forms.Switch)headersPage.FindByName ("KeepAppState");
 			keepAppState.IsToggled = ca.KeepApplicationState;
 
-			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "KeepAppStateLabel", "Помнить настройки приложения", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (headersPage, "AllowServiceLabel",
+				"Оставить службу активной после выхода", false);
+			allowService = (Xamarin.Forms.Switch)headersPage.FindByName ("AllowService");
+			allowService.IsToggled = AndroidSupport.AllowServiceToStart;
+			allowService.Toggled += AllowService_Toggled;
 
 			try
 				{
@@ -1903,13 +1912,26 @@ namespace RD_AAOW
 			tlvTag.Text = "";
 			}
 
+		// Включение / выключение фоновой службы
+		private void AllowService_Toggled (object sender, ToggledEventArgs e)
+			{
+			AndroidSupport.AllowServiceToStart = allowService.IsToggled;
+			}
+
 		/// <summary>
 		/// Обработчик события перехода в ждущий режим
 		/// </summary>
 		protected override void OnSleep ()
 			{
+			// Переключение состояния
+			if (!allowService.IsToggled)
+				AndroidSupport.StopRequested = true;
+
+			AndroidSupport.AppIsRunning = false;
+
+			// Сохранение настроек
 			ca.KeepApplicationState = keepAppState.IsToggled;
-			if (!ca.KeepApplicationState)
+			if (!keepAppState.IsToggled)
 				return;
 
 			ca.CurrentTab = (uint)((CarouselPage)MainPage).Children.IndexOf (((CarouselPage)MainPage).CurrentPage);
@@ -1939,6 +1961,14 @@ namespace RD_AAOW
 			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
 			//ca.KKTForCodes	// -||-
 			ca.CodesText = codesSourceText.Text;
+			}
+
+		/// <summary>
+		/// Возврат в интерфейс
+		/// </summary>
+		protected override void OnResume ()
+			{
+			AndroidSupport.AppIsRunning = true;
 			}
 		}
 	}

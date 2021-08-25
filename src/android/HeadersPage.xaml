@@ -8,6 +8,7 @@
 
 		<ScrollView>
 			<StackLayout>
+
 				<Button x:Name="Button01" IsVisible="False" />
 				<Button x:Name="Button02" IsVisible="False" />
 				<Button x:Name="Button03" IsVisible="False" />
@@ -24,7 +25,13 @@
 					<Label x:Name="KeepAppStateLabel" />
 				</StackLayout>
 
-				<Label x:Name="Filler" />
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Switch x:Name="AllowService" />
+					<Label x:Name="AllowServiceLabel" />
+				</StackLayout>
+
+				<Label />
+
 			</StackLayout>
 		</ScrollView>
 
