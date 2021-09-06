@@ -217,19 +217,9 @@ namespace RD_AAOW.Droid
 			notBuilder.SetTicker (ProgramDescription.AssemblyTitle);
 
 			// Настройка видимости для стартового сообщения
-			if (!AndroidSupport.IsForegroundAvailable)
-				{
-				notBuilder.SetDefaults (0);         // Для служебного сообщения
-				notBuilder.SetPriority ((int)NotificationPriority.Default);
-				}
-			else
-				{
-				notBuilder.SetDefaults (0);
-				notBuilder.SetPriority ((int)NotificationPriority.High);
-
-				notBuilder.SetLights (0x00FF80, 1000, 1000);
-				notBuilder.SetVibrate (new long[] { 200, 600, 200 });
-				}
+			notBuilder.SetDefaults (0);         // Для служебного сообщения
+			notBuilder.SetPriority (!AndroidSupport.IsForegroundAvailable ? (int)NotificationPriority.Default :
+				(int)NotificationPriority.High);
 
 			notBuilder.SetSmallIcon (Resource.Drawable.ic_not);
 			if (AndroidSupport.IsLargeIconRequired)
@@ -335,16 +325,35 @@ namespace RD_AAOW.Droid
 			}
 
 		/// <summary>
-		/// Обработка события выполнения задания
+		/// Обработка события выполнения задания для Android O и новее
+		/// </summary>
+		public override StartCommandResult OnStartCommand (Intent intent, StartCommandFlags flags, int startId)
+			{
+			if (AndroidSupport.IsForegroundAvailable)
+				StartActivity ();
+
+			return base.OnStartCommand (intent, flags, startId);
+			}
+
+		/// <summary>
+		/// Обработка события выполнения задания для Android N и старше
 		/// </summary>
 		protected override void OnHandleWork (Intent intent)
 			{
-			if (AndroidSupport.AppIsRunning || (intent == null))
+			if (!AndroidSupport.IsForegroundAvailable)
+				StartActivity ();
+			}
+
+		// Общий метод запуска
+		private void StartActivity ()
+			{
+			if (AndroidSupport.AppIsRunning)
 				return;
 
 			AndroidSupport.StopRequested = false;
 			Intent mainActivity = new Intent (this, typeof (MainActivity));
-			PendingIntent.GetActivity (this, 0, mainActivity, 0).Send ();
+			mainActivity.PutExtra ("Tab", 0);
+			PendingIntent.GetActivity (this, 0, mainActivity, PendingIntentFlags.UpdateCurrent).Send ();
 			}
 		}
 

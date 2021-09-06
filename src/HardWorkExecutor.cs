@@ -221,8 +221,8 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="HardWorkProcess">Выполняемый процесс</param>
 		/// <param name="Parameters">Передаваемые параметры выполнения</param>
-		/// <param name="Caption">Сообщение для отображения (если не задано, окно прогресса не отображается)</param>
-		public HardWorkExecutor (DoWorkEventHandler HardWorkProcess, object Parameters, string Caption)
+		/// <param name="WindowCaption">Сообщение для отображения (если не задано, окно прогресса не отображается)</param>
+		public HardWorkExecutor (DoWorkEventHandler HardWorkProcess, object Parameters, string WindowCaption)
 			{
 			// Настройка BackgroundWorker
 			bw.WorkerReportsProgress = true;        // Разрешает возвраты изнутри процесса
@@ -233,7 +233,7 @@ namespace RD_AAOW
 			bw.ProgressChanged += ProgressChanged;
 
 			// Донастройка окна
-			if ((Caption == null) || (Caption == ""))
+			if ((WindowCaption == null) || (WindowCaption == ""))
 				{
 				bw.RunWorkerAsync (Parameters);
 				}
@@ -244,9 +244,9 @@ namespace RD_AAOW
 				InitializeProgressBar ();
 				currentPercentage = (int)ProgressBarSize;
 
-				this.AbortButton.Visible = this.AbortButton.Enabled = false;
-				this.StateLabel.Text = Caption;
-				this.StateLabel.TextAlign = ContentAlignment.MiddleCenter;
+				AbortButton.Visible = AbortButton.Enabled = false;
+				StateLabel.Text = WindowCaption;
+				StateLabel.TextAlign = ContentAlignment.MiddleCenter;
 
 				// Запуск
 				this.ShowDialog ();
