@@ -8,6 +8,7 @@
 
 		<ScrollView>
 			<StackLayout>
+
 				<!-- Поле ввода ЗН ФН и указания номинала -->
 				<Label x:Name="SetModelLabel" />
 				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
@@ -71,7 +72,6 @@
 					<Switch x:Name="FNLifeDeFacto" VerticalOptions="Center" />
 					<Label x:Name="FNLifeDeFactoLabel" VerticalOptions="Center" />
 				</StackLayout>
-
 
 				<Label />
 

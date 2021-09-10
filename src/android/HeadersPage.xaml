@@ -20,14 +20,16 @@
 				<Button x:Name="Button09" IsVisible="False" />
 				<Button x:Name="Button10" IsVisible="False" />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Switch x:Name="KeepAppState" />
-					<Label x:Name="KeepAppStateLabel" />
-				</StackLayout>
+				<Label />
 
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Switch x:Name="AllowService" />
 					<Label x:Name="AllowServiceLabel" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Switch x:Name="KeepAppState" />
+					<Label x:Name="KeepAppStateLabel" />
 				</StackLayout>
 
 				<Label />

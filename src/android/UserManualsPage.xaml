@@ -14,49 +14,8 @@
 
 				<Label x:Name="HelpLabel" />
 
-				<!--<Label x:Name="OperationLabel01" />
-				<Label x:Name="OperationText01" />
-
-				<Label x:Name="OperationLabel02" />
-				<Label x:Name="OperationText02" />
-
-				<Label x:Name="OperationLabel03" />
-				<Label x:Name="OperationText03" />
-
-				<Label x:Name="OperationLabel04" />
-				<Label x:Name="OperationText04" />
-
-				<Label x:Name="OperationLabel05" />
-				<Label x:Name="OperationText05" />
-
-				<Label x:Name="OperationLabel06" />
-				<Label x:Name="OperationText06" />
-
-				<Label x:Name="OperationLabel07" />
-				<Label x:Name="OperationText07" />
-
-				<Label x:Name="OperationLabel08" />
-				<Label x:Name="OperationText08" />
-
-				<Label x:Name="OperationLabel09" IsVisible="false" />
-				<Label x:Name="OperationText09" IsVisible="false" />
-
-				<Label x:Name="OperationLabel10" IsVisible="false" />
-				<Label x:Name="OperationText10" IsVisible="false" />
-
-				<Label x:Name="OperationLabel11" IsVisible="false" />
-				<Label x:Name="OperationText11" IsVisible="false" />
-
-				<Label x:Name="OperationLabel12" IsVisible="false" />
-				<Label x:Name="OperationText12" IsVisible="false" />
-
-				<Label x:Name="OperationLabel13" IsVisible="false" />
-				<Label x:Name="OperationText13" IsVisible="false" />
-				
-				<Label x:Name="Filler" />-->
-				
 			</StackLayout>
 		</ScrollView>
-		
+
 	</StackLayout>
 </ContentPage>

@@ -29,9 +29,9 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			byte[] s = Properties.TextToKKMResources.Codes;
+			byte[] s = Properties.TextToKKMResources.KKTCodes;
 #else
-			byte[] s = Properties.Resources.Codes;
+			byte[] s = Properties.Resources.KKTCodes;
 #endif
 			string buf = Encoding.UTF8.GetString (s);
 			StringReader SR = new StringReader (buf);

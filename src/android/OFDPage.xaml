@@ -41,6 +41,19 @@
 					</StackLayout>
 
 					<StackLayout HorizontalOptions="Center">
+						<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+							<Label x:Name="OFDEmailLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDEmail" />
+						</StackLayout>
+						<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+							<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDSite" />
+						</StackLayout>
+
+						<Label />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Center">
 						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 							<Label x:Name="OFDDNSNameMLabel" VerticalOptions="Center" />
 							<Button x:Name="OFDDNSNameM" VerticalOptions="Center" />
@@ -59,23 +72,10 @@
 							<Button x:Name="OFDDNSNameK" VerticalOptions="Center" />
 						</StackLayout>
 						<Button x:Name="OFDPortK" VerticalOptions="Center" HorizontalOptions="Center" />
-						
-						<Label />
-					</StackLayout>
-
-					<StackLayout HorizontalOptions="Center">
-						<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
-							<Label x:Name="OFDEmailLabel" VerticalOptions="Center" />
-							<Button x:Name="OFDEmail" />
-						</StackLayout>
-						<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
-							<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
-							<Button x:Name="OFDSite" />
-						</StackLayout>
 
 						<Label />
 					</StackLayout>
-					
+
 				</FlexLayout>
 
 				<StackLayout HorizontalOptions="Center" Orientation="Horizontal">

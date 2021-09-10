@@ -30,7 +30,7 @@
 				<Label x:Name="CommandDescrLabel" />
 				<Label x:Name="CommandDescr" />
 
-				<Label x:Name="Filler" />
+				<Label />
 
 			</StackLayout>
 		</ScrollView>

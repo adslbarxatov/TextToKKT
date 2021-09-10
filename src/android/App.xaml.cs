@@ -16,20 +16,17 @@ namespace RD_AAOW
 		#region Настройки стилей отображения
 
 		private readonly Color
-			codesMasterBackColor = Color.FromHex ("#FFFFF0"),
-			codesFieldBackColor = Color.FromHex ("#FFFFD0"),
+			headersMasterBackColor = Color.FromHex ("#E8E8E8"),
+			headersFieldBackColor = Color.FromHex ("#E0E0E0"),
+
+			userManualsMasterBackColor = Color.FromHex ("#F4E8FF"),
+			userManualsFieldBackColor = Color.FromHex ("#ECD8FF"),
 
 			errorsMasterBackColor = Color.FromHex ("#FFF0F0"),
 			errorsFieldBackColor = Color.FromHex ("#FFD0D0"),
 
-			aboutMasterBackColor = Color.FromHex ("#F0FFF0"),
-			aboutFieldBackColor = Color.FromHex ("#D0FFD0"),
-
 			fnLifeMasterBackColor = Color.FromHex ("#FFF0E0"),
 			fnLifeFieldBackColor = Color.FromHex ("#FFE0C0"),
-
-			headersMasterBackColor = Color.FromHex ("#E8E8E8"),
-			headersFieldBackColor = Color.FromHex ("#E0E0E0"),
 
 			rnmMasterBackColor = Color.FromHex ("#E0F0FF"),
 			rnmFieldBackColor = Color.FromHex ("#C0E0FF"),
@@ -37,36 +34,46 @@ namespace RD_AAOW
 			ofdMasterBackColor = Color.FromHex ("#F0F0FF"),
 			ofdFieldBackColor = Color.FromHex ("#C8C8FF"),
 
-			lowLevelMasterBackColor = Color.FromHex ("#FFF0FF"),
-			lowLevelFieldBackColor = Color.FromHex ("#FFC8FF"),
-
 			tagsMasterBackColor = Color.FromHex ("#E0FFF0"),
 			tagsFieldBackColor = Color.FromHex ("#C8FFE4"),
 
-			userManualsMasterBackColor = Color.FromHex ("#F4E8FF"),
-			userManualsFieldBackColor = Color.FromHex ("#ECD8FF"),
+			lowLevelMasterBackColor = Color.FromHex ("#FFF0FF"),
+			lowLevelFieldBackColor = Color.FromHex ("#FFC8FF"),
+
+			kktCodesMasterBackColor = Color.FromHex ("#FFFFF0"),
+			kktCodesFieldBackColor = Color.FromHex ("#FFFFD0"),
+
+			aboutMasterBackColor = Color.FromHex ("#F0FFF0"),
+			aboutFieldBackColor = Color.FromHex ("#D0FFD0"),
+
+			barCodesMasterBackColor = Color.FromHex ("#F6FAEC"),
+			barCodesFieldBackColor = Color.FromHex ("#D8E8B0"),
 
 			untoggledSwitchColor = Color.FromHex ("#505050"),
 			errorColor = Color.FromHex ("#FF0000"),
-			correctColor = Color.FromHex ("#008000");
+			correctColor = Color.FromHex ("#008000"),
+
+			disabledFieldColor = Color.FromHex ("#808080"),
+			disabledPageColor = Color.FromHex ("#C0C0C0");
 		private const string firstStartRegKey = "HelpShownAt";
 
 		#endregion
 
 		#region Переменные страниц
-		private ContentPage headersPage, codesPage, errorsPage, aboutPage,
-			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage;
+		private ContentPage headersPage, kktCodesPage, errorsPage, aboutPage,
+			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage, barCodesPage;
 
-		private Label codesSourceTextLabel, codesHelpLabel, codesErrorLabel, codesResultText,
+		private Label kktCodesSourceTextLabel, kktCodesHelpLabel, kktCodesErrorLabel, kktCodesResultText,
 			errorsResultText,
 			aboutLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel,
-			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel;
+			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel,
+			barcodeDescriptionLabel, rnmTip;
 		private List<Label> operationTextLabels = new List<Label> ();
 
-		private Xamarin.Forms.Button codesKKTButton, fnLifeResult,
+		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdDNSNameKButton, ofdPortKButton,
@@ -75,7 +82,8 @@ namespace RD_AAOW
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
 			ofdINN, unlockField,
 			fnLifeSerial, tlvTag,
-			rnmKKTSN, rnmINN, rnmRNM;
+			rnmKKTSN, rnmINN, rnmRNM,
+			barcodeField;
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
 			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeDeFacto,
@@ -149,9 +157,12 @@ namespace RD_AAOW
 				lowLevelMasterBackColor, headerNumber++);
 			lowLevelPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
-			codesPage = ApplyPageSettings ("CodesPage", "Перевод текста в коды ККТ",
-				codesMasterBackColor, headerNumber++);
-			codesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
+			kktCodesPage = ApplyPageSettings ("KKTCodesPage", "Перевод текста в коды ККТ",
+				kktCodesMasterBackColor, headerNumber++);
+			kktCodesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
+
+			barCodesPage = ApplyPageSettings ("BarCodesPage", "Штрих-коды",
+				barCodesMasterBackColor, headerNumber++);
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
@@ -222,17 +233,17 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница кодов
+			#region Страница кодов символов ККТ
 
 			if (!ca.AllowExtendedFunctionsLevel1)
 				{
-				codesFieldBackColor = codesMasterBackColor = Color.FromRgb (128, 128, 128);
-				codesPage.BackgroundColor = Color.FromRgb (192, 192, 192);
+				kktCodesFieldBackColor = kktCodesMasterBackColor = disabledFieldColor;
+				kktCodesPage.BackgroundColor = disabledPageColor;
 				}
 
-			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SelectionLabel", "Модель ККТ:", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "SelectionLabel", "Модель ККТ:", true);
 
-			onlyNewCodes = (Xamarin.Forms.Switch)codesPage.FindByName ("OnlyNewCodes");
+			onlyNewCodes = (Xamarin.Forms.Switch)kktCodesPage.FindByName ("OnlyNewCodes");
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
@@ -244,37 +255,37 @@ namespace RD_AAOW
 				onlyNewCodes.IsEnabled = false;
 				}
 
-			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "OnlyNewCodesLabel", "Только новые", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "OnlyNewCodesLabel", "Только новые", false);
 
-			codesKKTButton = AndroidSupport.ApplyButtonSettings (codesPage, "KKTButton",
+			kktCodesKKTButton = AndroidSupport.ApplyButtonSettings (kktCodesPage, "KKTButton",
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes],
-				codesFieldBackColor, CodesKKTButton_Clicked);
-			codesKKTButton.FontSize *= fontSizeMultiplier;
+				kktCodesFieldBackColor, CodesKKTButton_Clicked);
+			kktCodesKKTButton.FontSize *= fontSizeMultiplier;
 
-			codesSourceTextLabel = AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "SourceTextLabel",
+			kktCodesSourceTextLabel = AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "SourceTextLabel",
 				"Исходный текст:", true);
 
-			codesSourceText = AndroidSupport.ApplyEditorSettings (codesPage, "SourceText",
-				codesFieldBackColor, Keyboard.Default, 72, ca.CodesText, SourceText_TextChanged);
+			codesSourceText = AndroidSupport.ApplyEditorSettings (kktCodesPage, "SourceText",
+				kktCodesFieldBackColor, Keyboard.Default, 72, ca.CodesText, SourceText_TextChanged);
 			codesSourceText.HorizontalOptions = LayoutOptions.Fill;
 			codesSourceText.FontSize *= fontSizeMultiplier;
 
-			AndroidSupport.ApplyLabelSettingsForKKT (codesPage, "ResultTextLabel", "Коды ККТ:", true);
+			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "ResultTextLabel", "Коды ККТ:", true);
 
-			codesErrorLabel = AndroidSupport.ApplyTipLabelSettings (codesPage, "ErrorLabel",
+			kktCodesErrorLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "ErrorLabel",
 				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
 				errorColor);
 
-			codesResultText = AndroidSupport.ApplyResultLabelSettings (codesPage, "ResultText", "", codesFieldBackColor);
-			codesResultText.HorizontalTextAlignment = TextAlignment.Start;
-			codesResultText.FontSize *= fontSizeMultiplier;
+			kktCodesResultText = AndroidSupport.ApplyResultLabelSettings (kktCodesPage, "ResultText", "", kktCodesFieldBackColor);
+			kktCodesResultText.HorizontalTextAlignment = TextAlignment.Start;
+			kktCodesResultText.FontSize *= fontSizeMultiplier;
 
-			codesHelpLabel = AndroidSupport.ApplyTipLabelSettings (codesPage, "HelpLabel",
+			kktCodesHelpLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
 
-			AndroidSupport.ApplyButtonSettings (codesPage, "Clear",
+			AndroidSupport.ApplyButtonSettings (kktCodesPage, "Clear",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
-				codesFieldBackColor, CodesClear_Clicked);
+				kktCodesFieldBackColor, CodesClear_Clicked);
 
 			SourceText_TextChanged (null, null);    // Протягивание кодов
 
@@ -512,12 +523,17 @@ namespace RD_AAOW
 			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
 			rnmGenerate.Margin = new Thickness (0);
 
-			string rnmAbout = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
-				"жёлтый – планируется; синий – нет сведений (на момент релиза этой версии приложения)";
+			string rnmAbout = "Индикатор ФФД: " +
+				"<b><font color=\"#FF4040\">красный</font></b> – поддержка не планируется; " +
+				"<b><font color=\"#00C000\">зелёный</font></b> – поддерживается; " +
+				"<b><font color=\"#FFFFA0\">жёлтый</font></b> – планируется; " +
+				"<b><font color=\"#6060FF\">синий</font></b> – нет сведений (на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
-				rnmAbout += ("\n\nПервые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
+				rnmAbout += ("<br/><br/>Первые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
 					"вручную при генерации");
-			AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout", rnmAbout, untoggledSwitchColor);
+
+			rnmTip = AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout", rnmAbout, untoggledSwitchColor);
+			rnmTip.TextType = TextType.Html;
 
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
@@ -611,8 +627,8 @@ namespace RD_AAOW
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
-				tagsFieldBackColor = tagsMasterBackColor = Color.FromRgb (128, 128, 128);
-				tagsPage.BackgroundColor = Color.FromRgb (192, 192, 192);
+				tagsFieldBackColor = tagsMasterBackColor = disabledFieldColor;
+				tagsPage.BackgroundColor = disabledPageColor;
 				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVSearchLabel", "Номер или часть описания:", true);
@@ -651,8 +667,8 @@ namespace RD_AAOW
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
-				lowLevelFieldBackColor = lowLevelMasterBackColor = Color.FromRgb (128, 128, 128);
-				lowLevelPage.BackgroundColor = Color.FromRgb (192, 192, 192);
+				lowLevelFieldBackColor = lowLevelMasterBackColor = disabledFieldColor;
+				lowLevelPage.BackgroundColor = disabledPageColor;
 				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ProtocolLabel", "Протокол:", true);
@@ -689,6 +705,25 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandSearchButton",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Find),
 				lowLevelFieldBackColor, Command_Find);
+
+			#endregion
+
+			#region Страница штрих-кодов
+
+			AndroidSupport.ApplyLabelSettingsForKKT (barCodesPage, "BarcodeFieldLabel", "Данные штрих-кода:", true);
+			barcodeField = AndroidSupport.ApplyEditorSettings (barCodesPage, "BarcodeField",
+				barCodesFieldBackColor, Keyboard.Numeric, BarCodes.MaxSupportedDataLength,
+				ca.BarcodeData, BarcodeText_TextChanged);
+			barcodeField.FontSize *= fontSizeMultiplier;
+
+			AndroidSupport.ApplyLabelSettingsForKKT (barCodesPage, "BarcodeDescriptionLabel",
+				"Описание штрих-кода:", true);
+			barcodeDescriptionLabel = AndroidSupport.ApplyResultLabelSettings (barCodesPage, "BarcodeDescription", "",
+				barCodesFieldBackColor);
+			barcodeDescriptionLabel.HorizontalTextAlignment = TextAlignment.Start;
+			barcodeDescriptionLabel.FontSize *= fontSizeMultiplier;
+
+			BarcodeText_TextChanged (null, null);
 
 			#endregion
 
@@ -732,7 +767,7 @@ namespace RD_AAOW
 		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
 			{
 			ca.KKTForCodes = 0;
-			codesKKTButton.Text = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes];
+			kktCodesKKTButton.Text = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes];
 			}
 
 		// Выбор команды нижнего уровня
@@ -869,18 +904,8 @@ namespace RD_AAOW
 					{
 					fnLifeResult.TextColor = errorColor;
 
-					/*string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
-					if (DateTime.Now >= KKTSupport.OldFNDeadline)
-						{*/
-					fnLifeResult.Text += ("\n(выбранный ФН с " + KKTSupport.OldFNDeadline.ToString ("d.MM.yy") +
-						" не может быть зарегистрирован в ФНС)");
+					fnLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
 					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
-					/*}
-				else
-					{
-					fnLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
-					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
-					}*/
 					}
 				else
 					{
@@ -1034,13 +1059,13 @@ namespace RD_AAOW
 				}
 			}
 
-		// Ввод текста
+		// Ввод текста для перевода в коды символов
 		private void SourceText_TextChanged (object sender, TextChangedEventArgs e)
 			{
-			codesResultText.Text = "";
-			codesErrorLabel.IsVisible = !Decode ();
+			kktCodesResultText.Text = "";
+			kktCodesErrorLabel.IsVisible = !Decode ();
 
-			codesSourceTextLabel.Text = "Исходный текст (" + codesSourceText.Text.Length.ToString () + "):";
+			kktCodesSourceTextLabel.Text = "Исходный текст (" + codesSourceText.Text.Length.ToString () + "):";
 			}
 
 		// Выбор модели ККТ
@@ -1048,7 +1073,7 @@ namespace RD_AAOW
 		private async void CodesKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
-			string res = await codesPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
+			string res = await kktCodesPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).ToArray ());
 
 			// Установка модели
@@ -1056,9 +1081,9 @@ namespace RD_AAOW
 			if ((i = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res)) < 0)
 				return;
 
-			codesKKTButton.Text = res;
+			kktCodesKKTButton.Text = res;
 			ca.KKTForCodes = (uint)i;
-			codesHelpLabel.Text = kkmc.GetKKTTypeDescription (ca.KKTForCodes);
+			kktCodesHelpLabel.Text = kkmc.GetKKTTypeDescription (ca.KKTForCodes);
 
 			SourceText_TextChanged (null, null);
 			}
@@ -1077,12 +1102,12 @@ namespace RD_AAOW
 				if ((s = kkmc.GetCode (ca.KKTForCodes, CharToCP1251 (codesSourceText.Text[i]))) ==
 					KKTCodes.EmptyCode)
 					{
-					codesResultText.Text += "xxx   ";
+					kktCodesResultText.Text += "xxx   ";
 					res = false;
 					}
 				else
 					{
-					codesResultText.Text += (s + "   ");
+					kktCodesResultText.Text += (s + "   ");
 					}
 				}
 
@@ -1918,6 +1943,13 @@ namespace RD_AAOW
 			AndroidSupport.AllowServiceToStart = allowService.IsToggled;
 			}
 
+		// Ввод данных штрих-кода
+		private BarCodes barc = new BarCodes ();
+		private void BarcodeText_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			barcodeDescriptionLabel.Text = barc.GetBarcodeDescription (barcodeField.Text);
+			}
+
 		/// <summary>
 		/// Обработчик события перехода в ждущий режим
 		/// </summary>
@@ -1961,6 +1993,8 @@ namespace RD_AAOW
 			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
 			//ca.KKTForCodes	// -||-
 			ca.CodesText = codesSourceText.Text;
+
+			ca.BarcodeData = barcodeField.Text;
 			}
 
 		/// <summary>

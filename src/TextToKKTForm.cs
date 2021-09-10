@@ -24,6 +24,7 @@ namespace RD_AAOW
 		private KKTSerial kkts = null;
 		private FNSerial fns = null;
 		private TLVTags tlvt = null;
+		private BarCodes barc = null;
 
 		private NotifyIcon ni = new NotifyIcon ();
 
@@ -50,6 +51,7 @@ namespace RD_AAOW
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();
+			barc = new BarCodes ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -126,6 +128,8 @@ namespace RD_AAOW
 				OperationsListForManuals.SelectedIndex = 0;
 				}
 
+			BarcodeData.Text = ca.BarcodeData;
+
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
@@ -133,14 +137,13 @@ namespace RD_AAOW
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
 				"жёлтый – планируется; синий – нет сведений\n(на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
+				{
 				RNMTip.Text += ("\n\nПервые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
 					"вручную при генерации");
-
-			if (!ca.AllowExtendedFunctionsLevel2)
-				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
-
-			if (!ca.AllowExtendedFunctionsLevel2)
+				}
+			else
 				{
+				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
 				UnlockField.Visible = UnlockLabel.Visible = true;
 				UnlockLabel.Text = ca.LockMessage;
 				FNReader.Enabled = false;
@@ -260,6 +263,8 @@ namespace RD_AAOW
 			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			ca.CodesText = TextToConvert.Text;
 
+			ca.BarcodeData = BarcodeData.Text;
+
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
 			}
@@ -354,7 +359,6 @@ namespace RD_AAOW
 			KKTListForErrors.Items.Clear ();
 			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
-			/*lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки*/
 			}
 
 		// Ввод номера ФН в разделе срока жизни
@@ -425,18 +429,8 @@ namespace RD_AAOW
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
-					/*string deadLine = KKTSupport.OldFNDeadline.ToString ("d.MM.yy");
-					if (DateTime.Now >= KKTSupport.OldFNDeadline)
-						{*/
-					FNLifeResult.Text += ("\n(выбранный ФН с " + KKTSupport.OldFNDeadline.ToString ("d.MM.yy") +
-						" не может быть зарегистрирован)");
+					FNLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
 					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
-					/*}
-				else
-					{
-					FNLifeResult.Text += ("\n(выбранный ФН должен быть зарегистрирован до " + deadLine + ")");
-					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
-					}*/
 					}
 				else
 					{
@@ -580,7 +574,6 @@ namespace RD_AAOW
 			LowLevelCommand.Items.Clear ();
 			LowLevelCommand.Items.AddRange (ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
 			LowLevelCommand.SelectedIndex = 0;
-			/*lastLowLevelSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды*/
 			}
 
 		// Выбор команды
@@ -624,14 +617,6 @@ namespace RD_AAOW
 					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = (i + lastErrorSearchOffset) % codes.Count;
 					return;
 					}
-
-			/*for (int i = 0; i < lastErrorSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (ErrorSearchText.Text.ToLower ()))
-					{
-					lastErrorSearchOffset = i + 1;
-					ErrorCodesList.SelectedIndex = i;
-					return;
-					}*/
 			}
 
 		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
@@ -654,14 +639,6 @@ namespace RD_AAOW
 					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex = (i + lastLowLevelSearchOffset) % codes.Count;
 					return;
 					}
-
-			/*for (int i = 0; i < lastLowLevelSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (LowLevelSearchText.Text.ToLower ()))
-					{
-					lastLowLevelSearchOffset = i + 1;
-					LowLevelCommand.SelectedIndex = i;
-					return;
-					}*/
 			}
 
 		private void LowLevelSearchText_KeyDown (object sender, KeyEventArgs e)
@@ -685,14 +662,6 @@ namespace RD_AAOW
 					OFDNamesList.SelectedIndex = lastOFDSearchOffset + 1;
 					return;
 					}
-
-			/*for (int i = 0; i < lastOFDSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (OFDSearchText.Text.ToLower ()))
-					{
-					lastOFDSearchOffset = i + 1;
-					OFDNamesList.SelectedIndex = i + 1;
-					return;
-					}*/
 			}
 
 		private void OFDSearchText_KeyDown (object sender, KeyEventArgs e)
@@ -852,6 +821,12 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				TLVButton_Click (null, null);
+			}
+
+		// Ввод штрих-кода
+		private void BarcodeData_TextChanged (object sender, EventArgs e)
+			{
+			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
 			}
 		}
 	}
