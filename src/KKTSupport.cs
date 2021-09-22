@@ -8,18 +8,6 @@ namespace RD_AAOW
 	/// </summary>
 	public static class KKTSupport
 		{
-		/*/// <summary>
-		/// Возвращает дату ограничения регистрации ФН, не поддерживающих ФФД 1.2
-		/// </summary>
-		public static DateTime OldFNDeadline
-			{
-			get
-				{
-				return fnDeadline;
-				}
-			}
-		private static DateTime fnDeadline = new DateTime (2021, 8, 6, 0, 0, 0);*/
-
 		/// <summary>
 		/// Структура используется для передачи списка параметров определения срока жизни ФН
 		/// </summary>

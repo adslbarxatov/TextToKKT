@@ -71,7 +71,10 @@
 							<Label x:Name="OFDDNSNameKLabel" VerticalOptions="Center" />
 							<Button x:Name="OFDDNSNameK" VerticalOptions="Center" />
 						</StackLayout>
-						<Button x:Name="OFDPortK" VerticalOptions="Center" HorizontalOptions="Center" />
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Button x:Name="OFDIPK" VerticalOptions="Center" />
+							<Button x:Name="OFDPortK" VerticalOptions="Center" />
+						</StackLayout>
 
 						<Label />
 					</StackLayout>

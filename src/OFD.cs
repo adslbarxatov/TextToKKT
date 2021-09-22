@@ -37,6 +37,11 @@ namespace RD_AAOW
 		public const string OKPSite = "prod01.okp-fn.ru";
 
 		/// <summary>
+		/// Общий IP-адрес сервера обновления ключей проверки кодов маркировки
+		/// </summary>
+		public const string OKPIP = "31.44.83.184";
+
+		/// <summary>
 		/// Общий порт сервера обновления ключей проверки кодов маркировки
 		/// </summary>
 		public const string OKPPort = "26101";
@@ -52,7 +57,7 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { ';' };
+			char[] splitters = new char[] { '\t' };
 			uint line = 0;
 
 			try

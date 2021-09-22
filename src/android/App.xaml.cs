@@ -76,7 +76,7 @@ namespace RD_AAOW
 		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
-			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdDNSNameKButton, ofdPortKButton,
+			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdDNSNameKButton, ofdIPKButton, ofdPortKButton,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -587,6 +587,9 @@ namespace RD_AAOW
 			ofdDNSNameKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
 				ofdFieldBackColor, Field_Clicked);
 			ofdDNSNameKButton.FontSize *= fontSizeMultiplier;
+			ofdIPKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPK", OFD.OKPIP,
+				ofdFieldBackColor, Field_Clicked);
+			ofdIPKButton.FontSize *= fontSizeMultiplier;
 			ofdPortKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
 				ofdFieldBackColor, Field_Clicked);
 			ofdPortKButton.FontSize *= fontSizeMultiplier;
@@ -755,7 +758,6 @@ namespace RD_AAOW
 		// Сброс списков ККТ и ошибок
 		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
 			{
-			/*lastErrorSearchOffset = 0;  // Позволяет избежать сбоя при вторичном вызове поиска по коду ошибки*/
 			ca.KKTForErrors = ca.ErrorCode = 0;
 
 			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
@@ -811,11 +813,8 @@ namespace RD_AAOW
 				lowLevelProtocol.Text = res;
 
 				// Вызов вложенного обработчика
-				/*lastCommandSearchOffset = 0;   // Позволяет избежать сбоя при вторичном вызове поиска по коду команды*/
 				LowLevelCommandCodeButton_Clicked (sender, null);
 				}
-
-			//list.Clear ();
 			}
 
 		// Ввод ЗН ФН в разделе определения срока жизни
@@ -1800,17 +1799,6 @@ namespace RD_AAOW
 					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
 					return;
 					}
-
-			/*for (int i = 0; i < lastErrorSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (errorSearchText.Text.ToLower ()))
-					{
-					lastErrorSearchOffset = i + 1;
-
-					errorsCodeButton.Text = codes[i];
-					ca.ErrorCode = (uint)i;
-					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
-					return;
-					}*/
 			}
 
 		// Поиск по названию команды нижнего уровня
@@ -1835,19 +1823,6 @@ namespace RD_AAOW
 						(uint)lastCommandSearchOffset2, true);
 					return;
 					}
-
-			/*for (int i = 0; i < lastCommandSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (commandSearchText.Text.ToLower ()))
-					{
-					lastCommandSearchOffset = i + 1;
-
-					lowLevelCommand.Text = codes[i];
-					ca.LowLevelCode = (uint)i;
-
-					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
-					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
-					return;
-					}*/
 			}
 
 		// Поиск по названию ОФД
@@ -1870,18 +1845,6 @@ namespace RD_AAOW
 
 					return;
 					}
-
-			/*for (int i = 0; i < lastCommandSearchOffset; i++)
-				if (codes[i].ToLower ().Contains (ofdSearchText.Text.ToLower ()))
-					{
-					lastOFDSearchOffset = i + 1;
-
-					ofdNameButton.Text = codes[i];
-					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
-					if (s != "")
-						ca.OFDINN = ofdINN.Text = s;
-					return;
-					}*/
 			}
 
 		// Очистка полей

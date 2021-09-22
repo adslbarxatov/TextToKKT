@@ -86,11 +86,7 @@ namespace RD_AAOW
 			Unsupported = -1
 			}
 
-		/// <summary>
-		/// Метод определяет тип штрих-кода
-		/// </summary>
-		/// <param name="BarcodeData">Данные штрих-кода</param>
-		/// <returns>Тип штрих-кода, если он поддерживается</returns>
+		// Метод определяет тип штрих-кода
 		private SupportedBarcodesTypes GetBarcodeType (string BarcodeData)
 			{
 			// Контроль
@@ -129,11 +125,7 @@ namespace RD_AAOW
 			return ((10 - (checksum % 10)).ToString () == BarcodeData[EAN13 ? 12 : 7].ToString ());
 			}
 
-		/// <summary>
-		/// Метод возвращает область применения штрих-кода или страну-производителя, которой он соответствует
-		/// </summary>
-		/// <param name="BarcodeData">Данные штрих-кода</param>
-		/// <returns>Область применения или страна-производитель</returns>
+		// Метод возвращает область применения штрих-кода или страну-производителя, которой он соответствует
 		private string GetEANUsage (string BarcodeData)
 			{
 			// Контроль
@@ -169,11 +161,11 @@ namespace RD_AAOW
 			// Тип штрих-кода
 			SupportedBarcodesTypes type = GetBarcodeType (BarcodeData);
 			if (type == BarCodes.SupportedBarcodesTypes.Unsupported)
-				return "Штрих-код неполный или не поддерживается";
+				return "Штрих-код неполный, некорректный или не поддерживается";
 			string res = "Тип штрих-кода: " + type.ToString () + "\r\n";
 
 			// Данные области применения
-			res += GetEANUsage (BarcodeData);	//+ "\r\n";
+			res += GetEANUsage (BarcodeData);
 
 			// Завершено
 			return res;

@@ -107,6 +107,7 @@ namespace RD_AAOW
 			OFDINN.Text = ca.OFDINN;
 			OFDNalogSite.Text = OFD.FNSSite;
 			OFDDNSNameK.Text = OFD.OKPSite;
+			OFDIPK.Text = OFD.OKPIP;
 			OFDPortK.Text = OFD.OKPPort;
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
