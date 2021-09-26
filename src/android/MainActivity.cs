@@ -213,8 +213,8 @@ namespace RD_AAOW.Droid
 
 			string launchMessage = "Нажмите, чтобы вернуться в основное приложение";
 			notBuilder.SetContentText (launchMessage);
-			notBuilder.SetContentTitle (ProgramDescription.AssemblyTitle);
-			notBuilder.SetTicker (ProgramDescription.AssemblyTitle);
+			notBuilder.SetContentTitle (ProgramDescription.AssemblyMainName);
+			notBuilder.SetTicker (ProgramDescription.AssemblyMainName);
 
 			// Настройка видимости для стартового сообщения
 			notBuilder.SetDefaults (0);         // Для служебного сообщения
