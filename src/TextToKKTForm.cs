@@ -152,14 +152,17 @@ namespace RD_AAOW
 
 			// Настройка иконки в трее
 			ni.Icon = Properties.TextToKKMResources.TextToKKTTray;
-			ni.Text = ProgramDescription.AssemblyTitle;
+			ni.Text = ProgramDescription.AssemblyMainName;
 			ni.Visible = true;
 
 			ni.ContextMenu = new ContextMenu ();
 
+			ni.ContextMenu.MenuItems.Add (new MenuItem ("FNReader", FNReader_Click));
+			ni.ContextMenu.MenuItems[0].Enabled = FNReader.Enabled;
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
+
 			ni.MouseDown += ReturnWindow;
-			ni.ContextMenu.MenuItems[0].DefaultItem = true;
+			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
 			if (!File.Exists (startupLink))
 				ni.ContextMenu.MenuItems.Add (new MenuItem ("Добавить в &автозапуск", AddToStartup));
