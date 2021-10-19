@@ -22,6 +22,9 @@ namespace RD_AAOW
 		/// </summary>
 		public const string EmptyCode = "\x7";
 
+		// Разделители
+		private char[] splitters = new char[] { '\n', '\t' };
+
 		/// <summary>
 		/// Конструктор. Инициализирует таблицы кодов
 		/// </summary>
@@ -33,48 +36,40 @@ namespace RD_AAOW
 #else
 			byte[] s = Properties.Resources.KKTCodes;
 #endif
-			string buf = Encoding.UTF8.GetString (s);
-			StringReader SR = new StringReader (buf);
+			string[] buf = Encoding.UTF8.GetString (s).Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 			// Формирование массива 
-			string str;
-			uint line = 0;
+			int line = 0;
 			try
 				{
 				// Чтение количества новых ККТ
-				newKKTCount = int.Parse (SR.ReadLine ());
+				newKKTCount = int.Parse (buf[line++]);
 
 				// Чтение кодов
-				while ((str = SR.ReadLine ()) != null)
+				while (line < buf.Length)
 					{
-					// Чтение имени ККТ
-					line++;
+					// Чтение названия
+					names.Add (buf[line++]);
 
 					// Чтение кодов
-					names.Add (str);
 					codes.Add (new List<int> ());
 
 					for (int i = 0; i < 0x100; i++)
 						{
-						str = SR.ReadLine ();   // Любое недопустимое значение в этой строке вызовет исключение в следующей
-						codes[codes.Count - 1].Add (int.Parse (str));
-						line++;
+						if (i < 32)
+							codes[codes.Count - 1].Add (-1);
+						else
+							codes[codes.Count - 1].Add (int.Parse (buf[line++]));
 						}
 
-					// Чтение представления
-					presentations.Add (SR.ReadLine ());
-					line++;
-
-					// Чтение примечания
-					descriptions.Add (SR.ReadLine ());
-					line++;
+					// Чтение представления и примечания
+					presentations.Add (buf[line++]);
+					descriptions.Add (buf[line++]);
 					}
 
 				if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
 					(descriptions.Count != presentations.Count))
-					{
 					throw new Exception ();
-					}
 
 				// Верификация количества
 				if (newKKTCount < 1)
@@ -87,9 +82,6 @@ namespace RD_AAOW
 				throw new Exception ("База кодов программы повреждена. Работа программы невозможна.\n" +
 					"Ошибка встречена в строке " + line.ToString ());
 				}
-
-			// Завершено
-			SR.Close ();
 			}
 
 		/// <summary>
@@ -103,9 +95,7 @@ namespace RD_AAOW
 			if ((int)KKTType < names.Count)
 				{
 				if (codes[(int)KKTType][CodeNumber] < 0)
-					{
 					return EmptyCode;
-					}
 
 				return codes[(int)KKTType][CodeNumber].ToString (presentations[(int)KKTType]);
 				}
