@@ -14,7 +14,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает интерфейс отображения сведений о программе
 	/// </summary>
-	public partial class AboutForm: Form
+	public partial class AboutForm:Form
 		{
 		// Переменные
 		private string projectLink, updatesLink, userManualLink;
@@ -188,14 +188,14 @@ namespace RD_AAOW
 			HardWorkExecutor hwe;
 			if (!AcceptMode)
 				{
-				hwe = new HardWorkExecutor (UpdatesChecker, null, "");
+				hwe = new HardWorkExecutor (UpdatesChecker, null, null, false, false);
 				UpdatesTimer.Enabled = true;
 				}
 
 			// Получение Политики
 			else
 				{
-				hwe = new HardWorkExecutor (PolicyLoader, null, policyLoaderCaption);
+				hwe = new HardWorkExecutor (PolicyLoader, null, policyLoaderCaption, true, false);
 
 				string html = hwe.Result.ToString ();
 				if (html != "")
@@ -203,7 +203,7 @@ namespace RD_AAOW
 					DescriptionBox.Text = html;
 
 					int left = html.IndexOf ("rev");
-					int right = html.IndexOf ("\r", left);
+					int right = html.IndexOf ("\n", left);
 					if ((left >= 0) && (right >= 0))
 						adpRevision = html.Substring (left, right - left);
 					}
@@ -512,7 +512,8 @@ htmlError:
 			return;
 			}
 
-#if !SIMPLE_HWE
+#if DPMODULE
+
 		/// <summary>
 		/// Метод-исполнитель загрузки пакета обновлений
 		/// </summary>
@@ -634,6 +635,7 @@ htmlError:
 			e.Result = 0;
 			return;
 			}
+
 #endif
 
 		// Контроль сообщения об обновлении

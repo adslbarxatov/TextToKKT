@@ -12,7 +12,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает главную форму программы
 	/// </summary>
-	public partial class TextToKKTForm: Form
+	public partial class TextToKKTForm:Form
 		{
 		// Переменные
 		private KKTCodes kkmc = null;
@@ -74,6 +74,7 @@ namespace RD_AAOW
 			this.Top = ca.WindowTop;
 
 			KeepAppState.Checked = ca.KeepApplicationState;
+			TopFlag.Checked = ca.TopMost;
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 
@@ -195,8 +196,11 @@ namespace RD_AAOW
 			else
 				{
 				this.Show ();
+
 				this.TopMost = true;
-				this.TopMost = false;
+				if (!TopFlag.Checked)
+					this.TopMost = false;
+				this.WindowState = FormWindowState.Normal;
 				}
 			}
 
@@ -236,6 +240,7 @@ namespace RD_AAOW
 			ca.WindowTop = this.Top;
 
 			ca.KeepApplicationState = KeepAppState.Checked;
+			ca.TopMost = TopFlag.Checked;
 			if (!ca.KeepApplicationState)
 				return;
 
@@ -760,9 +765,6 @@ namespace RD_AAOW
 			{
 			if ((m.Msg == ConfigAccessor.NextDumpPathMsg) && (ConfigAccessor.NextDumpPath != ""))
 				{
-				// Вывод на передний план
-				//this.TopMost = true;
-
 				// Делается для защиты от непредвиденных сбросов состояния приложения
 				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 					{
@@ -775,8 +777,6 @@ namespace RD_AAOW
 					CallFNReader (ConfigAccessor.NextDumpPath);
 					ConfigAccessor.NextDumpPath = "";
 					}
-
-				//this.TopMost = false;
 				}
 
 			base.WndProc (ref m);
@@ -831,6 +831,12 @@ namespace RD_AAOW
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
 			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
+			}
+
+		// Переключение состояния "поверх всех окон"
+		private void TopFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			this.TopMost = TopFlag.Checked;
 			}
 		}
 	}
