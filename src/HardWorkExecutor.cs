@@ -18,6 +18,12 @@ namespace RD_AAOW
 		private int currentXOffset = 0, currentPercentage = 0;
 		private object parameters;                              // Параметры инициализации потока
 
+		// Цветовая схема
+		private Color backColor = Color.FromArgb (224, 224, 224);
+		private Color foreColor = Color.FromArgb (32, 32, 32);
+		private Color greenColor = Color.FromArgb (0, 160, 80);
+		private Color greyColor = Color.FromArgb (160, 160, 160);
+
 		/// <summary>
 		/// Длина шкалы прогресса
 		/// </summary>
@@ -64,16 +70,9 @@ namespace RD_AAOW
 			{
 			// Настройка контролов
 			InitializeComponent ();
-#if !DPMODULE
-			this.BackColor = Color.FromKnownColor (KnownColor.Control);
-			StateLabel.ForeColor = AbortButton.ForeColor = Color.FromArgb (0, 0, 0);
-			AbortButton.BackColor = Color.FromKnownColor (KnownColor.Control);
-#else
-			this.BackColor = Color.FromArgb (11 * ProgramDescription.MasterBackColor.R / 10,
-				11 * ProgramDescription.MasterBackColor.G / 10, 11 * ProgramDescription.MasterBackColor.B / 10);
-			StateLabel.ForeColor = AbortButton.ForeColor = ProgramDescription.MasterTextColor;
-			AbortButton.BackColor = ProgramDescription.MasterButtonColor;
-#endif
+			this.BackColor = backColor;
+			StateLabel.ForeColor = AbortButton.ForeColor = foreColor;
+			AbortButton.BackColor = backColor;
 
 			// Инициализация
 			progress = new Bitmap (this.Width - 20, 30);
@@ -84,16 +83,16 @@ namespace RD_AAOW
 			Point[] frame = new Point[] {
 					new Point (0, 0),
 					new Point (this.Width / 4, 0),
-					new Point (this.Width / 4 + progress.Height / 2, progress .Height / 2),
+					new Point (this.Width / 4 + progress.Height / 2, progress.Height / 2),
 					new Point (this.Width / 4, progress.Height),
-					new Point (0, progress .Height),
-					new Point (progress .Height / 2, progress .Height / 2)
+					new Point (0, progress.Height),
+					new Point (progress.Height / 2, progress.Height / 2)
 					};
 
 			// Подготовка дескрипторов
-			SolidBrush green = new SolidBrush (Color.FromArgb (0, 160, 80)),
-				grey = new SolidBrush (Color.FromArgb (160, 160, 160)),
-				back = new SolidBrush (this.BackColor);
+			SolidBrush green = new SolidBrush (greenColor),
+				grey = new SolidBrush (greyColor),
+				back = new SolidBrush (backColor);
 
 			frameGreenGrey = new Bitmap (10 * this.Width / 4, progress.Height);
 			frameBack = new Bitmap (10 * this.Width / 4, progress.Height);
