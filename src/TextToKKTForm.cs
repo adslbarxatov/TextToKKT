@@ -348,7 +348,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start ("https://github.com/adslbarxatov/TextToKKT/blob/master/FNReader.pdf");
+				Process.Start (ProgramDescription.AssemblyFNReaderLink);
 				}
 			catch
 				{

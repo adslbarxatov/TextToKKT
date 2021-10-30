@@ -11,7 +11,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает функционал приложения
 	/// </summary>
-	public partial class App: Application
+	public partial class App:Application
 		{
 		#region Настройки стилей отображения
 
@@ -1623,7 +1623,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (AndroidSupport.MasterGitLink + "FNReader");
+				await Launcher.OpenAsync (ProgramDescription.AssemblyFNReaderLink);
 				}
 			catch
 				{

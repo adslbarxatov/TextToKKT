@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--package="texttokkt.huawei" package="com.RD_AAOW.TextToKKT"-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="600521" android:versionName="5.5.5">
+	android:installLocation="internalOnly" android:versionCode="600522" android:versionName="5.5.17">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30" />
 
@@ -11,9 +11,11 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
 	<application android:label="Text to KKT" android:icon="@mipmap/icon">
+	<!--application android:label="Text to KKT | GH" android:icon="@mipmap/icon"-->
 
 		<receiver android:name="com.RD_AAOW.TextToKKTBoot" android:label="TextToKKTBoot">
-			<intent-filter>
+		<!--receiver android:name="com.RD_AAOW.TextToKKTBoot_GH" android:label="TextToKKTBoot"-->
+				<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 				<action android:name="android.intent.action.QUICKBOOT_POWERON" />
 			</intent-filter>
