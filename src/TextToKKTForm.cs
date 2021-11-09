@@ -32,6 +32,8 @@ namespace RD_AAOW
 		private string startupLink = Environment.GetFolderPath (Environment.SpecialFolder.CommonStartup) + "\\" +
 			ProgramDescription.AssemblyMainName + ".lnk";
 
+		#region Главный интерфейс
+
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
@@ -234,6 +236,7 @@ namespace RD_AAOW
 			ni.Visible = false;
 			}
 
+		// Сохранение настроек приложения
 		private void SaveAppSettings ()
 			{
 			ca.WindowLeft = this.Left;
@@ -277,6 +280,153 @@ namespace RD_AAOW
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
 			}
+
+		// Отображение справки
+		private void BHelp_Clicked (object sender, EventArgs e)
+			{
+			ProgramDescription.ShowAbout (false);
+			}
+
+		// Дополнительные функции
+		private void FNReaderUserManual_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				Process.Start (ProgramDescription.AssemblyFNReaderLink);
+				}
+			catch
+				{
+				}
+			}
+
+		// Копирование в буфер обмена
+		private void SendToClipboard (string Text)
+			{
+			try
+				{
+				Clipboard.SetData (DataFormats.Text, Text);
+				}
+			catch { }
+			}
+
+		// Запрос цвета, соответствующего статусу поддержки
+		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
+			{
+			if (Status == KKTSerial.FFDSupportStatuses.Planned)
+				return Color.FromArgb (255, 255, 200);
+
+			if (Status == KKTSerial.FFDSupportStatuses.Supported)
+				return Color.FromArgb (200, 255, 200);
+
+			if (Status == KKTSerial.FFDSupportStatuses.Unsupported)
+				return Color.FromArgb (255, 200, 200);
+
+			// Остальные
+			return Color.FromArgb (200, 200, 255);
+			}
+
+		// Разблокировка функционала
+		private void UnlockField_TextChanged (object sender, EventArgs e)
+			{
+			if (ca.TestPass (UnlockField.Text))
+				{
+				UnlockField.Enabled = false;
+				UnlockLabel.Text = ConfigAccessor.UnlockMessage;
+				UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
+				}
+			}
+
+		// Вызов библиотеки FNReader
+		private const string fnReaderDLL = "FNReader.dll";
+		private void FNReader_Click (object sender, EventArgs e)
+			{
+			CallFNReader ("");
+			}
+
+		private Assembly FNReaderDLL;
+		private Type FNReaderProgram;
+		private dynamic FNReaderInstance;
+		private void CallFNReader (string DumpPath)
+			{
+			// Контроль
+			if (FNReaderDLL == null)
+				{
+				try
+					{
+					FNReaderDLL = Assembly.LoadFile (AboutForm.AppStartupPath + fnReaderDLL);
+					FNReaderProgram = FNReaderDLL.GetType ("RD_AAOW.Program");
+					FNReaderInstance = Activator.CreateInstance (FNReaderProgram);
+					}
+				catch
+					{
+					try
+						{
+						switch (MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
+							"Данный компонент доступен в комплекте с руководством пользователя при развёртке приложения " +
+							"через оператор пакетов DPModule:\n" +
+							"• Нажмите «Да», чтобы перейти к загрузке приложения с GitHub;\n" +
+							"• Нажмите «Нет», чтобы ознакомиться с презентацией DPModule на YouTube",
+							ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
+							{
+							case DialogResult.Yes:
+								Process.Start ("https://github.com/adslbarxatov/DPModule/releases");
+								break;
+
+							case DialogResult.No:
+								Process.Start ("https://youtu.be/m7CqXvUrbc8");
+								break;
+							}
+						}
+					catch
+						{
+						MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyTitle,
+							MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						}
+
+					return;
+					}
+				}
+
+			// Запуск
+			if (FNReaderDLL != null)
+				{
+				FNReaderInstance.FNReaderEx (DumpPath);
+				}
+			}
+
+		/// <summary>
+		/// Ручная обработка сообщения для окна по спецкоду
+		/// </summary>
+		protected override void WndProc (ref Message m)
+			{
+			if ((m.Msg == ConfigAccessor.NextDumpPathMsg) && (ConfigAccessor.NextDumpPath != ""))
+				{
+				// Делается для защиты от непредвиденных сбросов состояния приложения
+				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
+					{
+					ConfigAccessor.NextDumpPath = "";
+					MessageBox.Show ("Завершите работу с модулем FNReader, чтобы открыть новый файл",
+						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					}
+				else
+					{
+					CallFNReader (ConfigAccessor.NextDumpPath);
+					ConfigAccessor.NextDumpPath = "";
+					}
+				}
+
+			base.WndProc (ref m);
+			}
+
+		// Переключение состояния "поверх всех окон"
+		private void TopFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			this.TopMost = TopFlag.Checked;
+			}
+
+		#endregion
+
+		#region Коды символов ККТ
 
 		// Изменение текста и его кодировка
 		private void TextToConvert_TextChanged (object sender, EventArgs e)
@@ -322,11 +472,23 @@ namespace RD_AAOW
 			TextToConvert_TextChanged (null, null);
 			}
 
-		// Отображение справки
-		private void BHelp_Clicked (object sender, EventArgs e)
+		// Изменение списка ККТ
+		private void OnlyNewCodes_CheckedChanged (object sender, EventArgs e)
 			{
-			ProgramDescription.ShowAbout (false);
+			KKTListForCodes.Items.Clear ();
+			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (OnlyNewCodes.Checked).ToArray ());
+			KKTListForCodes.SelectedIndex = 0;
 			}
+
+		// Очистка полей
+		private void TextToConvertClear_Click (object sender, EventArgs e)
+			{
+			TextToConvert.Text = "";
+			}
+
+		#endregion
+
+		#region Коды ошибок ККТ
 
 		// Выбор ошибки
 		private void ErrorCodesList_SelectedIndexChanged (object sender, EventArgs e)
@@ -343,32 +505,39 @@ namespace RD_AAOW
 			ErrorCodesList.SelectedIndex = 0;
 			}
 
-		// Дополнительные функции
-		private void FNReaderUserManual_Click (object sender, EventArgs e)
-			{
-			try
-				{
-				Process.Start (ProgramDescription.AssemblyFNReaderLink);
-				}
-			catch
-				{
-				}
-			}
-
 		// Изменение списка ККТ
-		private void OnlyNewCodes_CheckedChanged (object sender, EventArgs e)
-			{
-			KKTListForCodes.Items.Clear ();
-			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (OnlyNewCodes.Checked).ToArray ());
-			KKTListForCodes.SelectedIndex = 0;
-			}
-
 		private void OnlyNewErrors_CheckedChanged (object sender, EventArgs e)
 			{
 			KKTListForErrors.Items.Clear ();
 			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 			}
+
+		// Поиск по тексту ошибки
+		private int lastErrorSearchOffset = 0;
+		private void ErrorFindButton_Click (object sender, EventArgs e)
+			{
+			List<string> codes = kkme.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
+			string text = ErrorSearchText.Text.ToLower ();
+
+			lastErrorSearchOffset++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastErrorSearchOffset) % codes.Count].ToLower ().Contains (text))
+					{
+					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = (i + lastErrorSearchOffset) % codes.Count;
+					return;
+					}
+			}
+
+		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				ErrorFindButton_Click (null, null);
+			}
+
+		#endregion
+
+		#region Срок жизни ФН
 
 		// Ввод номера ФН в разделе срока жизни
 		private void FNLifeSN_TextChanged (object sender, EventArgs e)
@@ -459,6 +628,30 @@ namespace RD_AAOW
 			SendToClipboard (fnLifeResult);
 			}
 
+		// Очистка полей
+		private void FNLifeSNClear_Click (object sender, EventArgs e)
+			{
+			FNLifeSN.Text = "";
+			}
+
+		// Поиск сигнатуры ЗН ФН по части названия
+		private void FNFindSN_Click (object sender, EventArgs e)
+			{
+			string sig = fns.FindSignatureByName (FNLifeSN.Text);
+			if (sig != "")
+				FNLifeSN.Text = sig;
+			}
+
+		private void FNLifeSN_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				FNFindSN_Click (null, null);
+			}
+
+		#endregion
+
+		#region РНМ и ЗН
+
 		// Ввод номеров в разделе РН
 		private void RNMSerial_TextChanged (object sender, EventArgs e)
 			{
@@ -499,22 +692,6 @@ namespace RD_AAOW
 				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 			}
 
-		// Запрос цвета, соответствующего статусу поддержки
-		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
-			{
-			if (Status == KKTSerial.FFDSupportStatuses.Planned)
-				return Color.FromArgb (255, 255, 200);
-
-			if (Status == KKTSerial.FFDSupportStatuses.Supported)
-				return Color.FromArgb (200, 255, 200);
-
-			if (Status == KKTSerial.FFDSupportStatuses.Unsupported)
-				return Color.FromArgb (255, 200, 200);
-
-			// Остальные
-			return Color.FromArgb (200, 200, 255);
-			}
-
 		// Генерация регистрационного номера
 		private void RNMGenerate_Click (object sender, EventArgs e)
 			{
@@ -525,6 +702,32 @@ namespace RD_AAOW
 			else
 				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10));
 			}
+
+		// Очистка полей
+		private void RNMSerialClear_Click (object sender, EventArgs e)
+			{
+			RNMSerial.Text = "";
+			RNMUserINN.Text = "";
+			RNMValue.Text = "";
+			}
+
+		// Поиск сигнатуры ЗН ККТ по части названия
+		private void RNMSerialFind_Click (object sender, EventArgs e)
+			{
+			string sig = kkts.FindSignatureByName (RNMSerial.Text);
+			if (sig != "")
+				RNMSerial.Text = sig;
+			}
+
+		private void RNMSerial_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				RNMSerialFind_Click (null, null);
+			}
+
+		#endregion
+
+		#region ОФД
 
 		// Выбор имени ОФД
 		private void OFDNamesList_SelectedIndexChanged (object sender, EventArgs e)
@@ -558,15 +761,6 @@ namespace RD_AAOW
 			SendToClipboard (((Button)sender).Text);
 			}
 
-		private void SendToClipboard (string Text)
-			{
-			try
-				{
-				Clipboard.SetData (DataFormats.Text, Text);
-				}
-			catch { }
-			}
-
 		private void OFDNameCopy_Click (object sender, EventArgs e)
 			{
 			SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'));
@@ -575,85 +769,6 @@ namespace RD_AAOW
 		private void OFDINNCopy_Click (object sender, EventArgs e)
 			{
 			SendToClipboard (OFDINN.Text);
-			}
-
-		// Выбор списка команд нижнего уровня
-		private void LowLevelProtocol_CheckedChanged (object sender, EventArgs e)
-			{
-			LowLevelCommand.Items.Clear ();
-			LowLevelCommand.Items.AddRange (ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
-			LowLevelCommand.SelectedIndex = 0;
-			}
-
-		// Выбор команды
-		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
-			{
-			LowLevelCommandCode.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, false);
-			LowLevelCommandDescr.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, true);
-			}
-
-		// Выбор модели аппарата
-		private void KKTListForManuals_SelectedIndexChanged (object sender, EventArgs e)
-			{
-			UMOperationText.Text = um.GetManual ((uint)KKTListForManuals.SelectedIndex,
-				(uint)OperationsListForManuals.SelectedIndex);
-			}
-
-		// Разблокировка функционала
-		private void UnlockField_TextChanged (object sender, EventArgs e)
-			{
-			if (ca.TestPass (UnlockField.Text))
-				{
-				UnlockField.Enabled = false;
-				UnlockLabel.Text = ConfigAccessor.UnlockMessage;
-				UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
-				}
-			}
-
-		// Поиск по тексту ошибки
-		private int lastErrorSearchOffset = 0;
-		private void ErrorFindButton_Click (object sender, EventArgs e)
-			{
-			List<string> codes = kkme.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
-			string text = ErrorSearchText.Text.ToLower ();
-
-			lastErrorSearchOffset++;
-			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastErrorSearchOffset) % codes.Count].ToLower ().Contains (text))
-					{
-					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = (i + lastErrorSearchOffset) % codes.Count;
-					return;
-					}
-			}
-
-		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				ErrorFindButton_Click (null, null);
-			}
-
-		// Поиск по тексту ошибки
-		private int lastLowLevelSearchOffset = 0;
-		private void LowLevelFindButton_Click (object sender, EventArgs e)
-			{
-			List<string> codes = ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
-			string text = LowLevelSearchText.Text.ToLower ();
-
-			lastLowLevelSearchOffset++;
-			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastLowLevelSearchOffset) % codes.Count].ToLower ().Contains (text))
-					{
-					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex = (i + lastLowLevelSearchOffset) % codes.Count;
-					return;
-					}
-			}
-
-		private void LowLevelSearchText_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				LowLevelFindButton_Click (null, null);
 			}
 
 		// Поиск по названию ОФД
@@ -680,134 +795,73 @@ namespace RD_AAOW
 			}
 
 		// Очистка полей
-		private void RNMSerialClear_Click (object sender, EventArgs e)
-			{
-			RNMSerial.Text = "";
-			RNMUserINN.Text = "";
-			RNMValue.Text = "";
-			}
-
 		private void OFDINNClear_Click (object sender, EventArgs e)
 			{
 			OFDINN.Text = "";
 			}
 
-		private void TextToConvertClear_Click (object sender, EventArgs e)
+		#endregion
+
+		#region Команды нижнего уровня
+
+		// Выбор списка команд нижнего уровня
+		private void LowLevelProtocol_CheckedChanged (object sender, EventArgs e)
 			{
-			TextToConvert.Text = "";
+			LowLevelCommand.Items.Clear ();
+			LowLevelCommand.Items.AddRange (ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
+			LowLevelCommand.SelectedIndex = 0;
 			}
 
-		private void FNLifeSNClear_Click (object sender, EventArgs e)
+		// Выбор команды
+		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			FNLifeSN.Text = "";
+			LowLevelCommandCode.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex, false);
+			LowLevelCommandDescr.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex, true);
 			}
 
+		// Поиск по тексту ошибки
+		private int lastLowLevelSearchOffset = 0;
+		private void LowLevelFindButton_Click (object sender, EventArgs e)
+			{
+			List<string> codes = ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
+			string text = LowLevelSearchText.Text.ToLower ();
+
+			lastLowLevelSearchOffset++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastLowLevelSearchOffset) % codes.Count].ToLower ().Contains (text))
+					{
+					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex = (i + lastLowLevelSearchOffset) % codes.Count;
+					return;
+					}
+			}
+
+		private void LowLevelSearchText_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				LowLevelFindButton_Click (null, null);
+			}
+
+		#endregion
+
+		#region Руководства пользователя
+
+		// Выбор модели аппарата
+		private void KKTListForManuals_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			UMOperationText.Text = um.GetManual ((uint)KKTListForManuals.SelectedIndex,
+				(uint)OperationsListForManuals.SelectedIndex);
+			}
+
+		#endregion
+
+		#region TLV-теги
+
+		// Очистка полей
 		private void TLVClearButton_Click (object sender, EventArgs e)
 			{
 			TLVFind.Text = "";
-			}
-
-		// Вызов библиотеки FNReader
-		private const string fnReaderDLL = "FNReader.dll";
-		private void FNReader_Click (object sender, EventArgs e)
-			{
-			CallFNReader ("");
-			}
-
-		private Assembly FNReaderDLL;
-		private Type FNReaderProgram;
-		private dynamic FNReaderInstance;
-		private void CallFNReader (string DumpPath)
-			{
-			// Контроль
-			if (FNReaderDLL == null)
-				{
-				try
-					{
-					FNReaderDLL = Assembly.LoadFile (AboutForm.AppStartupPath + fnReaderDLL);
-					FNReaderProgram = FNReaderDLL.GetType ("RD_AAOW.Program");
-					FNReaderInstance = Activator.CreateInstance (FNReaderProgram);
-					}
-				catch
-					{
-					if (MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
-						"Запросить доступ?", ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo,
-						MessageBoxIcon.Question) == DialogResult.Yes)
-						{
-						try
-							{
-							Process.Start ("mailto://adslbarxatov@gmail.com" + ("?subject=Запрос на доступ к модулю FNReader&" +
-								"body=Запрашиваем доступ к модулю FNReader для работы с данными ФН. Спасибо!").Replace (" ",
-								"%20"));
-							}
-						catch
-							{
-							MessageBox.Show ("Почтовый агент не найден", ProgramDescription.AssemblyTitle,
-								MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-							}
-						}
-
-					return;
-					}
-				}
-
-			// Запуск
-			if (FNReaderDLL != null)
-				{
-				FNReaderInstance.FNReaderEx (DumpPath);
-				}
-			}
-
-		/// <summary>
-		/// Ручная обработка сообщения для окна по спецкоду
-		/// </summary>
-		protected override void WndProc (ref Message m)
-			{
-			if ((m.Msg == ConfigAccessor.NextDumpPathMsg) && (ConfigAccessor.NextDumpPath != ""))
-				{
-				// Делается для защиты от непредвиденных сбросов состояния приложения
-				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
-					{
-					ConfigAccessor.NextDumpPath = "";
-					MessageBox.Show ("Завершите работу с модулем FNReader, чтобы открыть новый файл",
-						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-					}
-				else
-					{
-					CallFNReader (ConfigAccessor.NextDumpPath);
-					ConfigAccessor.NextDumpPath = "";
-					}
-				}
-
-			base.WndProc (ref m);
-			}
-
-		// Поиск сигнатуры ЗН ККТ по части названия
-		private void RNMSerialFind_Click (object sender, EventArgs e)
-			{
-			string sig = kkts.FindSignatureByName (RNMSerial.Text);
-			if (sig != "")
-				RNMSerial.Text = sig;
-			}
-
-		private void RNMSerial_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				RNMSerialFind_Click (null, null);
-			}
-
-		// Поиск сигнатуры ЗН ФН по части названия
-		private void FNFindSN_Click (object sender, EventArgs e)
-			{
-			string sig = fns.FindSignatureByName (FNLifeSN.Text);
-			if (sig != "")
-				FNLifeSN.Text = sig;
-			}
-
-		private void FNLifeSN_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				FNFindSN_Click (null, null);
 			}
 
 		// Поиск TLV-тега
@@ -827,16 +881,16 @@ namespace RD_AAOW
 				TLVButton_Click (null, null);
 			}
 
+		#endregion
+
+		#region Штрих-коды
+
 		// Ввод штрих-кода
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
 			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
 			}
 
-		// Переключение состояния "поверх всех окон"
-		private void TopFlag_CheckedChanged (object sender, EventArgs e)
-			{
-			this.TopMost = TopFlag.Checked;
-			}
+		#endregion
 		}
 	}

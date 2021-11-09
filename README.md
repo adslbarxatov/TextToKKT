@@ -1,5 +1,5 @@
-# TextToKKT v 5.5.17
-> PCC: 0007885AE5A655E6
+# TextToKKT v 5.6
+> PCC: 001423949C412608
 
 
 Утилита сервис-инженера ККТ (контрольно-кассовая техника, 54-ФЗ)
@@ -124,8 +124,7 @@
 #
 
 - Язык интерфейса и руководства пользователя: ru_ru.
-- Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/TextToKKT/blob/master/src/FNReader/FNEnums.h).
-- По вопросам предоставления доступа к приложению просим обращаться на [электронную почту](mailto://adslbarxatov@mail.ru)
+- Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/TextToKKT/blob/master/src/FNReader/FNEnums.h)
 
 &nbsp;
 

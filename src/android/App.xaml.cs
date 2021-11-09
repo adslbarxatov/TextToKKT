@@ -95,6 +95,8 @@ namespace RD_AAOW
 
 		#endregion
 
+		#region Основной функционал 
+
 		private ConfigAccessor ca;
 		private KKTSupport.FNLifeFlags fnlf;
 		private double fontSizeMultiplier = 1.2;
@@ -755,225 +757,6 @@ namespace RD_AAOW
 			Preferences.Set (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
 			}
 
-		// Сброс списков ККТ и ошибок
-		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
-			{
-			ca.KKTForErrors = ca.ErrorCode = 0;
-
-			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
-			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
-			errorsCodeButton.Text = list[(int)ca.ErrorCode];
-			list.Clear ();
-			}
-
-		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
-			{
-			ca.KKTForCodes = 0;
-			kktCodesKKTButton.Text = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes];
-			}
-
-		// Выбор команды нижнего уровня
-		private LowLevel ll = new LowLevel ();
-		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
-			{
-			// Запрос кода ошибки
-			List<string> list = ll.GetCommandsList (ca.LowLevelProtocol);
-			string res = list[0];
-			if (e != null)
-				res = await lowLevelPage.DisplayActionSheet ("Выберите команду:", "Отмена", null,
-				   list.ToArray ());
-
-			// Установка результата
-			int i = 0;
-			if ((e == null) || ((i = list.IndexOf (res)) >= 0))
-				{
-				ca.LowLevelCode = (uint)i;
-				lowLevelCommand.Text = res;
-
-				lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
-				lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
-				}
-
-			list.Clear ();
-			}
-
-		// Выбор списка команд
-		private async void LowLevelProtocol_Clicked (object sender, EventArgs e)
-			{
-			// Запрос кода ошибки
-			List<string> list = ll.GetProtocolsNames ();
-			string res = list[0];
-			res = await lowLevelPage.DisplayActionSheet ("Выберите протокол:", "Отмена", null, list.ToArray ());
-
-			// Установка результата
-			int i = 0;
-			if ((i = list.IndexOf (res)) >= 0)
-				{
-				ca.LowLevelProtocol = (uint)i;
-				lowLevelProtocol.Text = res;
-
-				// Вызов вложенного обработчика
-				LowLevelCommandCodeButton_Clicked (sender, null);
-				}
-			}
-
-		// Ввод ЗН ФН в разделе определения срока жизни
-		private FNSerial fns = new FNSerial ();
-		private void FNLifeSerial_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			// Получение описания
-			if (fnLifeSerial.Text != "")
-				fnLifeModelLabel.Text = fns.GetFNName (fnLifeSerial.Text);
-			else
-				fnLifeModelLabel.Text = "(введите ЗН ФН)";
-
-			// Определение длины ключа
-			if (fnLifeModelLabel.Text.Contains ("(13)") || fnLifeModelLabel.Text.Contains ("(15)"))
-				{
-				fnLife13.IsToggled = false;
-				fnLife13.IsVisible = fnLife13.IsEnabled = false;
-				}
-			else if (fnLifeModelLabel.Text.Contains ("(36)"))
-				{
-				fnLife13.IsToggled = true;
-				fnLife13.IsVisible = fnLife13.IsEnabled = false;
-				}
-			else
-				{
-				fnLife13.IsVisible = fnLife13.IsEnabled = true;
-				}
-
-			// Принудительное изменение
-			FnLife13_Toggled (null, null);
-			}
-
-		// Изменение параметров пользователя и даты
-		private void FnLifeStartDate_DateSelected (object sender, DateChangedEventArgs e)
-			{
-			FnLife13_Toggled (null, null);
-			}
-
-		private void FnLife13_Toggled (object sender, ToggledEventArgs e)
-			{
-			// Обновление состояний
-			if (fnLife13.IsToggled)
-				fnLifeLabel.Text = "36 месяцев";
-			else
-				fnLifeLabel.Text = "13/15 месяцев";
-
-			if (fnLifeGenericTax.IsToggled)
-				fnLifeGenericTaxLabel.Text = "УСН / ЕНВД / ЕСХН / ПСН";
-			else
-				fnLifeGenericTaxLabel.Text = "ОСН / совмещение с ОСН";
-
-			if (fnLifeGoods.IsToggled)
-				fnLifeGoodsLabel.Text = "услуги";
-			else
-				fnLifeGoodsLabel.Text = "товары";
-
-			// Расчёт срока
-			fnlf.FN15 = !fnLife13.IsToggled;
-			fnlf.FNExactly13 = fnLifeModelLabel.Text.Contains ("(13)");
-			fnlf.GenericTax = !fnLifeGenericTax.IsToggled;
-			fnlf.Goods = !fnLifeGoods.IsToggled;
-			fnlf.SeasonOrAgents = fnLifeSeason.IsToggled || fnLifeAgents.IsToggled;
-			fnlf.Excise = fnLifeExcise.IsToggled;
-			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
-			fnlf.DeFacto = fnLifeDeFacto.IsToggled;
-
-			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, fnlf);
-
-			fnLifeResult.Text = "ФН прекратит работу ";
-			if (res.Contains ("!"))
-				{
-				fnLifeResult.TextColor = errorColor;
-				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate + "\n(выбранный ФН неприменим с указанными параметрами)");
-				}
-			else
-				{
-				fnLifeResult.TextColor = fnLifeStartDate.TextColor;
-				fnLifeResultDate = res;
-				fnLifeResult.Text += res;
-				}
-
-			if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН
-				{
-				if (!fns.IsFNCompatibleWithFFD12 (fnLifeSerial.Text))
-					{
-					fnLifeResult.TextColor = errorColor;
-
-					fnLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
-					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
-					}
-				else
-					{
-					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
-					}
-				}
-			else
-				{
-				fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
-				}
-			}
-
-		// Изменение ИНН ОФД и РН ККТ
-		private KKTSerial kkts = new KKTSerial ();
-		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			// ЗН ККТ
-			if (rnmKKTSN.Text != "")
-				{
-				rnmKKTTypeLabel.Text = kkts.GetKKTModel (rnmKKTSN.Text);
-
-				KKTSerial.FFDSupportStatuses[] statuses = kkts.GetFFDSupportStatus (rnmKKTSN.Text);
-				rnmSupport105.BackgroundColor = StatusToColor (statuses[0]);
-				rnmSupport11.BackgroundColor = StatusToColor (statuses[1]);
-				rnmSupport12.BackgroundColor = StatusToColor (statuses[2]);
-				}
-			else
-				{
-				rnmKKTTypeLabel.Text = "";
-				rnmSupport105.BackgroundColor = rnmSupport11.BackgroundColor = rnmSupport12.BackgroundColor =
-					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
-				}
-
-			// ИНН пользователя
-			if (KKTSupport.CheckINN (rnmINN.Text) < 0)
-				{
-				rnmINNCheckLabel.TextColor = rnmINN.TextColor;
-				rnmINNCheckLabel.Text = "неполный";
-				}
-			else if (KKTSupport.CheckINN (rnmINN.Text) == 0)
-				{
-				rnmINNCheckLabel.TextColor = correctColor;
-				rnmINNCheckLabel.Text = "ОК";
-				}
-			else
-				{
-				rnmINNCheckLabel.TextColor = errorColor;
-				rnmINNCheckLabel.Text = "возможно, некорректный";
-				}
-			rnmINNCheckLabel.Text += (" (" + KKTSupport.GetRegionName (rnmINN.Text) + ")");
-
-			// РН
-			if (rnmRNM.Text.Length < 10)
-				{
-				rnmRNMCheckLabel.TextColor = rnmRNM.TextColor;
-				rnmRNMCheckLabel.Text = "неполный";
-				}
-			else if (KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
-				{
-				rnmRNMCheckLabel.TextColor = correctColor;
-				rnmRNMCheckLabel.Text = "OK";
-				}
-			else
-				{
-				rnmRNMCheckLabel.TextColor = errorColor;
-				rnmRNMCheckLabel.Text = "некорректный";
-				}
-			}
-
 		// Запрос цвета, соответствующего статусу поддержки
 		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
 			{
@@ -990,61 +773,7 @@ namespace RD_AAOW
 			return Color.FromHex ("#C8C8FF");
 			}
 
-		private OFD ofd = new OFD ();
-		private void OFDINN_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			List<string> parameters = ofd.GetOFDParameters (ofdINN.Text);
-
-			ofdNameButton.Text = parameters[1];
-
-			ofdDNSNameButton.Text = parameters[2];
-			ofdIPButton.Text = parameters[3];
-			ofdPortButton.Text = parameters[4];
-
-			ofdEmailButton.Text = parameters[5];
-			ofdSiteButton.Text = parameters[6];
-
-			ofdDNSNameMButton.Text = parameters[7];
-			ofdIPMButton.Text = parameters[8];
-			ofdPortMButton.Text = parameters[9];
-
-			}
-
-		private async void OFDName_Clicked (object sender, EventArgs e)
-			{
-			// Запрос ОФД по имени
-			List<string> list = ofd.GetOFDNames ();
-			string res = await ofdPage.DisplayActionSheet ("Выберите название ОФД:", "Отмена", null,
-				list.ToArray ());
-
-			// Установка результата
-			if (list.IndexOf (res) >= 0)
-				{
-				ofdNameButton.Text = res;
-				SendToClipboard (res.Replace ('«', '\"').Replace ('»', '\"'));
-				string s = ofd.GetOFDINNByName (ofdNameButton.Text);
-				if (s != "")
-					ofdINN.Text = s;
-				}
-			}
-
 		// Отправка значения в буфер обмена
-		private void Field_Clicked (object sender, EventArgs e)
-			{
-			SendToClipboard (((Xamarin.Forms.Button)sender).Text);
-			}
-
-		private void OFDINNCopy_Clicked (object sender, EventArgs e)
-			{
-			SendToClipboard (ofdINN.Text);
-			}
-
-		private string fnLifeResultDate = "";
-		private void FNLifeResultCopy (object sender, EventArgs e)
-			{
-			SendToClipboard (fnLifeResultDate);
-			}
-
 		private void SendToClipboard (string Text)
 			{
 			try
@@ -1057,6 +786,170 @@ namespace RD_AAOW
 				{
 				}
 			}
+
+		private void Field_Clicked (object sender, EventArgs e)
+			{
+			SendToClipboard (((Xamarin.Forms.Button)sender).Text);
+			}
+
+		// Выбор элемента содержания
+		private void HeaderButton_Clicked (object sender, EventArgs e)
+			{
+			Xamarin.Forms.Button b = (Xamarin.Forms.Button)sender;
+			ContentPage p = (ContentPage)b.CommandParameter;
+			((CarouselPage)MainPage).CurrentPage = p;
+			}
+
+		/// <summary>
+		/// Метод выполняет возврат на страницу содержания
+		/// </summary>
+		public void CallHeadersPage ()
+			{
+			((CarouselPage)MainPage).CurrentPage = headersPage;
+			}
+
+		// Включение / выключение фоновой службы
+		private void AllowService_Toggled (object sender, ToggledEventArgs e)
+			{
+			AndroidSupport.AllowServiceToStart = allowService.IsToggled;
+			}
+
+		/// <summary>
+		/// Обработчик события перехода в ждущий режим
+		/// </summary>
+		protected override void OnSleep ()
+			{
+			// Переключение состояния
+			if (!allowService.IsToggled)
+				AndroidSupport.StopRequested = true;
+
+			AndroidSupport.AppIsRunning = false;
+
+			// Сохранение настроек
+			ca.KeepApplicationState = keepAppState.IsToggled;
+			if (!keepAppState.IsToggled)
+				return;
+
+			ca.CurrentTab = (uint)((CarouselPage)MainPage).Children.IndexOf (((CarouselPage)MainPage).CurrentPage);
+
+			// ca.KKTForErrors	// Обновляется в коде программы
+			// ca.ErrorCode		// -||-
+			ca.OnlyNewKKTErrors = onlyNewErrors.IsToggled;
+
+			ca.FNSerial = fnLifeSerial.Text;
+			ca.GenericTaxFlag = !fnLifeGenericTax.IsToggled;
+			ca.GoodsFlag = !fnLifeGoods.IsToggled;
+			ca.SeasonFlag = fnLifeSeason.IsToggled;
+			ca.AgentsFlag = fnLifeAgents.IsToggled;
+			ca.ExciseFlag = fnLifeExcise.IsToggled;
+			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
+			ca.FNLifeDeFacto = fnLifeDeFacto.IsToggled;
+
+			ca.KKTSerial = rnmKKTSN.Text;
+			ca.UserINN = rnmINN.Text;
+			ca.RNMKKT = rnmRNM.Text;
+
+			ca.OFDINN = ofdINN.Text;
+
+			//ca.LowLevelProtocol	// -||-
+			//ca.LowLevelCode		// -||-
+
+			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
+			//ca.KKTForCodes	// -||-
+			ca.CodesText = codesSourceText.Text;
+
+			ca.BarcodeData = barcodeField.Text;
+			}
+
+		/// <summary>
+		/// Возврат в интерфейс
+		/// </summary>
+		protected override void OnResume ()
+			{
+			AndroidSupport.AppIsRunning = true;
+			}
+
+		#endregion
+
+		#region Коды ошибок ККТ
+
+		// Выбор модели ККТ
+		private KKTErrorsList kkme = new KKTErrorsList ();
+		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
+			{
+			// Запрос модели ККТ
+			List<string> list = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled);
+			string res = await errorsPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
+				list.ToArray ());
+
+			// Установка модели
+			if (list.IndexOf (res) < 0)
+				return;
+
+			errorsKKTButton.Text = res;
+			ca.KKTForErrors = (uint)list.IndexOf (res);
+
+			List<string> list2 = kkme.GetErrorCodesList (ca.KKTForErrors);
+			errorsCodeButton.Text = list2[0];
+
+			ca.ErrorCode = 0;
+			errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+			list2.Clear ();
+			}
+
+		// Выбор кода ошибки
+		private async void ErrorsCodeButton_Clicked (object sender, EventArgs e)
+			{
+			// Запрос кода ошибки
+			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
+			string res = await errorsPage.DisplayActionSheet ("Выберите код/текст ошибки:", "Отмена", null,
+				list.ToArray ());
+
+			// Установка результата
+			if (list.IndexOf (res) >= 0)
+				{
+				errorsCodeButton.Text = res;
+				ca.ErrorCode = (uint)list.IndexOf (res);
+				errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+				}
+
+			list.Clear ();
+			}
+
+		// Флаг только новых ошибок
+		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
+			{
+			ca.KKTForErrors = ca.ErrorCode = 0;
+
+			errorsKKTButton.Text = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors];
+			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
+			errorsCodeButton.Text = list[(int)ca.ErrorCode];
+			list.Clear ();
+			}
+
+		// Поиск по тексту ошибки
+		private int lastErrorSearchOffset2 = 0;
+		private void Errors_Find (object sender, EventArgs e)
+			{
+			List<string> codes = kkme.GetErrorCodesList (ca.KKTForErrors);
+			string text = errorSearchText.Text.ToLower ();
+
+			lastErrorSearchOffset2++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastErrorSearchOffset2) % codes.Count].ToLower ().Contains (text))
+					{
+					lastErrorSearchOffset2 = (i + lastErrorSearchOffset2) % codes.Count;
+
+					errorsCodeButton.Text = codes[lastErrorSearchOffset2];
+					ca.ErrorCode = (uint)lastErrorSearchOffset2;
+					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+					return;
+					}
+			}
+
+		#endregion
+
+		#region Коды символов ККТ
 
 		// Ввод текста для перевода в коды символов
 		private void SourceText_TextChanged (object sender, TextChangedEventArgs e)
@@ -1575,48 +1468,385 @@ namespace RD_AAOW
 				}
 			}
 
-		// Выбор модели ККТ
-		private KKTErrorsList kkme = new KKTErrorsList ();
-		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
+		// Флаг только новых кодовых таблиц
+		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
 			{
-			// Запрос модели ККТ
-			List<string> list = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled);
-			string res = await errorsPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-				list.ToArray ());
-
-			// Установка модели
-			if (list.IndexOf (res) < 0)
-				return;
-
-			errorsKKTButton.Text = res;
-			ca.KKTForErrors = (uint)list.IndexOf (res);
-
-			List<string> list2 = kkme.GetErrorCodesList (ca.KKTForErrors);
-			errorsCodeButton.Text = list2[0];
-
-			ca.ErrorCode = 0;
-			errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
-			list2.Clear ();
+			ca.KKTForCodes = 0;
+			kktCodesKKTButton.Text = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes];
 			}
 
-		// Выбор кода ошибки
-		private async void ErrorsCodeButton_Clicked (object sender, EventArgs e)
+		// Очистка полей
+		private void CodesClear_Clicked (object sender, EventArgs e)
+			{
+			codesSourceText.Text = "";
+			}
+
+		#endregion
+
+		#region Команды нижнего уровня
+
+		// Выбор команды нижнего уровня
+		private LowLevel ll = new LowLevel ();
+		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос кода ошибки
-			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
-			string res = await errorsPage.DisplayActionSheet ("Выберите код/текст ошибки:", "Отмена", null,
+			List<string> list = ll.GetCommandsList (ca.LowLevelProtocol);
+			string res = list[0];
+			if (e != null)
+				res = await lowLevelPage.DisplayActionSheet ("Выберите команду:", "Отмена", null,
+				   list.ToArray ());
+
+			// Установка результата
+			int i = 0;
+			if ((e == null) || ((i = list.IndexOf (res)) >= 0))
+				{
+				ca.LowLevelCode = (uint)i;
+				lowLevelCommand.Text = res;
+
+				lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, false);
+				lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol, (uint)i, true);
+				}
+
+			list.Clear ();
+			}
+
+		// Выбор списка команд
+		private async void LowLevelProtocol_Clicked (object sender, EventArgs e)
+			{
+			// Запрос кода ошибки
+			List<string> list = ll.GetProtocolsNames ();
+			string res = list[0];
+			res = await lowLevelPage.DisplayActionSheet ("Выберите протокол:", "Отмена", null, list.ToArray ());
+
+			// Установка результата
+			int i = 0;
+			if ((i = list.IndexOf (res)) >= 0)
+				{
+				ca.LowLevelProtocol = (uint)i;
+				lowLevelProtocol.Text = res;
+
+				// Вызов вложенного обработчика
+				LowLevelCommandCodeButton_Clicked (sender, null);
+				}
+			}
+
+		// Поиск по названию команды нижнего уровня
+		private int lastCommandSearchOffset2 = 0;
+		private void Command_Find (object sender, EventArgs e)
+			{
+			List<string> codes = ll.GetCommandsList (ca.LowLevelProtocol);
+			string text = commandSearchText.Text.ToLower ();
+
+			lastCommandSearchOffset2++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastCommandSearchOffset2) % codes.Count].ToLower ().Contains (text))
+					{
+					lastCommandSearchOffset2 = (i + lastCommandSearchOffset2) % codes.Count;
+
+					lowLevelCommand.Text = codes[lastCommandSearchOffset2];
+					ca.LowLevelCode = (uint)lastCommandSearchOffset2;
+
+					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol,
+						(uint)lastCommandSearchOffset2, false);
+					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol,
+						(uint)lastCommandSearchOffset2, true);
+					return;
+					}
+			}
+
+		#endregion
+
+		#region Срок жизни ФН
+
+		// Ввод ЗН ФН в разделе определения срока жизни
+		private FNSerial fns = new FNSerial ();
+		private void FNLifeSerial_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			// Получение описания
+			if (fnLifeSerial.Text != "")
+				fnLifeModelLabel.Text = fns.GetFNName (fnLifeSerial.Text);
+			else
+				fnLifeModelLabel.Text = "(введите ЗН ФН)";
+
+			// Определение длины ключа
+			if (fnLifeModelLabel.Text.Contains ("(13)") || fnLifeModelLabel.Text.Contains ("(15)"))
+				{
+				fnLife13.IsToggled = false;
+				fnLife13.IsVisible = fnLife13.IsEnabled = false;
+				}
+			else if (fnLifeModelLabel.Text.Contains ("(36)"))
+				{
+				fnLife13.IsToggled = true;
+				fnLife13.IsVisible = fnLife13.IsEnabled = false;
+				}
+			else
+				{
+				fnLife13.IsVisible = fnLife13.IsEnabled = true;
+				}
+
+			// Принудительное изменение
+			FnLife13_Toggled (null, null);
+			}
+
+		// Изменение параметров пользователя и даты
+		private void FnLifeStartDate_DateSelected (object sender, DateChangedEventArgs e)
+			{
+			FnLife13_Toggled (null, null);
+			}
+
+		private void FnLife13_Toggled (object sender, ToggledEventArgs e)
+			{
+			// Обновление состояний
+			if (fnLife13.IsToggled)
+				fnLifeLabel.Text = "36 месяцев";
+			else
+				fnLifeLabel.Text = "13/15 месяцев";
+
+			if (fnLifeGenericTax.IsToggled)
+				fnLifeGenericTaxLabel.Text = "УСН / ЕНВД / ЕСХН / ПСН";
+			else
+				fnLifeGenericTaxLabel.Text = "ОСН / совмещение с ОСН";
+
+			if (fnLifeGoods.IsToggled)
+				fnLifeGoodsLabel.Text = "услуги";
+			else
+				fnLifeGoodsLabel.Text = "товары";
+
+			// Расчёт срока
+			fnlf.FN15 = !fnLife13.IsToggled;
+			fnlf.FNExactly13 = fnLifeModelLabel.Text.Contains ("(13)");
+			fnlf.GenericTax = !fnLifeGenericTax.IsToggled;
+			fnlf.Goods = !fnLifeGoods.IsToggled;
+			fnlf.SeasonOrAgents = fnLifeSeason.IsToggled || fnLifeAgents.IsToggled;
+			fnlf.Excise = fnLifeExcise.IsToggled;
+			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
+			fnlf.DeFacto = fnLifeDeFacto.IsToggled;
+
+			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, fnlf);
+
+			fnLifeResult.Text = "ФН прекратит работу ";
+			if (res.Contains ("!"))
+				{
+				fnLifeResult.TextColor = errorColor;
+				fnLifeResultDate = res.Substring (1);
+				fnLifeResult.Text += (fnLifeResultDate + "\n(выбранный ФН неприменим с указанными параметрами)");
+				}
+			else
+				{
+				fnLifeResult.TextColor = fnLifeStartDate.TextColor;
+				fnLifeResultDate = res;
+				fnLifeResult.Text += res;
+				}
+
+			if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН
+				{
+				if (!fns.IsFNCompatibleWithFFD12 (fnLifeSerial.Text))
+					{
+					fnLifeResult.TextColor = errorColor;
+
+					fnLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
+					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+					}
+				else
+					{
+					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+					}
+				}
+			else
+				{
+				fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				}
+			}
+
+		// Копирование срока жизни ФН
+		private string fnLifeResultDate = "";
+		private void FNLifeResultCopy (object sender, EventArgs e)
+			{
+			SendToClipboard (fnLifeResultDate);
+			}
+
+		// Очистка полей
+		private void FNLifeClear_Clicked (object sender, EventArgs e)
+			{
+			fnLifeSerial.Text = "";
+			}
+
+		// Поиск по сигнатуре
+		private void FNLifeFind_Clicked (object sender, EventArgs e)
+			{
+			string sig = fns.FindSignatureByName (fnLifeSerial.Text);
+			if (sig != "")
+				fnLifeSerial.Text = sig;
+			}
+
+		#endregion
+
+		#region РНМ и ЗН
+
+		// Изменение ИНН ОФД и РН ККТ
+		private KKTSerial kkts = new KKTSerial ();
+		private void RNM_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			// ЗН ККТ
+			if (rnmKKTSN.Text != "")
+				{
+				rnmKKTTypeLabel.Text = kkts.GetKKTModel (rnmKKTSN.Text);
+
+				KKTSerial.FFDSupportStatuses[] statuses = kkts.GetFFDSupportStatus (rnmKKTSN.Text);
+				rnmSupport105.BackgroundColor = StatusToColor (statuses[0]);
+				rnmSupport11.BackgroundColor = StatusToColor (statuses[1]);
+				rnmSupport12.BackgroundColor = StatusToColor (statuses[2]);
+				}
+			else
+				{
+				rnmKKTTypeLabel.Text = "";
+				rnmSupport105.BackgroundColor = rnmSupport11.BackgroundColor = rnmSupport12.BackgroundColor =
+					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				}
+
+			// ИНН пользователя
+			if (KKTSupport.CheckINN (rnmINN.Text) < 0)
+				{
+				rnmINNCheckLabel.TextColor = rnmINN.TextColor;
+				rnmINNCheckLabel.Text = "неполный";
+				}
+			else if (KKTSupport.CheckINN (rnmINN.Text) == 0)
+				{
+				rnmINNCheckLabel.TextColor = correctColor;
+				rnmINNCheckLabel.Text = "ОК";
+				}
+			else
+				{
+				rnmINNCheckLabel.TextColor = errorColor;
+				rnmINNCheckLabel.Text = "возможно, некорректный";
+				}
+			rnmINNCheckLabel.Text += (" (" + KKTSupport.GetRegionName (rnmINN.Text) + ")");
+
+			// РН
+			if (rnmRNM.Text.Length < 10)
+				{
+				rnmRNMCheckLabel.TextColor = rnmRNM.TextColor;
+				rnmRNMCheckLabel.Text = "неполный";
+				}
+			else if (KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
+				{
+				rnmRNMCheckLabel.TextColor = correctColor;
+				rnmRNMCheckLabel.Text = "OK";
+				}
+			else
+				{
+				rnmRNMCheckLabel.TextColor = errorColor;
+				rnmRNMCheckLabel.Text = "некорректный";
+				}
+			}
+
+		// Метод генерирует регистрационный номер ККТ
+		private void RNMGenerate_Clicked (object sender, EventArgs e)
+			{
+			if (rnmRNM.Text.Length < 1)
+				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, "0");
+			else if (rnmRNM.Text.Length < 10)
+				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text);
+			else
+				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10));
+			}
+
+		// Очистка полей
+		private void RNMClear_Clicked (object sender, EventArgs e)
+			{
+			rnmKKTSN.Text = "";
+			rnmINN.Text = "";
+			rnmRNM.Text = "";
+			}
+
+		// Поиск по сигнатуре
+		private void RNMFind_Clicked (object sender, EventArgs e)
+			{
+			string sig = kkts.FindSignatureByName (rnmKKTSN.Text);
+			if (sig != "")
+				rnmKKTSN.Text = sig;
+			}
+
+		#endregion
+
+		#region ОФД
+
+		// Ввод названия или ИНН ОФД
+		private OFD ofd = new OFD ();
+		private void OFDINN_TextChanged (object sender, TextChangedEventArgs e)
+			{
+			List<string> parameters = ofd.GetOFDParameters (ofdINN.Text);
+
+			ofdNameButton.Text = parameters[1];
+
+			ofdDNSNameButton.Text = parameters[2];
+			ofdIPButton.Text = parameters[3];
+			ofdPortButton.Text = parameters[4];
+
+			ofdEmailButton.Text = parameters[5];
+			ofdSiteButton.Text = parameters[6];
+
+			ofdDNSNameMButton.Text = parameters[7];
+			ofdIPMButton.Text = parameters[8];
+			ofdPortMButton.Text = parameters[9];
+
+			}
+
+		private async void OFDName_Clicked (object sender, EventArgs e)
+			{
+			// Запрос ОФД по имени
+			List<string> list = ofd.GetOFDNames ();
+			string res = await ofdPage.DisplayActionSheet ("Выберите название ОФД:", "Отмена", null,
 				list.ToArray ());
 
 			// Установка результата
 			if (list.IndexOf (res) >= 0)
 				{
-				errorsCodeButton.Text = res;
-				ca.ErrorCode = (uint)list.IndexOf (res);
-				errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+				ofdNameButton.Text = res;
+				SendToClipboard (res.Replace ('«', '\"').Replace ('»', '\"'));
+				string s = ofd.GetOFDINNByName (ofdNameButton.Text);
+				if (s != "")
+					ofdINN.Text = s;
 				}
-
-			list.Clear ();
 			}
+
+		// Копирование ИНН в буфер обмена
+		private void OFDINNCopy_Clicked (object sender, EventArgs e)
+			{
+			SendToClipboard (ofdINN.Text);
+			}
+
+		// Поиск по названию ОФД
+		private int lastOFDSearchOffset2 = 0;
+		private void OFD_Find (object sender, EventArgs e)
+			{
+			List<string> codes = ofd.GetOFDNames ();
+			string text = ofdSearchText.Text.ToLower ();
+
+			lastOFDSearchOffset2++;
+			for (int i = 0; i < codes.Count; i++)
+				if (codes[(i + lastOFDSearchOffset2) % codes.Count].ToLower ().Contains (text))
+					{
+					lastOFDSearchOffset2 = (i + lastOFDSearchOffset2) % codes.Count;
+					ofdNameButton.Text = codes[lastOFDSearchOffset2];
+
+					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
+					if (s != "")
+						ca.OFDINN = ofdINN.Text = s;
+
+					return;
+					}
+			}
+
+		// Очистка полей
+		private void OFDClear_Clicked (object sender, EventArgs e)
+			{
+			ofdINN.Text = "";
+			}
+
+		#endregion
+
+		#region О приложении
 
 		// Страница обновлений
 		private async void UpdateButton_Clicked (object sender, EventArgs e)
@@ -1677,7 +1907,7 @@ namespace RD_AAOW
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			List<string> comm = new List<string> { "ВКонтакте", "Телеграм" };
+			List<string> comm = new List<string> { "Начальная страница", "ВКонтакте", "Телеграм" };
 			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm.ToArray ());
 
 			if (!comm.Contains (res))
@@ -1685,10 +1915,20 @@ namespace RD_AAOW
 
 			try
 				{
-				if (comm.IndexOf (res) == 0)
-					await Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
-				else
-					await Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
+				switch (comm.IndexOf (res))
+					{
+					case 1:
+						await Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
+						break;
+
+					case 2:
+						await Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
+						break;
+
+					case 0:
+						await Launcher.OpenAsync (AndroidSupport.WelcomeLink);
+						break;
+					}
 				}
 			catch
 				{
@@ -1717,32 +1957,20 @@ namespace RD_AAOW
 				}
 			}
 
-		// Выбор элемента содержания
-		private void HeaderButton_Clicked (object sender, EventArgs e)
+		// Разблокировка расширенного функционала
+		private void UnlockMethod (object sender, TextChangedEventArgs e)
 			{
-			Xamarin.Forms.Button b = (Xamarin.Forms.Button)sender;
-			ContentPage p = (ContentPage)b.CommandParameter;
-			((CarouselPage)MainPage).CurrentPage = p;
+			if (ca.TestPass (unlockField.Text))
+				{
+				unlockField.IsEnabled = false;
+				unlockLabel.Text = ConfigAccessor.UnlockMessage;
+				unlockLabel.HorizontalTextAlignment = TextAlignment.Center;
+				}
 			}
 
-		/// <summary>
-		/// Метод выполняет возврат на страницу содержания
-		/// </summary>
-		public void CallHeadersPage ()
-			{
-			((CarouselPage)MainPage).CurrentPage = headersPage;
-			}
+		#endregion
 
-		// Метод генерирует регистрационный номер ККТ
-		private void RNMGenerate_Clicked (object sender, EventArgs e)
-			{
-			if (rnmRNM.Text.Length < 1)
-				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, "0");
-			else if (rnmRNM.Text.Length < 10)
-				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text);
-			else
-				rnmRNM.Text = KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10));
-			}
+		#region Руководства пользователей
 
 		// Выбор модели ККТ
 		private UserManuals um;
@@ -1770,119 +1998,9 @@ namespace RD_AAOW
 				operationTextLabels[i].Text = um.GetManual ((uint)idx, (uint)i);
 			}
 
-		// Разблокировка расширенного функционала
-		private void UnlockMethod (object sender, TextChangedEventArgs e)
-			{
-			if (ca.TestPass (unlockField.Text))
-				{
-				unlockField.IsEnabled = false;
-				unlockLabel.Text = ConfigAccessor.UnlockMessage;
-				unlockLabel.HorizontalTextAlignment = TextAlignment.Center;
-				}
-			}
+		#endregion
 
-		// Поиск по тексту ошибки
-		private int lastErrorSearchOffset2 = 0;
-		private void Errors_Find (object sender, EventArgs e)
-			{
-			List<string> codes = kkme.GetErrorCodesList (ca.KKTForErrors);
-			string text = errorSearchText.Text.ToLower ();
-
-			lastErrorSearchOffset2++;
-			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastErrorSearchOffset2) % codes.Count].ToLower ().Contains (text))
-					{
-					lastErrorSearchOffset2 = (i + lastErrorSearchOffset2) % codes.Count;
-
-					errorsCodeButton.Text = codes[lastErrorSearchOffset2];
-					ca.ErrorCode = (uint)lastErrorSearchOffset2;
-					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
-					return;
-					}
-			}
-
-		// Поиск по названию команды нижнего уровня
-		private int lastCommandSearchOffset2 = 0;
-		private void Command_Find (object sender, EventArgs e)
-			{
-			List<string> codes = ll.GetCommandsList (ca.LowLevelProtocol);
-			string text = commandSearchText.Text.ToLower ();
-
-			lastCommandSearchOffset2++;
-			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastCommandSearchOffset2) % codes.Count].ToLower ().Contains (text))
-					{
-					lastCommandSearchOffset2 = (i + lastCommandSearchOffset2) % codes.Count;
-
-					lowLevelCommand.Text = codes[lastCommandSearchOffset2];
-					ca.LowLevelCode = (uint)lastCommandSearchOffset2;
-
-					lowLevelCommandCode.Text = ll.GetCommand (ca.LowLevelProtocol,
-						(uint)lastCommandSearchOffset2, false);
-					lowLevelCommandDescr.Text = ll.GetCommand (ca.LowLevelProtocol,
-						(uint)lastCommandSearchOffset2, true);
-					return;
-					}
-			}
-
-		// Поиск по названию ОФД
-		private int lastOFDSearchOffset2 = 0;
-		private void OFD_Find (object sender, EventArgs e)
-			{
-			List<string> codes = ofd.GetOFDNames ();
-			string text = ofdSearchText.Text.ToLower ();
-
-			lastOFDSearchOffset2++;
-			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastOFDSearchOffset2) % codes.Count].ToLower ().Contains (text))
-					{
-					lastOFDSearchOffset2 = (i + lastOFDSearchOffset2) % codes.Count;
-					ofdNameButton.Text = codes[lastOFDSearchOffset2];
-
-					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
-					if (s != "")
-						ca.OFDINN = ofdINN.Text = s;
-
-					return;
-					}
-			}
-
-		// Очистка полей
-		private void RNMClear_Clicked (object sender, EventArgs e)
-			{
-			rnmKKTSN.Text = "";
-			rnmINN.Text = "";
-			rnmRNM.Text = "";
-			}
-
-		private void OFDClear_Clicked (object sender, EventArgs e)
-			{
-			ofdINN.Text = "";
-			}
-
-		private void CodesClear_Clicked (object sender, EventArgs e)
-			{
-			codesSourceText.Text = "";
-			}
-
-		private void FNLifeClear_Clicked (object sender, EventArgs e)
-			{
-			fnLifeSerial.Text = "";
-			}
-
-		private void FNLifeFind_Clicked (object sender, EventArgs e)
-			{
-			string sig = fns.FindSignatureByName (fnLifeSerial.Text);
-			if (sig != "")
-				fnLifeSerial.Text = sig;
-			}
-
-		private void RNMFind_Clicked (object sender, EventArgs e)
-			{
-			string sig = kkts.FindSignatureByName (rnmKKTSN.Text);
-			if (sig != "")
-				rnmKKTSN.Text = sig;
-			}
+		#region Теги TLV
 
 		private TLVTags tlvt = new TLVTags ();
 		private void TLVFind_Clicked (object sender, EventArgs e)
@@ -1900,11 +2018,9 @@ namespace RD_AAOW
 			tlvTag.Text = "";
 			}
 
-		// Включение / выключение фоновой службы
-		private void AllowService_Toggled (object sender, ToggledEventArgs e)
-			{
-			AndroidSupport.AllowServiceToStart = allowService.IsToggled;
-			}
+		#endregion
+
+		#region Штрих-коды
 
 		// Ввод данных штрих-кода
 		private BarCodes barc = new BarCodes ();
@@ -1913,59 +2029,6 @@ namespace RD_AAOW
 			barcodeDescriptionLabel.Text = barc.GetBarcodeDescription (barcodeField.Text);
 			}
 
-		/// <summary>
-		/// Обработчик события перехода в ждущий режим
-		/// </summary>
-		protected override void OnSleep ()
-			{
-			// Переключение состояния
-			if (!allowService.IsToggled)
-				AndroidSupport.StopRequested = true;
-
-			AndroidSupport.AppIsRunning = false;
-
-			// Сохранение настроек
-			ca.KeepApplicationState = keepAppState.IsToggled;
-			if (!keepAppState.IsToggled)
-				return;
-
-			ca.CurrentTab = (uint)((CarouselPage)MainPage).Children.IndexOf (((CarouselPage)MainPage).CurrentPage);
-
-			// ca.KKTForErrors	// Обновляется в коде программы
-			// ca.ErrorCode		// -||-
-			ca.OnlyNewKKTErrors = onlyNewErrors.IsToggled;
-
-			ca.FNSerial = fnLifeSerial.Text;
-			ca.GenericTaxFlag = !fnLifeGenericTax.IsToggled;
-			ca.GoodsFlag = !fnLifeGoods.IsToggled;
-			ca.SeasonFlag = fnLifeSeason.IsToggled;
-			ca.AgentsFlag = fnLifeAgents.IsToggled;
-			ca.ExciseFlag = fnLifeExcise.IsToggled;
-			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
-			ca.FNLifeDeFacto = fnLifeDeFacto.IsToggled;
-
-			ca.KKTSerial = rnmKKTSN.Text;
-			ca.UserINN = rnmINN.Text;
-			ca.RNMKKT = rnmRNM.Text;
-
-			ca.OFDINN = ofdINN.Text;
-
-			//ca.LowLevelProtocol	// -||-
-			//ca.LowLevelCode		// -||-
-
-			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
-			//ca.KKTForCodes	// -||-
-			ca.CodesText = codesSourceText.Text;
-
-			ca.BarcodeData = barcodeField.Text;
-			}
-
-		/// <summary>
-		/// Возврат в интерфейс
-		/// </summary>
-		protected override void OnResume ()
-			{
-			AndroidSupport.AppIsRunning = true;
-			}
+		#endregion
 		}
 	}

@@ -4,10 +4,16 @@
 enum FNDocumentTypes
 	{
 	// Отчёт о регистрации
-	Registration = 1,
+	Registration = 0x01,
+
+	// Отчёт о регистрации под ФФД 1.2
+	Registration_12 = 0x41,
 
 	// Отчёт об изменении реквизитов регистрации
-	RegistrationChange = 11,
+	RegistrationChange = 0x0B,
+
+	// Отчёт об изменении реквизитов регистрации под ФФД 1.2
+	RegistrationChange_12 = 0x4B,
 
 	// Открытие смены
 	OpenSession = 2,
@@ -51,6 +57,10 @@ enum FNDocumentTypes
 	// Неизвестный тип документа
 	UnknownType = 255
 	};
+
+#define REG_CAUSE(type)		(type == Registration) || (type == RegistrationChange) || \
+	(type == Registration_12) || (type == RegistrationChange_12)
+#define REREG_CAUSE(type)	(type == RegistrationChange) || (type == RegistrationChange_12)
 
 // Возможные фазы жизни ФН
 enum FNLifePhases
@@ -109,7 +119,7 @@ enum TLVTags
 
 	#define	PROC_AUTOMATICFLAG(src,dest,type)\
 		case AutomaticFlag:\
-			if (((type == Registration) || (type == RegistrationChange)) && src)\
+			if ((REG_CAUSE (type)) && src)\
 				sprintf (dest, "%s  ККТ установлена в автомате\r\n", dest);\
 			break;
 
@@ -118,7 +128,7 @@ enum TLVTags
 
 	#define PROC_AUTONOMOUSFLAG(src,dest,type)\
 		case AutonomousFlag:\
-			if ((type == Registration) || (type == RegistrationChange))\
+			if (REG_CAUSE (type))\
 				sprintf (dest, src ? "%s  Автономный режим (без ОФД)\r\n" : "%s  Режим передачи данных\r\n", dest);\
 			break;
 
@@ -135,7 +145,7 @@ enum TLVTags
 
 	#define PROC_REGISTRATIONADDRESS(src,dest,type,preproc)\
 		case RegistrationAddress:\
-			if ((type == Registration) || (type == RegistrationChange))\
+			if (REG_CAUSE (type))\
 				{\
 				preproc;\
 				sprintf (dest, "%s  Адрес расчёта: %s\r\n", dest, src);\
@@ -182,7 +192,7 @@ enum TLVTags
 
 	#define PROC_TERMINALNUMBER(src,dest,type)\
 		case TerminalNumber:\
-			if ((type == Registration) || (type == RegistrationChange))\
+			if (REG_CAUSE (type))\
 				sprintf (dest, "%s  Номер автомата: %s\r\n", dest, src);\
 			break;
 
@@ -221,7 +231,7 @@ enum TLVTags
 
 	#define PROC_ENCRYPTIONFLAG(src,dest,type)\
 		case EncryptionFlag:\
-			if (((type == Registration) || (type == RegistrationChange)) && src)\
+			if ((REG_CAUSE (type)) && src)\
 				sprintf (dest, "%s  Шифрование фискальных данных\r\n", dest);\
 			break;
 
@@ -263,7 +273,7 @@ enum TLVTags
 
 	#define PROC_REGISTRATIONCHANGECAUSE(src,dest,type)\
 		case RegistrationChangeCause:\
-			if (type == RegistrationChange)\
+			if (REREG_CAUSE (type))\
 				sprintf (dest, "%s  Причина перерегистрации: %s\r\n", dest, GetRegistrationChangeCause (src));\
 			break;
 
@@ -272,7 +282,7 @@ enum TLVTags
 
 	#define PROC_INTERNETFLAG(src,dest,type)\
 		case InternetFlag:\
-			if (((type == Registration) || (type == RegistrationChange)) && src)\
+			if ((REG_CAUSE (type)) && src)\
 				sprintf (dest, "%s  Работа в сети интернет\r\n", dest);\
 			break;
 
@@ -281,7 +291,7 @@ enum TLVTags
 
 	#define PROC_SERVICEFLAG(src,dest,type)\
 		case ServiceFlag:\
-			if ((type == Registration) || (type == RegistrationChange))\
+			if (REG_CAUSE (type))\
 				sprintf (dest, src ? "%s  Режим услуг\r\n" : "%s  Режим товаров\r\n", dest);\
 			break;
 
@@ -290,7 +300,7 @@ enum TLVTags
 
 	#define PROC_BLANKFLAG(src,dest,type)\
 		case BlankFlag:\
-			if ((type == Registration) || (type == RegistrationChange))\
+			if (REG_CAUSE (type))\
 				sprintf (dest, src ? "%s  Режим системы БСО\r\n": "%s  Режим кассовых чеков\r\n", dest);\
 			break;
 
@@ -302,7 +312,7 @@ enum TLVTags
 
 	#define PROC_REGISTRATIONPLACE(src,dest,type,preproc)\
 		case RegistrationPlace:\
-			if ((type == Registration) || (type == RegistrationChange))\
+			if (REG_CAUSE (type))\
 				{\
 				preproc;\
 				sprintf (dest, "%s  Место расчёта: %s\r\n", dest, src);\
@@ -314,7 +324,7 @@ enum TLVTags
 
 	#define PROC_GAMESFLAG(src,dest,type)\
 		case GamesFlag:\
-			if (((type == Registration) || (type == RegistrationChange)) && src)\
+			if ((REG_CAUSE (type)) && src)\
 				sprintf (dest, "%s  Используется при проведении азартных игр\r\n", dest);\
 			break;
 
@@ -334,7 +344,7 @@ enum TLVTags
 
 	#define PROC_EXCISEFLAG(src,dest,type)\
 		case ExciseFlag:\
-			if (((type == Registration) || (type == RegistrationChange)) && src)\
+			if ((REG_CAUSE (type)) && src)\
 				sprintf (dest, "%s  Используется для продажи подакцизных товаров\r\n", dest);\
 			break;
 
