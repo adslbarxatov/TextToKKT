@@ -25,6 +25,7 @@ namespace RD_AAOW
 		private FNSerial fns = null;
 		private TLVTags tlvt = null;
 		private BarCodes barc = null;
+		private Connectors conn = null;
 
 		private NotifyIcon ni = new NotifyIcon ();
 
@@ -54,6 +55,7 @@ namespace RD_AAOW
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();
 			barc = new BarCodes ();
+			conn = new Connectors ();
 
 			// Настройка контролов
 			OnlyNewCodes_CheckedChanged (null, null);
@@ -68,6 +70,9 @@ namespace RD_AAOW
 			OFDNamesList.Items.Add ("Неизвестный ОФД");
 			OFDNamesList.Items.AddRange (ofd.GetOFDNames ().ToArray ());
 			OFDNamesList.SelectedIndex = 0;
+
+			CableType.Items.AddRange (conn.GetCablesNames ().ToArray ());
+			CableType.SelectedIndex = 0;
 
 			this.Text = ProgramDescription.AssemblyTitle;
 
@@ -98,8 +103,8 @@ namespace RD_AAOW
 			AgentsFlag.Checked = ca.AgentsFlag;
 			ExciseFlag.Checked = ca.ExciseFlag;
 			AutonomousFlag.Checked = ca.AutonomousFlag;
-			FNLifeDeFacto.Checked = ca.FNLifeDeFacto;
-			FNLifeDeFacto.Enabled = ca.AllowExtendedFunctionsLevel2;
+			/*FNLifeDeFacto.Checked = ca.FNLifeDeFacto;
+			FNLifeDeFacto.Enabled = ca.AllowExtendedFunctionsLevel2;*/
 
 			RNMSerial.MaxLength = (int)kkts.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
@@ -135,7 +140,7 @@ namespace RD_AAOW
 			BarcodeData.Text = ca.BarcodeData;
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ca.AllowExtendedFunctionsLevel2;
+			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
@@ -260,7 +265,7 @@ namespace RD_AAOW
 			ca.AgentsFlag = AgentsFlag.Checked;
 			ca.ExciseFlag = ExciseFlag.Checked;
 			ca.AutonomousFlag = AutonomousFlag.Checked;
-			ca.FNLifeDeFacto = FNLifeDeFacto.Checked;
+			/*ca.FNLifeDeFacto = FNLifeDeFacto.Checked;*/
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -583,7 +588,7 @@ namespace RD_AAOW
 			fnlf.SeasonOrAgents = SeasonFlag.Checked || AgentsFlag.Checked;
 			fnlf.Excise = ExciseFlag.Checked;
 			fnlf.Autonomous = AutonomousFlag.Checked;
-			fnlf.DeFacto = FNLifeDeFacto.Checked;
+			fnlf.DeFacto = false;   /*FNLifeDeFacto.Checked;*/
 
 			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
 
@@ -889,6 +894,25 @@ namespace RD_AAOW
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
 			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
+			}
+
+		#endregion
+
+		#region Распайки кабелей
+
+		// Выбор типа кабеля
+		private void CableType_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			uint i = (uint)CableType.SelectedIndex;
+
+			CableLeftSide.Text = "Со стороны " + conn.GetCableConnector (i, false);
+			CableLeftPins.Text = conn.GetCableConnectorPins (i, false);
+
+			CableRightSide.Text = "Со стороны " + conn.GetCableConnector (i, true);
+			CableRightPins.Text = conn.GetCableConnectorPins (i, true);
+
+			CableLeftDescription.Text = conn.GetCableConnectorDescription (i, false) + "\n\n" +
+				conn.GetCableConnectorDescription (i, true);
 			}
 
 		#endregion

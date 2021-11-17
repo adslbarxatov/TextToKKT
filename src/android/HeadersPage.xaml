@@ -19,6 +19,7 @@
 				<Button x:Name="Button08" IsVisible="False" />
 				<Button x:Name="Button09" IsVisible="False" />
 				<Button x:Name="Button10" IsVisible="False" />
+				<Button x:Name="Button11" IsVisible="False" />
 
 				<Label />
 

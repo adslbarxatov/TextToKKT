@@ -46,6 +46,9 @@ namespace RD_AAOW
 			aboutMasterBackColor = Color.FromHex ("#F0FFF0"),
 			aboutFieldBackColor = Color.FromHex ("#D0FFD0"),
 
+			connectorsMasterBackColor = Color.FromHex ("#F8FFF0"),
+			connectorsFieldBackColor = Color.FromHex ("#F0FFE0"),
+
 			barCodesMasterBackColor = Color.FromHex ("#F6FAEC"),
 			barCodesFieldBackColor = Color.FromHex ("#D8E8B0"),
 
@@ -60,12 +63,12 @@ namespace RD_AAOW
 		#endregion
 
 		#region Переменные страниц
-		private ContentPage headersPage, kktCodesPage, errorsPage, aboutPage,
+		private ContentPage headersPage, kktCodesPage, errorsPage, aboutPage, connectorsPage,
 			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage, barCodesPage;
 
 		private Label kktCodesSourceTextLabel, kktCodesHelpLabel, kktCodesErrorLabel, kktCodesResultText,
-			errorsResultText,
-			aboutLabel,
+			errorsResultText, cableLeftSideText, cableRightSideText, cableLeftPinsText, cableRightPinsText,
+			cableDescriptionText, aboutLabel,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel,
@@ -73,7 +76,7 @@ namespace RD_AAOW
 			barcodeDescriptionLabel, rnmTip;
 		private List<Label> operationTextLabels = new List<Label> ();
 
-		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult,
+		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult, cableTypeButton,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdDNSNameKButton, ofdIPKButton, ofdPortKButton,
@@ -86,7 +89,7 @@ namespace RD_AAOW
 			barcodeField;
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
-			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeDeFacto,
+			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, /*fnLifeDeFacto,*/
 			keepAppState, allowService;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
@@ -162,6 +165,10 @@ namespace RD_AAOW
 			kktCodesPage = ApplyPageSettings ("KKTCodesPage", "Перевод текста в коды ККТ",
 				kktCodesMasterBackColor, headerNumber++);
 			kktCodesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
+
+			connectorsPage = ApplyPageSettings ("ConnectorsPage", "Разъёмы",
+				connectorsMasterBackColor, headerNumber++);
+			connectorsPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
 			barCodesPage = ApplyPageSettings ("BarCodesPage", "Штрих-коды",
 				barCodesMasterBackColor, headerNumber++);
@@ -465,7 +472,7 @@ namespace RD_AAOW
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", untoggledSwitchColor);
 
 			//
-			fnLifeDeFacto = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeDeFacto");
+			/*fnLifeDeFacto = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeDeFacto");
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				fnLifeDeFacto.IsToggled = ca.FNLifeDeFacto;
@@ -476,7 +483,7 @@ namespace RD_AAOW
 				fnLifeDeFacto.IsToggled = fnLifeDeFacto.IsEnabled = false;
 				}
 
-			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "Фактический", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "Фактический", false);*/
 
 			//
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
@@ -732,6 +739,42 @@ namespace RD_AAOW
 
 			#endregion
 
+			#region Страница распиновок
+
+			if (!ca.AllowExtendedFunctionsLevel2)
+				{
+				connectorsFieldBackColor = connectorsMasterBackColor = disabledFieldColor;
+				connectorsPage.BackgroundColor = disabledPageColor;
+				}
+
+			AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLabel", "Тип кабеля:", true);
+			cableTypeButton = AndroidSupport.ApplyButtonSettings (connectorsPage, "CableTypeButton",
+				conn.GetCablesNames ()[0], connectorsFieldBackColor, CableTypeButton_Clicked);
+			cableTypeButton.FontSize *= fontSizeMultiplier;
+
+			cableLeftSideText = AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLeftSide", " ", false);
+			cableLeftSideText.HorizontalTextAlignment = TextAlignment.Center;
+			cableLeftSideText.HorizontalOptions = LayoutOptions.Center;
+
+			cableLeftPinsText = AndroidSupport.ApplyResultLabelSettings (connectorsPage, "CableLeftPins", " ",
+				connectorsFieldBackColor);
+			cableLeftPinsText.FontSize *= fontSizeMultiplier;
+
+			cableRightSideText = AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableRightSide", " ", false);
+			cableRightSideText.HorizontalTextAlignment = TextAlignment.Center;
+			cableRightSideText.HorizontalOptions = LayoutOptions.Center;
+
+			cableRightPinsText = AndroidSupport.ApplyResultLabelSettings (connectorsPage, "CableRightPins", " ",
+				connectorsFieldBackColor);
+			cableRightPinsText.FontSize *= fontSizeMultiplier;
+
+			cableDescriptionText = AndroidSupport.ApplyTipLabelSettings (connectorsPage, "CableDescription",
+				" ", untoggledSwitchColor);
+
+			CableTypeButton_Clicked (null, null);
+
+			#endregion
+
 			// Обязательное принятие Политики и EULA
 			AcceptPolicy ();
 			}
@@ -843,7 +886,7 @@ namespace RD_AAOW
 			ca.AgentsFlag = fnLifeAgents.IsToggled;
 			ca.ExciseFlag = fnLifeExcise.IsToggled;
 			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
-			ca.FNLifeDeFacto = fnLifeDeFacto.IsToggled;
+			/*ca.FNLifeDeFacto = fnLifeDeFacto.IsToggled;*/
 
 			ca.KKTSerial = rnmKKTSN.Text;
 			ca.UserINN = rnmINN.Text;
@@ -1620,7 +1663,7 @@ namespace RD_AAOW
 			fnlf.SeasonOrAgents = fnLifeSeason.IsToggled || fnLifeAgents.IsToggled;
 			fnlf.Excise = fnLifeExcise.IsToggled;
 			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
-			fnlf.DeFacto = fnLifeDeFacto.IsToggled;
+			fnlf.DeFacto = false;   /*fnLifeDeFacto.IsToggled;*/
 
 			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, fnlf);
 
@@ -2027,6 +2070,42 @@ namespace RD_AAOW
 		private void BarcodeText_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			barcodeDescriptionLabel.Text = barc.GetBarcodeDescription (barcodeField.Text);
+			}
+
+		#endregion
+
+		#region Распиновки
+
+		private Connectors conn = new Connectors ();
+		private async void CableTypeButton_Clicked (object sender, EventArgs e)
+			{
+			int idx = 0;
+			string res = conn.GetCablesNames ()[idx];
+
+			if (sender != null)
+				{
+				// Запрос модели ККТ
+				res = await connectorsPage.DisplayActionSheet ("Выберите тип кабеля:", "Отмена", null,
+					conn.GetCablesNames ().ToArray ());
+
+				// Установка типа кабеля
+				idx = conn.GetCablesNames ().IndexOf (res);
+				if (idx < 0)
+					return;
+				}
+
+			// Установка полей
+			cableTypeButton.Text = res;
+			/*ca.KKTForManuals = (uint)idx;*/
+
+			cableLeftSideText.Text = "Со стороны " + conn.GetCableConnector ((uint)idx, false);
+			cableLeftPinsText.Text = conn.GetCableConnectorPins ((uint)idx, false);
+
+			cableRightSideText.Text = "Со стороны " + conn.GetCableConnector ((uint)idx, true);
+			cableRightPinsText.Text = conn.GetCableConnectorPins ((uint)idx, true);
+
+			cableDescriptionText.Text = conn.GetCableConnectorDescription ((uint)idx, false) + "\n\n" +
+				conn.GetCableConnectorDescription ((uint)idx, true);
 			}
 
 		#endregion

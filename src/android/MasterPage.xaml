@@ -14,6 +14,7 @@
 	<mypages:TagsPage x:Name="TagsPage" />
 	<mypages:LowLevelPage x:Name="LowLevelPage" />
 	<mypages:KKTCodesPage x:Name="KKTCodesPage" />
+	<mypages:ConnectorsPage x:Name="ConnectorsPage" />
 	<mypages:BarCodesPage x:Name="BarCodesPage" />
 
 	<mypages:AboutPage x:Name="AboutPage" />

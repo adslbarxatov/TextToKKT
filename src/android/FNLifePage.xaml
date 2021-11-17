@@ -68,10 +68,10 @@
 				<Button x:Name="FNLifeResult" />
 				<Label x:Name="FNLifeHelpLabel" />
 
-				<StackLayout Orientation="Horizontal">
+				<!--StackLayout Orientation="Horizontal">
 					<Switch x:Name="FNLifeDeFacto" VerticalOptions="Center" />
 					<Label x:Name="FNLifeDeFactoLabel" VerticalOptions="Center" />
-				</StackLayout>
+				</StackLayout-->
 
 				<Label />
 
