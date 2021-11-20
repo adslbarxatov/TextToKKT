@@ -103,8 +103,7 @@ namespace RD_AAOW
 			AgentsFlag.Checked = ca.AgentsFlag;
 			ExciseFlag.Checked = ca.ExciseFlag;
 			AutonomousFlag.Checked = ca.AutonomousFlag;
-			/*FNLifeDeFacto.Checked = ca.FNLifeDeFacto;
-			FNLifeDeFacto.Enabled = ca.AllowExtendedFunctionsLevel2;*/
+			FFD12Flag.Checked = ca.FFD12Flag;
 
 			RNMSerial.MaxLength = (int)kkts.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
@@ -265,7 +264,7 @@ namespace RD_AAOW
 			ca.AgentsFlag = AgentsFlag.Checked;
 			ca.ExciseFlag = ExciseFlag.Checked;
 			ca.AutonomousFlag = AutonomousFlag.Checked;
-			/*ca.FNLifeDeFacto = FNLifeDeFacto.Checked;*/
+			ca.FFD12Flag = FFD12Flag.Checked;
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -588,7 +587,7 @@ namespace RD_AAOW
 			fnlf.SeasonOrAgents = SeasonFlag.Checked || AgentsFlag.Checked;
 			fnlf.Excise = ExciseFlag.Checked;
 			fnlf.Autonomous = AutonomousFlag.Checked;
-			fnlf.DeFacto = false;   /*FNLifeDeFacto.Checked;*/
+			fnlf.DeFacto = !FFD12Flag.Checked;
 
 			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
 

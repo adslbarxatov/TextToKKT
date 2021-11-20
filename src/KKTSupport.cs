@@ -94,7 +94,7 @@ namespace RD_AAOW
 				}
 
 			// Результат
-			return (res + StartDate.AddDays (length).ToString ("dd.MM.yyyy"));
+			return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");
 			}
 
 		// Контрольная последовательность для определения корректности ИНН

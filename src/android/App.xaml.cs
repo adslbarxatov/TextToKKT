@@ -89,7 +89,7 @@ namespace RD_AAOW
 			barcodeField;
 
 		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
-			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, /*fnLifeDeFacto,*/
+			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeFFD12,
 			keepAppState, allowService;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
@@ -136,6 +136,18 @@ namespace RD_AAOW
 			// Переход в статус запуска для отмены вызова из оповещения
 			AndroidSupport.AppIsRunning = true;
 
+			// Переопределение цветов для закрытых функций
+			if (!ca.AllowExtendedFunctionsLevel1)
+				{
+				kktCodesFieldBackColor = disabledFieldColor;
+				kktCodesMasterBackColor = disabledPageColor;
+				}
+			if (!ca.AllowExtendedFunctionsLevel2)
+				{
+				tagsFieldBackColor = lowLevelFieldBackColor = connectorsFieldBackColor = disabledFieldColor;
+				tagsMasterBackColor = lowLevelMasterBackColor = connectorsMasterBackColor = disabledPageColor;
+				}
+
 			#region Общая конструкция страниц приложения
 
 			MainPage = new MasterPage ();
@@ -175,6 +187,17 @@ namespace RD_AAOW
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
+
+			/*// Переопределение цветов для закрытых функций
+			if (!ca.AllowExtendedFunctionsLevel1)
+				{
+				kktCodesPage.BackgroundColor = disabledPageColor;
+				}
+			if (!ca.AllowExtendedFunctionsLevel2)
+				{
+				tagsPage.BackgroundColor = disabledPageColor;
+				lowLevelPage.BackgroundColor = disabledPageColor;
+				}*/
 
 			#endregion
 
@@ -243,12 +266,6 @@ namespace RD_AAOW
 			#endregion
 
 			#region Страница кодов символов ККТ
-
-			if (!ca.AllowExtendedFunctionsLevel1)
-				{
-				kktCodesFieldBackColor = kktCodesMasterBackColor = disabledFieldColor;
-				kktCodesPage.BackgroundColor = disabledPageColor;
-				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "SelectionLabel", "Модель ККТ:", true);
 
@@ -458,6 +475,13 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим", false);
 
 			//
+			fnLifeFFD12 = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeDeFacto");
+			fnLifeFFD12.IsToggled = ca.FFD12Flag;
+			fnLifeFFD12.Toggled += FnLife13_Toggled;
+
+			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "ФФД 1.2", false);
+
+			//
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetDate", "Дата фискализации:", false);
 			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate", fnLifeFieldBackColor,
 				FnLifeStartDate_DateSelected);
@@ -470,20 +494,6 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyTipLabelSettings (fnLifePage, "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", untoggledSwitchColor);
-
-			//
-			/*fnLifeDeFacto = (Xamarin.Forms.Switch)fnLifePage.FindByName ("FNLifeDeFacto");
-			if (ca.AllowExtendedFunctionsLevel2)
-				{
-				fnLifeDeFacto.IsToggled = ca.FNLifeDeFacto;
-				fnLifeDeFacto.Toggled += FnLife13_Toggled;
-				}
-			else
-				{
-				fnLifeDeFacto.IsToggled = fnLifeDeFacto.IsEnabled = false;
-				}
-
-			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "FNLifeDeFactoLabel", "Фактический", false);*/
 
 			//
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
@@ -637,12 +647,6 @@ namespace RD_AAOW
 
 			#region Страница TLV-тегов
 
-			if (!ca.AllowExtendedFunctionsLevel2)
-				{
-				tagsFieldBackColor = tagsMasterBackColor = disabledFieldColor;
-				tagsPage.BackgroundColor = disabledPageColor;
-				}
-
 			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVSearchLabel", "Номер или часть описания:", true);
 			tlvTag = AndroidSupport.ApplyEditorSettings (tagsPage, "TLVSearchText", tagsFieldBackColor,
 				Keyboard.Default, 20, "", null);
@@ -676,12 +680,6 @@ namespace RD_AAOW
 			#endregion
 
 			#region Страница команд нижнего уровня
-
-			if (!ca.AllowExtendedFunctionsLevel2)
-				{
-				lowLevelFieldBackColor = lowLevelMasterBackColor = disabledFieldColor;
-				lowLevelPage.BackgroundColor = disabledPageColor;
-				}
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ProtocolLabel", "Протокол:", true);
 			lowLevelProtocol = AndroidSupport.ApplyButtonSettings (lowLevelPage, "ProtocolButton",
@@ -741,12 +739,6 @@ namespace RD_AAOW
 
 			#region Страница распиновок
 
-			if (!ca.AllowExtendedFunctionsLevel2)
-				{
-				connectorsFieldBackColor = connectorsMasterBackColor = disabledFieldColor;
-				connectorsPage.BackgroundColor = disabledPageColor;
-				}
-
 			AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLabel", "Тип кабеля:", true);
 			cableTypeButton = AndroidSupport.ApplyButtonSettings (connectorsPage, "CableTypeButton",
 				conn.GetCablesNames ()[0], connectorsFieldBackColor, CableTypeButton_Clicked);
@@ -782,6 +774,7 @@ namespace RD_AAOW
 		// Контроль принятия Политики и EULA
 		private async void AcceptPolicy ()
 			{
+			// Политика
 			if (Preferences.Get (firstStartRegKey, "") != "")
 				return;
 
@@ -797,7 +790,24 @@ namespace RD_AAOW
 				ADPButton_Clicked (null, null);
 				}
 
+			// Вступление
 			Preferences.Set (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
+
+			await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!\r\n\r\n" +
+
+					"На этой странице находится перечень функций приложения, который позволяет перейти к нужному разделу. " +
+					"Вернуться сюда можно с помощью кнопки «Назад». Перемещение " +
+					"между разделами также доступно по свайпу влево-вправо",
+
+					"Далее");
+
+			await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
+					"Часть функций скрыта от рядовых пользователей. Чтобы открыть расширенный функционал для специалистов, " +
+					"перейдите на страницу «О приложении» и ответьте на несколько простых вопросов. Вопросы для расширенного " +
+					"и полного набора опций отличаются",
+
+					"ОК");
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
@@ -886,7 +896,7 @@ namespace RD_AAOW
 			ca.AgentsFlag = fnLifeAgents.IsToggled;
 			ca.ExciseFlag = fnLifeExcise.IsToggled;
 			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
-			/*ca.FNLifeDeFacto = fnLifeDeFacto.IsToggled;*/
+			ca.FFD12Flag = fnLifeFFD12.IsToggled;
 
 			ca.KKTSerial = rnmKKTSN.Text;
 			ca.UserINN = rnmINN.Text;
@@ -1663,7 +1673,7 @@ namespace RD_AAOW
 			fnlf.SeasonOrAgents = fnLifeSeason.IsToggled || fnLifeAgents.IsToggled;
 			fnlf.Excise = fnLifeExcise.IsToggled;
 			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
-			fnlf.DeFacto = false;   /*fnLifeDeFacto.IsToggled;*/
+			fnlf.DeFacto = !fnLifeFFD12.IsToggled;
 
 			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, fnlf);
 

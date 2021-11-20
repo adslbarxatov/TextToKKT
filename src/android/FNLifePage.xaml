@@ -56,6 +56,11 @@
 						<Switch x:Name="FNLifeAutonomous" VerticalOptions="Center" />
 						<Label x:Name="FNLifeAutonomousLabel" VerticalOptions="Center" />
 					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Switch x:Name="FNLifeDeFacto" VerticalOptions="Center" />
+						<Label x:Name="FNLifeDeFactoLabel" VerticalOptions="Center" />
+					</StackLayout>
 				</FlexLayout>
 
 				<!-- Поле указания даты -->
@@ -67,11 +72,6 @@
 				<!-- Результат -->
 				<Button x:Name="FNLifeResult" />
 				<Label x:Name="FNLifeHelpLabel" />
-
-				<!--StackLayout Orientation="Horizontal">
-					<Switch x:Name="FNLifeDeFacto" VerticalOptions="Center" />
-					<Label x:Name="FNLifeDeFactoLabel" VerticalOptions="Center" />
-				</StackLayout-->
 
 				<Label />
 
