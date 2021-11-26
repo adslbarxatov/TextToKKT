@@ -1,4 +1,4 @@
-// Общие перечисления
+﻿// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -226,6 +226,15 @@ enum TLVTags
 
 	#define PROC_USERNAME	"%s  Пользователь: %s\r\n"
 
+	// Предупреждения о состоянии ФН (1050 - 1053)
+	FN30DaysAlert = 0x041A,
+		
+	FN3DaysAlert = 0x041B,
+		
+	FNIsFullAlert = 0x041C,
+		
+	OFDNotRespondAlert = 0x041D,
+		
 	// Признак расчёта (1054)
 	OperationType = 0x041E,
 
@@ -327,6 +336,15 @@ enum TLVTags
 	// Количество чеков и БСО за смену (1118)
 	InSessionBlanksCount = 0x045E,
 		
+	// Флаг режима лотерей (1126)
+	LotteryFlag = 0x0466,
+
+	#define PROC_LOTTERYFLAG(src,dest,type)\
+		case LotteryFlag:\
+			if ((REG_CAUSE (type)) && src)\
+				sprintf (dest, "%s  - Используется при проведении лотерей\r\n", dest);\
+			break;
+
 	// Код товарной позиции (код маркировки) (1162)
 	GoodCode = 0x048A,
 
@@ -434,6 +452,9 @@ enum TLVTags
 	
 	// Сумма иной оплатой (1217)
 	OtherCashValue = 0x04C1,
+		
+	// Флаг установки внутри автоматического устройства расчётов (1221)
+	AutomaticInsideFlag = 0x04C5,
 		
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
