@@ -188,17 +188,6 @@ namespace RD_AAOW
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
 				aboutMasterBackColor, headerNumber);
 
-			/*// Переопределение цветов для закрытых функций
-			if (!ca.AllowExtendedFunctionsLevel1)
-				{
-				kktCodesPage.BackgroundColor = disabledPageColor;
-				}
-			if (!ca.AllowExtendedFunctionsLevel2)
-				{
-				tagsPage.BackgroundColor = disabledPageColor;
-				lowLevelPage.BackgroundColor = disabledPageColor;
-				}*/
-
 			#endregion
 
 			#region Страница «оглавления»
@@ -545,7 +534,7 @@ namespace RD_AAOW
 			string rnmAbout = "Индикатор ФФД: " +
 				"<b><font color=\"#FF4040\">красный</font></b> – поддержка не планируется; " +
 				"<b><font color=\"#00C000\">зелёный</font></b> – поддерживается; " +
-				"<b><font color=\"#FFFFA0\">жёлтый</font></b> – планируется; " +
+				"<b><font color=\"#FFFF00\">жёлтый</font></b> – планируется; " +
 				"<b><font color=\"#6060FF\">синий</font></b> – нет сведений (на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
 				rnmAbout += ("<br/><br/>Первые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
