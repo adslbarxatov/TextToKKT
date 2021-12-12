@@ -373,11 +373,11 @@ namespace RD_AAOW
 							ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
 							{
 							case DialogResult.Yes:
-								Process.Start ("https://github.com/adslbarxatov/DPModule/releases");
+								Process.Start ("https://adslbarxatov.github.io/DPModule");
 								break;
 
 							case DialogResult.No:
-								Process.Start ("https://youtu.be/m7CqXvUrbc8");
+								Process.Start ("https://youtube.com/watch?v=RdQoc4tnZsk");
 								break;
 							}
 						}

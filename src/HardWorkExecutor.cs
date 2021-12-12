@@ -17,6 +17,7 @@ namespace RD_AAOW
 		private Graphics g, gp;
 		private int currentXOffset = 0, currentPercentage = 0;
 		private object parameters;                              // Параметры инициализации потока
+		private bool alwaysOnTop = false;                       // Флаг принудительного размещения поверх всех окон
 
 		// Цветовая схема
 		private Color backColor = Color.FromArgb (224, 224, 224);
@@ -174,7 +175,25 @@ namespace RD_AAOW
 			HardWorkExecutor_Init (HardWorkProcess, arguments, " ", true, true);
 			}
 
-#endif
+		/// <summary>
+		/// Конструктор. Выполняет указанное действие с указанными параметрами
+		/// </summary>
+		/// <param name="HardWorkProcess">Выполняемый процесс</param>
+		/// <param name="Parameters">Параметры, передаваемые в процесс; может быть null</param>
+		/// <param name="WindowCaption">Строка, отображаемая при инициализации окна прогресса;
+		/// если null, окно прогресса не отображается</param>
+		/// <param name="CaptionInTheMiddle">Флаг указывает, что подпись будет выравниваться посередине</param>
+		/// <param name="AllowOperationAbort">Флаг указывает, разрешена ли отмена операции</param>
+		/// <param name="AlwaysOnTop">Флаг указывает на принудительное размежение поверх всех окон</param>
+		public HardWorkExecutor (DoWorkEventHandler HardWorkProcess, object Parameters, string WindowCaption,
+			bool CaptionInTheMiddle, bool AllowOperationAbort, bool AlwaysOnTop)
+			{
+			alwaysOnTop = AlwaysOnTop;
+			HardWorkExecutor_Init (HardWorkProcess, Parameters, WindowCaption, CaptionInTheMiddle,
+				AllowOperationAbort);
+			}
+
+#else
 
 		/// <summary>
 		/// Конструктор. Выполняет указанное действие с указанными параметрами
@@ -191,6 +210,8 @@ namespace RD_AAOW
 			HardWorkExecutor_Init (HardWorkProcess, Parameters, WindowCaption, CaptionInTheMiddle,
 				AllowOperationAbort);
 			}
+
+#endif
 
 		// Общий метод подготовки исполнителя заданий
 		private void HardWorkExecutor_Init (DoWorkEventHandler HWProcess, object Parameters,
@@ -229,10 +250,11 @@ namespace RD_AAOW
 		// Метод запускает выполнение процесса
 		private void HardWorkExecutor_Shown (object sender, EventArgs e)
 			{
-#if DPMODULE
-			this.Activate ();
-			this.TopMost = true;
-#endif
+			if (alwaysOnTop)
+				{
+				this.Activate ();
+				this.TopMost = true;
+				}
 
 			// Запуск отрисовки
 			const int roundingSize = 20;
