@@ -341,7 +341,8 @@ namespace RD_AAOW
 			}
 
 		// Вызов библиотеки FNReader
-		private const string fnReaderDLL = "FNReader.dll";
+		private const string fnReaderDLL = "FNReader.dll",
+			fnReaderDLL2 = "FNReaderLib.dll";
 		private void FNReader_Click (object sender, EventArgs e)
 			{
 			CallFNReader ("");
@@ -353,7 +354,11 @@ namespace RD_AAOW
 		private void CallFNReader (string DumpPath)
 			{
 			// Контроль
-			if (FNReaderDLL == null)
+			bool result = true;
+			if (!File.Exists (AboutForm.AppStartupPath + fnReaderDLL) || !File.Exists (AboutForm.AppStartupPath + fnReaderDLL2))
+				result = false;
+
+			if (result && (FNReaderDLL == null))
 				{
 				try
 					{
@@ -363,35 +368,40 @@ namespace RD_AAOW
 					}
 				catch
 					{
-					try
-						{
-						switch (MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
-							"Данный компонент доступен в комплекте с руководством пользователя при развёртке приложения " +
-							"через оператор пакетов DPModule:\n" +
-							"• Нажмите «Да», чтобы перейти к загрузке приложения с GitHub;\n" +
-							"• Нажмите «Нет», чтобы ознакомиться с презентацией DPModule на YouTube",
-							ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
-							{
-							case DialogResult.Yes:
-								Process.Start ("https://adslbarxatov.github.io/DPModule");
-								break;
-
-							case DialogResult.No:
-								Process.Start ("https://youtube.com/watch?v=RdQoc4tnZsk");
-								break;
-							}
-						}
-					catch
-						{
-						MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyTitle,
-							MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						}
-
-					return;
+					result = false;
 					}
 				}
 
-			// Запуск
+			if (!result)
+				{
+				try
+					{
+					switch (MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
+						"Данный компонент доступен в комплекте с руководством пользователя при развёртке приложения " +
+						"через оператор пакетов DPModule:\n" +
+						"• Нажмите «Да», чтобы перейти к загрузке DPModule с GitHub;\n" +
+						"• Нажмите «Нет», чтобы ознакомиться с презентацией DPModule на YouTube",
+						ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
+						{
+						case DialogResult.Yes:
+							Process.Start ("https://adslbarxatov.github.io/DPModule");
+							break;
+
+						case DialogResult.No:
+							Process.Start ("https://youtube.com/watch?v=RdQoc4tnZsk");
+							break;
+						}
+					}
+				catch
+					{
+					MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyTitle,
+						MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					}
+
+				return;
+				}
+
+			// Проверки прошли успешно, запуск
 			if (FNReaderDLL != null)
 				{
 				FNReaderInstance.FNReaderEx (DumpPath);
