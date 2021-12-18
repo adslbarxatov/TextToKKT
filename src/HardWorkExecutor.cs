@@ -15,7 +15,7 @@ namespace RD_AAOW
 		private bool allowClose = false;                        // Запрет выхода из формы до окончания работы
 		private Bitmap progress, frameGreenGrey, frameBack;     // Объекты-отрисовщики
 		private Graphics g, gp;
-		private int currentXOffset = 0, currentPercentage = 0;
+		private int currentXOffset = 0, oldPercentage = 0, newPercentage = 0;
 		private object parameters;                              // Параметры инициализации потока
 		private bool alwaysOnTop = false;                       // Флаг принудительного размещения поверх всех окон
 
@@ -235,7 +235,7 @@ namespace RD_AAOW
 				parameters = Parameters;
 
 				InitializeProgressBar ();
-				currentPercentage = (int)ProgressBarSize;
+				newPercentage = oldPercentage = (int)ProgressBarSize;
 
 				AbortButton.Visible = AbortButton.Enabled = AllowAbort;
 				StateLabel.Text = Caption;
@@ -286,8 +286,12 @@ namespace RD_AAOW
 		private void ProgressChanged (object sender, ProgressChangedEventArgs e)
 			{
 			// Обновление ProgressBar
-			currentPercentage = ((e.ProgressPercentage > ProgressBarSize) || (e.ProgressPercentage < 0)) ?
-				(int)ProgressBarSize : e.ProgressPercentage;
+			if (e.ProgressPercentage > ProgressBarSize)
+				newPercentage = (int)ProgressBarSize;
+			else if (e.ProgressPercentage < 0)
+				newPercentage = oldPercentage = 0;  // Скрытие шкалы
+			else
+				newPercentage = e.ProgressPercentage;
 
 			StateLabel.Text = (string)e.UserState;
 			}
@@ -364,10 +368,12 @@ namespace RD_AAOW
 		private void DrawingTimer_Tick (object sender, EventArgs e)
 			{
 			// Отрисовка текущей позиции
+			int recalcPercentage = (int)(oldPercentage + (newPercentage - oldPercentage) / 4);
 			gp.DrawImage (frameGreenGrey, currentXOffset, 0);
 			gp.DrawImage (frameBack, -9 * this.Width / 4, 0);
-			gp.DrawImage (frameBack, currentPercentage * (progress.Width - progress.Height) / ProgressBarSize -
-				this.Width / 4, 0);
+			gp.DrawImage (frameBack, recalcPercentage *
+				(progress.Width - progress.Height) / ProgressBarSize - this.Width / 4, 0);
+			oldPercentage = recalcPercentage;
 
 			g.DrawImage (progress, 18, StateLabel.Top + StateLabel.Height + 10);
 			// Почему 18? Да хрен его знает. При ожидаемом x = 10 получается левое смещение

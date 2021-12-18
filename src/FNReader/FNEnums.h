@@ -1,4 +1,4 @@
-// Общие перечисления
+﻿// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -224,7 +224,7 @@ enum TLVTags
 	// Имя пользователя (1048)
 	UserName = 0x0418,
 
-	#define PROC_USERNAME	"%s  Пользователь: %s\r\n"
+#define PROC_USERNAME	"%s  Пользователь: %s\r\n"
 
 	// Предупреждения о состоянии ФН (1050 - 1053)
 	FN30DaysAlert = 0x041A,
@@ -292,8 +292,13 @@ enum TLVTags
 				sprintf (dest, "%s  Причина перерегистрации: %s\r\n", dest, GetRegistrationChangeCause (src));\
 			break;
 
-	// Сумма к оплате (1105)
-	DocumentSumma = 0x0451,
+	// Сумма к оплате по ставкам НДС (1102 - 1107)
+	DocumentSummaNDS20 = 0x044E,
+	DocumentSummaNDS10 = 0x044F,
+	DocumentSummaNDS0 = 0x0450,
+	DocumentSummaNoNDS = 0x0451,
+	DocumentSummaNDS120 = 0x0452,
+	DocumentSummaNDS110 = 0x0453,
 
 	// Флаг работы в сети Интернет (1108)
 	InternetFlag = 0x0454,
@@ -332,7 +337,7 @@ enum TLVTags
 
 	// Номер первого непереданного документа (1116)
 	FirstUnsentDocumentNumber = 0x045C,
-		
+
 	// Адрес отправителя чеков (1117)
 	BlankSenderAddress = 0x045D,
 
@@ -348,25 +353,50 @@ enum TLVTags
 				sprintf (dest, "%s  - Используется при проведении лотерей\r\n", dest);\
 			break;
 
-	// Итоги по признакам (1129 - 1133)
+	// Итоги по признакам расчёта (1129 - 1132)
 	TotalsIncoming1 = 0x0469,
 	TotalsRevIncoming1 = 0x046A,
 	TotalsOutcoming1 = 0x046B,
 	TotalsRevOutcoming1 = 0x046C,
+
+	// Общие счётчики (1133)
 	TotalsCounts = 0x046D,
+
+	// Число документов в счётчиках итогов, общее и по отдельным признакам (1134, 1135)
+	TotalsDocumentsCount1 = 0x046E,
+	TotalsDocumentsCount2 = 0x046F,
+
+	// Итоговая сумма, наличными (1136)
+	TotalsSummaCash = 0x0470,
+
+	// Итоговая сумма, безналичными (1138)
+	TotalsSummaCard = 0x0472,
+
+	// Итоговые суммы по ставкам НДС (1139 - 1143)
+	TotalsSummaNDS20 = 0x0473,
+	TotalsSummaNDS10 = 0x0474,
+	TotalsSummaNDS120 = 0x0475,
+	TotalsSummaNDS110 = 0x0476,
+	TotalsSummaNDS0 = 0x0477,
+
+	// Число документов коррекции и непереданных документов (1144)
+	TotalsDocumentsCount3 = 0x0478,
 
 	// Итоги по признакам (1145, 1146)
 	TotalsIncoming2 = 0x0479,
 	TotalsOutcoming2 = 0x047A,
-		
+
 	// Счётчики итогов в ФН (1157)
-	TotalCounters1 = 0x0485,
-		
-	// Счётчики итогов (общие) (1158)
-	TotalCounters2 = 0x0486,
-		
+	TotalCounters = 0x0485,
+
+	// Счётчики итогов непереданных ФД (1158)
+	TotalUnsentCounters = 0x0486,
+
 	// Код товарной позиции (код маркировки) (1162)
 	GoodCode = 0x048A,
+
+	// Общая сумма по отдельному признаку расчёта (1183)
+	TotalsSummaPerType = 0x049F,
 
 	// Место расчётов (1187)
 	RegistrationPlace = 0x04A3,
@@ -404,14 +434,17 @@ enum TLVTags
 				sprintf (dest, "%s  - Используется при проведении азартных игр\r\n", dest);\
 			break;
 
-	// Счётчики итогов документов (1194)
-	TotalCounters3 = 0x04AA,
-		
+	// Счётчики итогов смены (1194)
+	TotalSessionCounters = 0x04AA,
+
 	// Ставка НДС (1199)
 	NDS = 0x04AF,
 
 	// Сумма НДС за товар / услугу (1200)
 	NDSSumma = 0x04B0,
+
+	// Общая сумма с учётом авансов и кредитов (1201)
+	TotalsSummaDebitCredit = 0x04B1,
 
 	// ИНН кассира (1203)
 	CashierINN = 0x04B3,
@@ -481,13 +514,18 @@ enum TLVTags
 	// Сумма иной оплатой (1217)
 	OtherCashValue = 0x04C1,
 
+	// Итоговая сумма авансом, кредитом и иными способами (1218 - 1220)
+	TotalsSummaPrepaid = 0x04C2,
+	TotalsSummaPostpaid = 0x04C3,
+	TotalsSummaOthers = 0x04C4,
+
 	// Флаг установки внутри автоматического устройства расчётов (1221)
 	AutomaticInsideFlag = 0x04C5,
 
 	// Итоги по признакам (1232, 1233)
 	TotalsRevIncoming2 = 0x04D0,
 	TotalsRevOutcoming2 = 0x04D1,
-		
+
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
 

@@ -677,7 +677,7 @@ policy:
 			resp.Close ();
 
 			// Завершено. Отображение сообщения
-			((BackgroundWorker)sender).ReportProgress (0, Localization.GetText ("PackageSuccess", al));
+			((BackgroundWorker)sender).ReportProgress (-1, Localization.GetText ("PackageSuccess", al));
 			Thread.Sleep (1000);
 
 			e.Result = 0;
