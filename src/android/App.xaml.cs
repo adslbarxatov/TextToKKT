@@ -245,7 +245,7 @@ namespace RD_AAOW
 
 			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "KKTButton",
 				"   ", userManualsFieldBackColor, UserManualsKKTButton_Clicked);
-			userManualsKKTButton.FontSize *= fontSizeMultiplier;
+			/*userManualsKKTButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyTipLabelSettings (userManualsPage, "HelpLabel",
 				"<...> – индикация на экране, [...] – клавиши ККТ", untoggledSwitchColor);
@@ -275,7 +275,7 @@ namespace RD_AAOW
 			kktCodesKKTButton = AndroidSupport.ApplyButtonSettings (kktCodesPage, "KKTButton",
 				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes],
 				kktCodesFieldBackColor, CodesKKTButton_Clicked);
-			kktCodesKKTButton.FontSize *= fontSizeMultiplier;
+			/*kktCodesKKTButton.FontSize *= fontSizeMultiplier;*/
 
 			kktCodesSourceTextLabel = AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "SourceTextLabel",
 				"Исходный текст:", true);
@@ -327,7 +327,7 @@ namespace RD_AAOW
 			errorsKKTButton = AndroidSupport.ApplyButtonSettings (errorsPage, "KKTButton",
 				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
-			errorsKKTButton.FontSize *= fontSizeMultiplier;
+			/*errorsKKTButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ErrorCodeLabel", "Код / сообщение:", true);
 
@@ -577,43 +577,43 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameLabel", "Адрес ОФД:", true);
 			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
-			ofdDNSNameButton.FontSize *= fontSizeMultiplier;
+			/*ofdDNSNameButton.FontSize *= fontSizeMultiplier;*/
 			ofdIPButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor, Field_Clicked);
-			ofdIPButton.FontSize *= fontSizeMultiplier;
+			/*ofdIPButton.FontSize *= fontSizeMultiplier;*/
 			ofdPortButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPort", "", ofdFieldBackColor, Field_Clicked);
-			ofdPortButton.FontSize *= fontSizeMultiplier;
+			/*ofdPortButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameMLabel", "Адрес ИСМ:", true);
 			ofdDNSNameMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameM", "", ofdFieldBackColor, Field_Clicked);
-			ofdDNSNameMButton.FontSize *= fontSizeMultiplier;
+			/*ofdDNSNameMButton.FontSize *= fontSizeMultiplier;*/
 			ofdIPMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPM", "", ofdFieldBackColor, Field_Clicked);
-			ofdIPMButton.FontSize *= fontSizeMultiplier;
+			/*ofdIPMButton.FontSize *= fontSizeMultiplier;*/
 			ofdPortMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortM", "", ofdFieldBackColor, Field_Clicked);
-			ofdPortMButton.FontSize *= fontSizeMultiplier;
+			/*ofdPortMButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameKLabel", "Адрес ОКП:", true);
 			ofdDNSNameKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
 				ofdFieldBackColor, Field_Clicked);
-			ofdDNSNameKButton.FontSize *= fontSizeMultiplier;
+			/*ofdDNSNameKButton.FontSize *= fontSizeMultiplier;*/
 			ofdIPKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPK", OFD.OKPIP,
 				ofdFieldBackColor, Field_Clicked);
-			ofdIPKButton.FontSize *= fontSizeMultiplier;
+			/*ofdIPKButton.FontSize *= fontSizeMultiplier;*/
 			ofdPortKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
 				ofdFieldBackColor, Field_Clicked);
-			ofdPortKButton.FontSize *= fontSizeMultiplier;
+			/*ofdPortKButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail ОФД:", true);
 			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor, Field_Clicked);
-			ofdEmailButton.FontSize *= fontSizeMultiplier;
+			/*ofdEmailButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDSiteLabel", "Сайт ОФД:", true);
 			ofdSiteButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor, Field_Clicked);
-			ofdSiteButton.FontSize *= fontSizeMultiplier;
+			/*ofdSiteButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", true);
 			ofdFNSButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
 				ofdFieldBackColor, Field_Clicked);
-			ofdFNSButton.FontSize *= fontSizeMultiplier;
+			/*ofdFNSButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
@@ -673,19 +673,19 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ProtocolLabel", "Протокол:", true);
 			lowLevelProtocol = AndroidSupport.ApplyButtonSettings (lowLevelPage, "ProtocolButton",
 				ll.GetProtocolsNames ()[(int)ca.LowLevelProtocol], lowLevelFieldBackColor, LowLevelProtocol_Clicked);
-			lowLevelProtocol.FontSize *= fontSizeMultiplier;
+			/*lowLevelProtocol.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandLabel", "Команда:", true);
 			lowLevelCommand = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandButton",
 				ll.GetCommandsList (ca.LowLevelProtocol)[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked);
-			lowLevelCommand.FontSize *= fontSizeMultiplier;
+			/*lowLevelCommand.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandCodeLabel", "Код команды:", true);
 			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
 				ll.GetCommand (ca.LowLevelProtocol, ca.LowLevelCode, false),
 				lowLevelFieldBackColor, Field_Clicked);
-			lowLevelCommandCode.FontSize *= fontSizeMultiplier;
+			/*lowLevelCommandCode.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandDescrLabel", "Описание:", true);
 
@@ -731,7 +731,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLabel", "Тип кабеля:", true);
 			cableTypeButton = AndroidSupport.ApplyButtonSettings (connectorsPage, "CableTypeButton",
 				conn.GetCablesNames ()[0], connectorsFieldBackColor, CableTypeButton_Clicked);
-			cableTypeButton.FontSize *= fontSizeMultiplier;
+			/*cableTypeButton.FontSize *= fontSizeMultiplier;*/
 
 			cableLeftSideText = AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLeftSide", " ", false);
 			cableLeftSideText.HorizontalTextAlignment = TextAlignment.Center;

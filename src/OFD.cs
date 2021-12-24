@@ -29,7 +29,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Общий адрес сайта ФНС
 		/// </summary>
-		public const string FNSSite = "www.nalog.ru";
+		public const string FNSSite = "www.nalog.gov.ru";
 
 		/// <summary>
 		/// Общий адрес сервера обновления ключей проверки кодов маркировки
