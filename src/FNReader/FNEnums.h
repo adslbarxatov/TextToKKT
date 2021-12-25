@@ -1,4 +1,4 @@
-﻿// Общие перечисления
+// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -6,41 +6,53 @@ enum FNDocumentTypes
 	// Отчёт о регистрации
 	Registration = 0x01,
 
-	// Отчёт о регистрации под ФФД 1.2
-	Registration_12 = 0x41,
+	// Отчёт о регистрации под ФФД 1.1 и 1.2
+	Registration_11_12 = 0x41,
 
 	// Отчёт об изменении реквизитов регистрации
 	RegistrationChange = 0x0B,
 
-	// Отчёт об изменении реквизитов регистрации под ФФД 1.2
-	RegistrationChange_12 = 0x4B,
+	// Отчёт об изменении реквизитов регистрации под ФФД 1.1 и 1.2
+	RegistrationChange_11_12 = 0x4B,
 
 	// Открытие смены
-	OpenSession = 2,
+	OpenSession = 0x02,
 
 	// Отчёт о текущем состоянии расчётов
-	CurrentState = 21,
+	CurrentState = 0x15,
 
 	// Кассовый чек
-	Bill = 3,
+	Bill = 0x03,
 
-	// Чек коррекции
-	CorrectionBill = 31,
+	// Кассовый чек под ФФД 1.1
+	Bill_11 = 0x83,
+
+	// Кассовый чек под ФФД 1.2
+	Bill_12 = 0xC3,
+
+	// Чек коррекции (31)
+	CorrectionBill = 0x1F,
+
+	// Чек коррекции под ФФД 1.1
+	CorrectionBill_11 = 0x9F,
+
+	// Чек коррекции под ФФД 1.2
+	CorrectionBill_12 = 0xDF,
 
 	// БСО
-	Blank = 4,
+	Blank = 0x04,
 
-	// БСО коррекции
-	CorrectionBlank = 41,
+	// БСО коррекции (41)
+	CorrectionBlank = 0x29,
 
 	// Закрытие смены
-	CloseSession = 5,
+	CloseSession = 0x05,
 
 	// Закрытие фискального режима
-	CloseFiscalStorage = 6,
+	CloseFiscalStorage = 0x06,
 
 	// Подтверждение оператора
-	Confirmation = 7,
+	Confirmation = 0x07,
 
 	// Запрос о коде маркировки
 	MarkCodeRequest = 81,
@@ -59,8 +71,8 @@ enum FNDocumentTypes
 	};
 
 #define REG_CAUSE(type)		(type == Registration) || (type == RegistrationChange) || \
-	(type == Registration_12) || (type == RegistrationChange_12)
-#define REREG_CAUSE(type)	(type == RegistrationChange) || (type == RegistrationChange_12)
+	(type == Registration_11_12) || (type == RegistrationChange_11_12)
+#define REREG_CAUSE(type)	(type == RegistrationChange) || (type == RegistrationChange_11_12)
 
 // Возможные фазы жизни ФН
 enum FNLifePhases
@@ -395,9 +407,12 @@ enum TLVTags
 	// Счётчики итогов непереданных ФД (1158)
 	TotalUnsentCounters = 0x0486,
 
-	// Код товарной позиции (код маркировки) (1162)
+	// Код товарной позиции ФФД 1.05 (1162)
 	GoodCode = 0x048A,
 
+	// Код маркировки ФФД 1.2 (1163)
+	GoodCodeMark = 0x048B,
+		
 	// Самостоятельная или предписанная коррекция (1173)
 	CorrectionType = 0x0495,
 		
@@ -452,6 +467,9 @@ enum TLVTags
 	// Счётчики итогов смены (1194)
 	TotalSessionCounters = 0x04AA,
 
+	// Единица измерения товара / услуги (1197)
+	UnitName = 0x04AD,
+		
 	// Ставка НДС (1199)
 	NDS = 0x04AF,
 
@@ -550,6 +568,25 @@ enum TLVTags
 				sprintf (dest, "%s  - Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\
 			break;
 
+	// Типы кодов маркировки (1300 - 1309, 1320 - 1325)
+	MarkCode_Unknown = 0x0514,
+	MarkCode_EAN8 = 0x0515,
+	MarkCode_EAN13 = 0x0516,
+	MarkCode_ITF14 = 0x0517,
+	MarkCode_GS10 = 0x0518,
+	MarkCode_GS1M = 0x0519,
+	MarkCode_Short = 0x051A,
+	MarkCode_Fur = 0x051B,
+	MarkCode_EGAIS20 = 0x051C,
+	MarkCode_EGAIS30 = 0x051D,
+
+	MarkCode_F1 = 0x0528,
+	MarkCode_F2 = 0x0529,
+	MarkCode_F3 = 0x052A,
+	MarkCode_F4 = 0x052B,
+	MarkCode_F5 = 0x052C,
+	MarkCode_F6 = 0x052D,
+
 	// Режим обработки КМ (2102)
 	MarkFlags_ProcessingMode = 0x0836,
 		
@@ -563,7 +600,7 @@ enum TLVTags
 	MarkFlags_HasWrongCodes = 0x083B,
 		
 	// Единица измерения товара / услуги (2108)
-	UnitName = 0x083C,
+	UnitNameMark = 0x083C,
 
 	// Признаки наличия некорректных кодов маркировки (2112)
 	MarkFlags_IncorrectCodes = 0x0840,

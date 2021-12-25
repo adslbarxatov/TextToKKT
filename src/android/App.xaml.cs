@@ -334,7 +334,7 @@ namespace RD_AAOW
 			errorsCodeButton = AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorCodeButton",
 				kkme.GetErrorCodesList (ca.KKTForErrors)[(int)ca.ErrorCode],
 				errorsFieldBackColor, ErrorsCodeButton_Clicked);
-			errorsCodeButton.FontSize *= fontSizeMultiplier;
+			/*errorsCodeButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ResultTextLabel", "Расшифровка:", true);
 
@@ -479,7 +479,7 @@ namespace RD_AAOW
 			//
 			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor,
 				FNLifeResultCopy, false);
-			fnLifeResult.FontSize *= fontSizeMultiplier;
+			/*fnLifeResult.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyTipLabelSettings (fnLifePage, "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", untoggledSwitchColor);
