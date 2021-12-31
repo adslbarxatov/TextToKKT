@@ -118,6 +118,14 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Метод возвращает список ИНН ОФД
+		/// </summary>
+		public List<string> GetOFDINNs ()
+			{
+			return new List<string> (inn);
+			}
+
+		/// <summary>
 		/// Метод возвращает параметры указанного ОФД
 		/// </summary>
 		/// <param name="INN">ИНН требуемого ОФД</param>

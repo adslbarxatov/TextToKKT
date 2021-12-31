@@ -573,7 +573,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNameLabel", "Название:", true);
 			ofdNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
 				ofdFieldBackColor, OFDName_Clicked);
-			ofdNameButton.FontSize *= fontSizeMultiplier;
+			/*ofdNameButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameLabel", "Адрес ОФД:", true);
 			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor, Field_Clicked);
@@ -638,7 +638,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVSearchLabel", "Номер или часть описания:", true);
 			tlvTag = AndroidSupport.ApplyEditorSettings (tagsPage, "TLVSearchText", tagsFieldBackColor,
-				Keyboard.Default, 20, "", null);
+				Keyboard.Default, 20, ca.TLVData, null);
 			tlvTag.FontSize *= fontSizeMultiplier;
 
 			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVSearchButton",
@@ -665,6 +665,8 @@ namespace RD_AAOW
 				tagsFieldBackColor);
 			tlvValuesLabel.HorizontalTextAlignment = TextAlignment.Start;
 			tlvValuesLabel.FontSize *= fontSizeMultiplier;
+
+			TLVFind_Clicked (null, null);
 
 			#endregion
 
@@ -722,6 +724,10 @@ namespace RD_AAOW
 			barcodeDescriptionLabel.HorizontalTextAlignment = TextAlignment.Start;
 			barcodeDescriptionLabel.FontSize *= fontSizeMultiplier;
 
+			AndroidSupport.ApplyButtonSettings (barCodesPage, "Clear",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
+				barCodesFieldBackColor, BarcodeClear_Clicked);
+
 			BarcodeText_TextChanged (null, null);
 
 			#endregion
@@ -730,7 +736,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLabel", "Тип кабеля:", true);
 			cableTypeButton = AndroidSupport.ApplyButtonSettings (connectorsPage, "CableTypeButton",
-				conn.GetCablesNames ()[0], connectorsFieldBackColor, CableTypeButton_Clicked);
+				conn.GetCablesNames ()[(int)ca.CableType], connectorsFieldBackColor, CableTypeButton_Clicked);
 			/*cableTypeButton.FontSize *= fontSizeMultiplier;*/
 
 			cableLeftSideText = AndroidSupport.ApplyLabelSettingsForKKT (connectorsPage, "CableLeftSide", " ", false);
@@ -901,6 +907,9 @@ namespace RD_AAOW
 			ca.CodesText = codesSourceText.Text;
 
 			ca.BarcodeData = barcodeField.Text;
+			//ca.CableType		// -||-
+
+			ca.TLVData = tlvTag.Text;
 			}
 
 		/// <summary>
@@ -1863,6 +1872,8 @@ namespace RD_AAOW
 		private void OFD_Find (object sender, EventArgs e)
 			{
 			List<string> codes = ofd.GetOFDNames ();
+			codes.AddRange (ofd.GetOFDINNs ());
+
 			string text = ofdSearchText.Text.ToLower ();
 
 			lastOFDSearchOffset2++;
@@ -1870,7 +1881,7 @@ namespace RD_AAOW
 				if (codes[(i + lastOFDSearchOffset2) % codes.Count].ToLower ().Contains (text))
 					{
 					lastOFDSearchOffset2 = (i + lastOFDSearchOffset2) % codes.Count;
-					ofdNameButton.Text = codes[lastOFDSearchOffset2];
+					ofdNameButton.Text = codes[lastOFDSearchOffset2 % (codes.Count / 2)];
 
 					string s = ofd.GetOFDINNByName (ofdNameButton.Text);
 					if (s != "")
@@ -1949,7 +1960,7 @@ namespace RD_AAOW
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			List<string> comm = new List<string> { "Начальная страница", "ВКонтакте", "Телеграм" };
+			List<string> comm = new List<string> { "Начальная страница", "ВКонтакте", "Telegram" };
 			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm.ToArray ());
 
 			if (!comm.Contains (res))
@@ -2071,6 +2082,12 @@ namespace RD_AAOW
 			barcodeDescriptionLabel.Text = barc.GetBarcodeDescription (barcodeField.Text);
 			}
 
+		// Очистка полей
+		private void BarcodeClear_Clicked (object sender, EventArgs e)
+			{
+			barcodeField.Text = "";
+			}
+
 		#endregion
 
 		#region Распиновки
@@ -2078,7 +2095,7 @@ namespace RD_AAOW
 		private Connectors conn = new Connectors ();
 		private async void CableTypeButton_Clicked (object sender, EventArgs e)
 			{
-			int idx = 0;
+			int idx = (int)ca.CableType;
 			string res = conn.GetCablesNames ()[idx];
 
 			if (sender != null)
@@ -2095,7 +2112,7 @@ namespace RD_AAOW
 
 			// Установка полей
 			cableTypeButton.Text = res;
-			/*ca.KKTForManuals = (uint)idx;*/
+			ca.CableType = (uint)idx;
 
 			cableLeftSideText.Text = "Со стороны " + conn.GetCableConnector ((uint)idx, false);
 			cableLeftPinsText.Text = conn.GetCableConnectorPins ((uint)idx, false);

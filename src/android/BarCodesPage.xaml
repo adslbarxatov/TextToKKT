@@ -10,7 +10,11 @@
 			<StackLayout>
 
 				<Label x:Name="BarcodeFieldLabel" />
-				<Editor x:Name="BarcodeField" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="BarcodeField" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
+				</StackLayout>
 
 				<Label x:Name="BarcodeDescriptionLabel" />
 				<Label x:Name="BarcodeDescription" />

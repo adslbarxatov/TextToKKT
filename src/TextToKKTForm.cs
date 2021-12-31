@@ -138,6 +138,11 @@ namespace RD_AAOW
 
 			BarcodeData.Text = ca.BarcodeData;
 
+			CableType.SelectedIndex = (int)ca.CableType;
+
+			TLVFind.Text = ca.TLVData;
+			TLVButton_Click (null, null);
+
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
@@ -280,6 +285,8 @@ namespace RD_AAOW
 			ca.CodesText = TextToConvert.Text;
 
 			ca.BarcodeData = BarcodeData.Text;
+			ca.CableType = (uint)CableType.SelectedIndex;
+			ca.TLVData = TLVFind.Text;
 
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
@@ -298,9 +305,7 @@ namespace RD_AAOW
 				{
 				Process.Start (ProgramDescription.AssemblyFNReaderLink);
 				}
-			catch
-				{
-				}
+			catch { }
 			}
 
 		// Копирование в буфер обмена
@@ -790,6 +795,8 @@ namespace RD_AAOW
 		private void OFDFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = ofd.GetOFDNames ();
+			codes.AddRange (ofd.GetOFDINNs ());
+
 			string text = OFDSearchText.Text.ToLower ();
 
 			lastOFDSearchOffset++;
@@ -797,7 +804,7 @@ namespace RD_AAOW
 				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (text))
 					{
 					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
-					OFDNamesList.SelectedIndex = lastOFDSearchOffset + 1;
+					OFDNamesList.SelectedIndex = lastOFDSearchOffset % (codes.Count/2) + 1;
 					return;
 					}
 			}
@@ -903,6 +910,11 @@ namespace RD_AAOW
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
 			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
+			}
+
+		private void BarcodeClear_Click (object sender, EventArgs e)
+			{
+			BarcodeData.Text = "";
 			}
 
 		#endregion
