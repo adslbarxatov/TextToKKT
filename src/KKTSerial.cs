@@ -65,6 +65,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("KKT serial numbers data reading failure, point 1");
 				}
 
 			// Завершено
@@ -122,10 +123,10 @@ namespace RD_AAOW
 			}
 		private FFDSupportStatuses[] emptyStatus = new FFDSupportStatuses[]
 			{
-				FFDSupportStatuses.Unknown, // 1.05
-				FFDSupportStatuses.Unknown, // 1.1
-				FFDSupportStatuses.Unknown  // 1.2
-				};
+			FFDSupportStatuses.Unknown, // 1.05
+			FFDSupportStatuses.Unknown, // 1.1
+			FFDSupportStatuses.Unknown  // 1.2
+			};
 
 		/// <summary>
 		/// Метод возвращает статус поддержки ФФД для ККТ по её заводскому номеру

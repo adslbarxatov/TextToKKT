@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace RD_AAOW
 	{
-	/// <summary>
+	/*/// <summary>
 	/// Класс обеспечивает преобразование таблицы в пригодный для импорта в программу вид
 	/// </summary>
 	public static class TablesInterpreter
@@ -77,5 +77,5 @@ namespace RD_AAOW
 			FO.Close ();
 			return 0;
 			}
-		}
+		}*/
 	}

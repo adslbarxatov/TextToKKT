@@ -65,11 +65,15 @@ namespace RD_AAOW
 					// Чтение представления и примечания
 					presentations.Add (buf[line++]);
 					descriptions.Add (buf[line++]);
+
+					// Отсечка по новым кодам
+					if (names.Count >= newKKTCount)
+						break;
 					}
 
 				if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
 					(descriptions.Count != presentations.Count))
-					throw new Exception ();
+					throw new Exception ("KKT codes reading failure, point 1");
 
 				// Верификация количества
 				if (newKKTCount < 1)
@@ -79,8 +83,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				throw new Exception ("База кодов программы повреждена. Работа программы невозможна.\n" +
-					"Ошибка встречена в строке " + line.ToString ());
+				throw new Exception ("KKT codes reading failure, point 2, line " + line.ToString ());
 				}
 			}
 
@@ -99,21 +102,19 @@ namespace RD_AAOW
 
 				return codes[(int)KKTType][CodeNumber].ToString (presentations[(int)KKTType]);
 				}
-			else
-				{
-				return EmptyCode;
-				}
+
+			return EmptyCode;
 			}
 
 		/// <summary>
 		/// Метод возвращает список названий ККТ
 		/// </summary>
-		/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
 		/// только новых моделей ККТ</param>
-		public List<string> GetKKTTypeNames (bool NewOnly)
+		public List<string> GetKKTTypeNames (/*bool NewOnly*/)
 			{
+			/*/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
 			if (NewOnly)
-				return names.GetRange (0, newKKTCount);
+				return names.GetRange (0, newKKTCount);*/
 
 			return names;
 			}
@@ -127,8 +128,8 @@ namespace RD_AAOW
 			{
 			if ((int)KKTType < names.Count)
 				return descriptions[(int)KKTType];
-			else
-				return EmptyCode;
+
+			return EmptyCode;
 			}
 		}
 	}

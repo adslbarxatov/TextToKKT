@@ -103,6 +103,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("OFD data reading failure, point 1");
 				}
 
 			// Завершено

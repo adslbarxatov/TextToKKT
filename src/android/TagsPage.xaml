@@ -26,6 +26,11 @@
 				<Label x:Name="TLVValuesLabel" />
 				<Label x:Name="TLVValues" />
 
+				<Label x:Name="TLVObligationLabel" />
+				<Label x:Name="TLVObligation" />
+
+				<Label x:Name="TLVObligationHelpLabel" />
+
 				<Label />
 
 			</StackLayout>

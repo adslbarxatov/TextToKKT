@@ -85,8 +85,8 @@ namespace RD_AAOW
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 
-			OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
-			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsLevel2;
+			/*OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
+			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsLevel2;*/
 			KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
 			ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
 
@@ -119,8 +119,8 @@ namespace RD_AAOW
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
-			OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
-			OnlyNewCodes.Enabled = ca.AllowExtendedFunctionsLevel2;
+			/*OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
+			OnlyNewCodes.Enabled = ca.AllowExtendedFunctionsLevel2;*/
 			KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
 			TextToConvert.Text = ca.CodesText;
 
@@ -136,11 +136,18 @@ namespace RD_AAOW
 				OperationsListForManuals.SelectedIndex = 0;
 				}
 
+			BarcodeData.MaxLength = (int)BarCodes.MaxSupportedDataLength;
 			BarcodeData.Text = ca.BarcodeData;
 
 			CableType.SelectedIndex = (int)ca.CableType;
 
+			TLV_FFDCombo.Items.Add ("ФФД 1.05");
+			TLV_FFDCombo.Items.Add ("ФФД 1.1");
+			TLV_FFDCombo.Items.Add ("ФФД 1.2");
+			TLV_FFDCombo.SelectedIndex = (int)ca.FFDForTLV;
+
 			TLVFind.Text = ca.TLVData;
+			TLV_ObligationBasic.Text = TLVTags.ObligationBasic;
 			TLVButton_Click (null, null);
 
 			// Блокировка расширенных функций при необходимости
@@ -258,7 +265,7 @@ namespace RD_AAOW
 
 			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
 
-			ca.OnlyNewKKTErrors = OnlyNewErrors.Checked;
+			/*ca.OnlyNewKKTErrors = OnlyNewErrors.Checked;*/
 			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
 			ca.ErrorCode = (uint)ErrorCodesList.SelectedIndex;
 
@@ -280,7 +287,7 @@ namespace RD_AAOW
 			ca.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
 			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
 
-			ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;
+			/*ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;*/
 			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			ca.CodesText = TextToConvert.Text;
 
@@ -290,6 +297,7 @@ namespace RD_AAOW
 
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
+			ca.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;
 			}
 
 		// Отображение справки
@@ -346,8 +354,6 @@ namespace RD_AAOW
 			}
 
 		// Вызов библиотеки FNReader
-		private const string fnReaderDLL = "FNReader.dll",
-			fnReaderDLL2 = "FNReaderLib.dll";
 		private void FNReader_Click (object sender, EventArgs e)
 			{
 			CallFNReader ("");
@@ -360,14 +366,15 @@ namespace RD_AAOW
 			{
 			// Контроль
 			bool result = true;
-			if (!File.Exists (AboutForm.AppStartupPath + fnReaderDLL) || !File.Exists (AboutForm.AppStartupPath + fnReaderDLL2))
+			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL) ||
+				!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderSubDLL))
 				result = false;
 
 			if (result && (FNReaderDLL == null))
 				{
 				try
 					{
-					FNReaderDLL = Assembly.LoadFile (AboutForm.AppStartupPath + fnReaderDLL);
+					FNReaderDLL = Assembly.LoadFile (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL);
 					FNReaderProgram = FNReaderDLL.GetType ("RD_AAOW.Program");
 					FNReaderInstance = Activator.CreateInstance (FNReaderProgram);
 					}
@@ -389,7 +396,7 @@ namespace RD_AAOW
 						ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
 						{
 						case DialogResult.Yes:
-							Process.Start ("https://adslbarxatov.github.io/DPModule");
+							Process.Start (RDGenerics.DPModuleLink);
 							break;
 
 						case DialogResult.No:
@@ -406,11 +413,19 @@ namespace RD_AAOW
 				return;
 				}
 
+			// Контроль версии
+			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
+				{
+				MessageBox.Show ("Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
+					"текущей версии программы. Работа модуля невозможна", ProgramDescription.AssemblyTitle,
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+				return;
+				}
+
 			// Проверки прошли успешно, запуск
 			if (FNReaderDLL != null)
-				{
 				FNReaderInstance.FNReaderEx (DumpPath);
-				}
 			}
 
 		/// <summary>
@@ -495,7 +510,7 @@ namespace RD_AAOW
 		private void OnlyNewCodes_CheckedChanged (object sender, EventArgs e)
 			{
 			KKTListForCodes.Items.Clear ();
-			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (OnlyNewCodes.Checked).ToArray ());
+			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (/*OnlyNewCodes.Checked*/).ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
 			}
 
@@ -528,7 +543,7 @@ namespace RD_AAOW
 		private void OnlyNewErrors_CheckedChanged (object sender, EventArgs e)
 			{
 			KKTListForErrors.Items.Clear ();
-			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
+			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (/*OnlyNewErrors.Checked*/).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 			}
 
@@ -804,7 +819,7 @@ namespace RD_AAOW
 				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (text))
 					{
 					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
-					OFDNamesList.SelectedIndex = lastOFDSearchOffset % (codes.Count/2) + 1;
+					OFDNamesList.SelectedIndex = lastOFDSearchOffset % (codes.Count / 2) + 1;
 					return;
 					}
 			}
@@ -888,11 +903,20 @@ namespace RD_AAOW
 		// Поиск TLV-тега
 		private void TLVButton_Click (object sender, EventArgs e)
 			{
-			if (tlvt.FindTag (TLVFind.Text))
+			if (tlvt.FindTag (TLVFind.Text, (TLVTags_FFDVersions)(TLV_FFDCombo.SelectedIndex + 2)))
 				{
 				TLVDescription.Text = tlvt.LastDescription;
 				TLVType.Text = tlvt.LastType;
-				TLVValues.Text = tlvt.LastValuesSet;
+
+				if (!string.IsNullOrWhiteSpace (tlvt.LastValuesSet))
+					TLVValues.Text = tlvt.LastValuesSet + "\r\n\r\n";
+				else
+					TLVValues.Text = "";
+				TLVValues.Text += tlvt.LastObligation;
+				}
+			else
+				{
+				TLVDescription.Text = TLVType.Text = TLVValues.Text = "(не найдено)";
 				}
 			}
 

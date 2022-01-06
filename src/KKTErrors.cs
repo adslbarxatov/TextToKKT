@@ -51,6 +51,10 @@ namespace RD_AAOW
 					// Обработка строки
 					line++;
 					string[] values = str.Split (splitters);
+
+					if ((values.Length != 1) && (values.Length != 2) && (names.Count >= newKKTCount))
+						break;
+
 					switch (values.Length)
 						{
 						case 1:
@@ -75,8 +79,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				throw new Exception ("База кодов программы повреждена. Работа программы невозможна.\n" +
-					"Ошибка встречена в строке " + line.ToString ());
+				throw new Exception ("Error codes reading failure, point 1, line " + line.ToString ());
 				}
 
 			// Завершено
@@ -116,19 +119,19 @@ namespace RD_AAOW
 			{
 			if (((int)KKTType < names.Count) && ((int)ErrorNumber < errors[(int)KKTType].Count))
 				return errors[(int)KKTType][(int)ErrorNumber].ErrorText;
-			else
-				return EmptyCode;
+
+			return EmptyCode;
 			}
 
 		/// <summary>
 		/// Метод возвращает список названий ККТ
 		/// </summary>
-		/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
 		/// только новых моделей ККТ</param>
-		public List<string> GetKKTTypeNames (bool NewOnly)
+		public List<string> GetKKTTypeNames (/*bool NewOnly*/)
 			{
+			/*/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
 			if (NewOnly)
-				return names.GetRange (0, newKKTCount);
+				return names.GetRange (0, newKKTCount);*/
 
 			return names;
 			}
@@ -170,8 +173,8 @@ namespace RD_AAOW
 		/// <param name="Text"></param>
 		public KKTError (string Code, string Text)
 			{
-			errorCode = ((Code == null) || (Code == "")) ? "—" : Code;
-			errorText = ((Text == null) || (Text == "")) ? "—" : Text;
+			errorCode = string.IsNullOrWhiteSpace (Code) ? "—" : Code;
+			errorText = string.IsNullOrWhiteSpace (Text) ? "—" : Text;
 			}
 		}
 	}

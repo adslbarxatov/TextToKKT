@@ -62,6 +62,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("Low level commands data reading failure, point 1");
 				}
 
 			// Завершено

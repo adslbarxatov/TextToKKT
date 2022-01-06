@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -113,6 +114,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("User manuals data reading failure, point 1");
 				}
 
 			// Первая часть завершена

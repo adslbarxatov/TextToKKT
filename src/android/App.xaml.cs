@@ -72,7 +72,7 @@ namespace RD_AAOW
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel,
-			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel,
+			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, rnmTip;
 		private List<Label> operationTextLabels = new List<Label> ();
 
@@ -88,7 +88,7 @@ namespace RD_AAOW
 			rnmKKTSN, rnmINN, rnmRNM,
 			barcodeField;
 
-		private Xamarin.Forms.Switch onlyNewCodes, onlyNewErrors,
+		private Xamarin.Forms.Switch /*onlyNewCodes, onlyNewErrors,*/
 			fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise, fnLifeAutonomous, fnLifeFFD12,
 			keepAppState, allowService;
 
@@ -258,7 +258,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "SelectionLabel", "Модель ККТ:", true);
 
-			onlyNewCodes = (Xamarin.Forms.Switch)kktCodesPage.FindByName ("OnlyNewCodes");
+			/*onlyNewCodes = (Xamarin.Forms.Switch)kktCodesPage.FindByName ("OnlyNewCodes");
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				onlyNewCodes.IsToggled = ca.OnlyNewKKTCodes;
@@ -270,10 +270,10 @@ namespace RD_AAOW
 				onlyNewCodes.IsEnabled = false;
 				}
 
-			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "OnlyNewCodesLabel", "Только новые", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "OnlyNewCodesLabel", "Только новые", false);*/
 
 			kktCodesKKTButton = AndroidSupport.ApplyButtonSettings (kktCodesPage, "KKTButton",
-				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes],
+				kkmc.GetKKTTypeNames (/*onlyNewCodes.IsToggled*/)[(int)ca.KKTForCodes],
 				kktCodesFieldBackColor, CodesKKTButton_Clicked);
 			/*kktCodesKKTButton.FontSize *= fontSizeMultiplier;*/
 
@@ -310,7 +310,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "SelectionLabel", "Модель ККТ:", true);
 
-			onlyNewErrors = (Xamarin.Forms.Switch)errorsPage.FindByName ("OnlyNewErrors");
+			/*onlyNewErrors = (Xamarin.Forms.Switch)errorsPage.FindByName ("OnlyNewErrors");
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
 				onlyNewErrors.IsToggled = ca.OnlyNewKKTErrors;
@@ -322,10 +322,10 @@ namespace RD_AAOW
 				onlyNewErrors.IsEnabled = false;
 				}
 
-			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "OnlyNewErrorsLabel", "Только новые", false);
+			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "OnlyNewErrorsLabel", "Только новые", false);*/
 
 			errorsKKTButton = AndroidSupport.ApplyButtonSettings (errorsPage, "KKTButton",
-				kkme.GetKKTTypeNames (onlyNewErrors.IsToggled)[(int)ca.KKTForErrors],
+				kkme.GetKKTTypeNames (/*onlyNewErrors.IsToggled*/)[(int)ca.KKTForErrors],
 				errorsFieldBackColor, ErrorsKKTButton_Clicked);
 			/*errorsKKTButton.FontSize *= fontSizeMultiplier;*/
 
@@ -358,7 +358,7 @@ namespace RD_AAOW
 			aboutLabel = AndroidSupport.ApplyLabelSettings (aboutPage, "AboutLabel",
 				ProgramDescription.AssemblyTitle + "\n" +
 				ProgramDescription.AssemblyDescription + "\n\n" +
-				ProgramDescription.AssemblyCopyright + "\nv " +
+				RDGenerics.AssemblyCopyright + "\nv " +
 				ProgramDescription.AssemblyVersion +
 				"; " + ProgramDescription.AssemblyLastUpdate);
 			aboutLabel.FontAttributes = FontAttributes.Bold;
@@ -376,7 +376,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (aboutPage, "UpdatePage",
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
-				AndroidSupport.MasterLabName, aboutFieldBackColor, CommunityButton_Clicked);
+				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked);
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
@@ -666,6 +666,16 @@ namespace RD_AAOW
 			tlvValuesLabel.HorizontalTextAlignment = TextAlignment.Start;
 			tlvValuesLabel.FontSize *= fontSizeMultiplier;
 
+			AndroidSupport.ApplyLabelSettingsForKKT (tagsPage, "TLVObligationLabel", "Обязательность:", true);
+			tlvObligationLabel = AndroidSupport.ApplyResultLabelSettings (tagsPage, "TLVObligation", "",
+				tagsFieldBackColor);
+			tlvObligationLabel.HorizontalTextAlignment = TextAlignment.Start;
+			tlvObligationLabel.TextType = TextType.Html;
+			tlvObligationLabel.FontSize *= fontSizeMultiplier;
+
+			AndroidSupport.ApplyTipLabelSettings (tagsPage, "TLVObligationHelpLabel",
+				TLVTags.ObligationBasic, untoggledSwitchColor);
+
 			TLVFind_Clicked (null, null);
 
 			#endregion
@@ -882,7 +892,7 @@ namespace RD_AAOW
 
 			// ca.KKTForErrors	// Обновляется в коде программы
 			// ca.ErrorCode		// -||-
-			ca.OnlyNewKKTErrors = onlyNewErrors.IsToggled;
+			/*ca.OnlyNewKKTErrors = onlyNewErrors.IsToggled;*/
 
 			ca.FNSerial = fnLifeSerial.Text;
 			ca.GenericTaxFlag = !fnLifeGenericTax.IsToggled;
@@ -902,7 +912,7 @@ namespace RD_AAOW
 			//ca.LowLevelProtocol	// -||-
 			//ca.LowLevelCode		// -||-
 
-			ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;
+			/*ca.OnlyNewKKTCodes = onlyNewCodes.IsToggled;*/
 			//ca.KKTForCodes	// -||-
 			ca.CodesText = codesSourceText.Text;
 
@@ -929,7 +939,7 @@ namespace RD_AAOW
 		private async void ErrorsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
-			List<string> list = kkme.GetKKTTypeNames (onlyNewErrors.IsToggled);
+			List<string> list = kkme.GetKKTTypeNames (/*onlyNewErrors.IsToggled*/);
 			string res = await errorsPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
 				list.ToArray ());
 
@@ -967,7 +977,7 @@ namespace RD_AAOW
 			list.Clear ();
 			}
 
-		// Флаг только новых ошибок
+		/*// Флаг только новых ошибок
 		private void OnlyNewErrors_Toggled (object sender, ToggledEventArgs e)
 			{
 			ca.KKTForErrors = ca.ErrorCode = 0;
@@ -976,7 +986,7 @@ namespace RD_AAOW
 			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
 			errorsCodeButton.Text = list[(int)ca.ErrorCode];
 			list.Clear ();
-			}
+			}*/
 
 		// Поиск по тексту ошибки
 		private int lastErrorSearchOffset2 = 0;
@@ -1016,12 +1026,12 @@ namespace RD_AAOW
 		private async void CodesKKTButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос модели ККТ
-			string res = await kktCodesPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-				kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).ToArray ());
+			List<string> list = kkmc.GetKKTTypeNames (/*onlyNewCodes.IsToggled*/);
+			string res = await kktCodesPage.DisplayActionSheet ("Выберите модель ККТ:", "Отмена", null, list.ToArray ());
 
 			// Установка модели
 			int i;
-			if ((i = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled).IndexOf (res)) < 0)
+			if ((i = list.IndexOf (res)) < 0)
 				return;
 
 			kktCodesKKTButton.Text = res;
@@ -1519,12 +1529,12 @@ namespace RD_AAOW
 				}
 			}
 
-		// Флаг только новых кодовых таблиц
+		/*// Флаг только новых кодовых таблиц
 		private void OnlyNewCodes_Toggled (object sender, ToggledEventArgs e)
 			{
 			ca.KKTForCodes = 0;
 			kktCodesKKTButton.Text = kkmc.GetKKTTypeNames (onlyNewCodes.IsToggled)[(int)ca.KKTForCodes];
-			}
+			}*/
 
 		// Очистка полей
 		private void CodesClear_Clicked (object sender, EventArgs e)
@@ -1920,7 +1930,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (AndroidSupport.MasterGitLink + ProgramDescription.AssemblyMainName);
+				await Launcher.OpenAsync (RDGenerics.AssemblyGitLink + ProgramDescription.AssemblyMainName);
 				}
 			catch
 				{
@@ -1934,7 +1944,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (AndroidSupport.ADPLink);
+				await Launcher.OpenAsync (RDGenerics.ADPLink);
 				}
 			catch
 				{
@@ -1960,7 +1970,7 @@ namespace RD_AAOW
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			List<string> comm = new List<string> { "Начальная страница", "ВКонтакте", "Telegram" };
+			List<string> comm = new List<string> { "Приветственная страница", "ВКонтакте", "Telegram" };
 			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm.ToArray ());
 
 			if (!comm.Contains (res))
@@ -1971,15 +1981,15 @@ namespace RD_AAOW
 				switch (comm.IndexOf (res))
 					{
 					case 1:
-						await Launcher.OpenAsync (AndroidSupport.MasterCommunityLink);
+						await Launcher.OpenAsync (RDGenerics.LabVKLink);
 						break;
 
 					case 2:
-						await Launcher.OpenAsync (AndroidSupport.CommunityInTelegram);
+						await Launcher.OpenAsync (RDGenerics.LabTGLink);
 						break;
 
 					case 0:
-						await Launcher.OpenAsync (AndroidSupport.WelcomeLink);
+						await Launcher.OpenAsync (RDGenerics.DPModuleLink);
 						break;
 					}
 				}
@@ -1999,7 +2009,7 @@ namespace RD_AAOW
 					{
 					Subject = "Wish, advice or bug in " + ProgramDescription.AssemblyTitle,
 					Body = "",
-					To = new List<string> () { AndroidSupport.MasterDeveloperLink }
+					To = new List<string> () { RDGenerics.LabMailLink }
 					};
 				await Email.ComposeAsync (message);
 				}
@@ -2063,6 +2073,12 @@ namespace RD_AAOW
 				tlvDescriptionLabel.Text = tlvt.LastDescription;
 				tlvTypeLabel.Text = tlvt.LastType;
 				tlvValuesLabel.Text = tlvt.LastValuesSet;
+				tlvObligationLabel.Text = tlvt.LastObligation;
+				}
+			else
+				{
+				tlvDescriptionLabel.Text = tlvTypeLabel.Text = tlvValuesLabel.Text =
+					tlvObligationLabel.Text = "(не найдено)";
 				}
 			}
 

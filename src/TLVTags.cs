@@ -6,6 +6,129 @@ using System.Text;
 namespace RD_AAOW
 	{
 	/// <summary>
+	/// Версии ФФД, описанные в текущем приказе
+	/// </summary>
+	public enum TLVTags_FFDVersions
+		{
+		/// <summary>
+		/// Версии ФФД 1.05 и ниже
+		/// </summary>
+		FFD_105 = 2,
+
+		/// <summary>
+		/// Версия ФФД 1.1
+		/// </summary>
+		FFD_110 = 3,
+
+		/// <summary>
+		/// Версия ФФД 1.2
+		/// </summary>
+		FFD_120 = 4
+		}
+
+	/// <summary>
+	/// Типы документов, описанные в текущем приказе
+	/// </summary>
+	public enum TLVTags_DocumentTypes
+		{
+		/// <summary>
+		/// Отчёт о регистрации или перерегистрации
+		/// </summary>
+		Registration = 1,
+
+		/// <summary>
+		/// Открытие смены
+		/// </summary>
+		OpenSession = 2,
+
+		/// <summary>
+		/// Отчёт о ТСР
+		/// </summary>
+		CurrentState = 3,
+
+		/// <summary>
+		/// Чек или БСО
+		/// </summary>
+		Bill = 4,
+
+		/// <summary>
+		/// Чеки и БСО, включая коррекцию (общие теги)
+		/// </summary>
+		BillAndCorrection = 20,
+
+		/// <summary>
+		/// Чеки и БСО коррекции
+		/// </summary>
+		Correction = 5,
+
+		/// <summary>
+		/// Закрытие смены
+		/// </summary>
+		CloseSession = 6,
+
+		/// <summary>
+		/// Закрытие архива ФН
+		/// </summary>
+		CloseArchive = 7,
+
+		/// <summary>
+		/// Подтверждение ОФД
+		/// </summary>
+		OperatorConfirmation = 8,
+
+		/// <summary>
+		/// Все типы документов
+		/// </summary>
+		AllTypes = 9,
+
+		/// <summary>
+		/// Запрос о коде маркировки
+		/// </summary>
+		CodeRequest = 31,
+
+		/// <summary>
+		/// Уведомление о реализации кода маркировки
+		/// </summary>
+		ReleaseRequest = 33,
+
+		/// <summary>
+		/// Ответ на запрос
+		/// </summary>
+		CodeAnswer = 32,
+
+		/// <summary>
+		/// Квитанция на уведомление
+		/// </summary>
+		ReleaseAnswer = 34
+		}
+
+	/// <summary>
+	/// Типы обязательности тегов, описанные в текущем приказе
+	/// </summary>
+	public enum TLVTags_ObligationStates
+		{
+		/// <summary>
+		/// Не используется
+		/// </summary>
+		Unused = 0,
+
+		/// <summary>
+		/// Обязателен
+		/// </summary>
+		Required = 1,
+
+		/// <summary>
+		/// Обязателен, если выполняются примечания
+		/// </summary>
+		RequiredWith = 2,
+
+		/// <summary>
+		/// Необязателен при выполнении примечаний
+		/// </summary>
+		RecommendedWith = 3
+		}
+
+	/// <summary>
 	/// Класс обеспечивает доступ к описаниям тегов TLV согласно актуальному ФФД
 	/// </summary>
 	public class TLVTags
@@ -16,6 +139,16 @@ namespace RD_AAOW
 		private List<string> types = new List<string> ();
 		private List<string> possibleValues = new List<string> ();
 		private List<int> links = new List<int> ();
+		private List<List<int>> oblIndices = new List<List<int>> ();
+
+		private List<TLVTags_FFDVersions> oblFFDVersions = new List<TLVTags_FFDVersions> ();
+		private List<TLVTags_DocumentTypes> oblDocTypes = new List<TLVTags_DocumentTypes> ();
+		private List<TLVTags_ObligationStates> oblPrintObligations = new List<TLVTags_ObligationStates> (),
+			oblVirtualObligations = new List<TLVTags_ObligationStates> ();
+		private List<string> oblPrintConditions = new List<string> (),
+			oblVirtualConditions = new List<string> (),
+			oblTables = new List<string> (),
+			oblParents = new List<string> ();
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -24,44 +157,73 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.TLVTags);
+			string tlv = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.TLVTags);
+			string obl = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.Obligation);
 #else
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.TLVTags);
+			string tlv = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.TLVTags);
+			string obl = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.Obligation);
 #endif
-			StringReader SR = new StringReader (buf);
+			StringReader tlvSR = new StringReader (tlv);
+			StringReader oblSR = new StringReader (obl);
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { ';' };
+			char[] tlvSplitter = new char[] { ';' };
+			char[] oblSplitter = new char[] { '\t' };
+
+			string[] tlvValues,
+				oblValues = oblSR.ReadLine ().Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
 
 			try
 				{
 				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
+				while ((str = tlvSR.ReadLine ()) != null)
 					{
-					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+					tlvValues = str.Split (tlvSplitter, StringSplitOptions.RemoveEmptyEntries);
 
 					// Описания тегов
-					if (values.Length >= 3)
+					if (tlvValues.Length >= 3)
 						{
 						// Список команд
-						tags.Add (uint.Parse (values[0]));
-						descriptions.Add (BuildDescription (values[1], tags[tags.Count - 1]));
-						types.Add (BuildType (values[2]));
+						tags.Add (uint.Parse (tlvValues[0]));
+						descriptions.Add (BuildDescription (tlvValues[1], tags[tags.Count - 1]));
+						types.Add (BuildType (tlvValues[2]));
 
-						if (values.Length > 3)
-							links.Add (int.Parse (values[3]) - 1);
+						if (tlvValues.Length > 3)
+							links.Add (int.Parse (tlvValues[3]) - 1);
 						else
 							links.Add (-1);
+
+						oblIndices.Add (new List<int> ());
+
+						// Разбор списка обязательности
+						while ((oblValues.Length == 8) && (uint.Parse (oblValues[1]) == tags[tags.Count - 1]))
+							{
+							uint type = uint.Parse (oblValues[0]);
+							oblFFDVersions.Add ((TLVTags_FFDVersions)(type / 100));
+							oblDocTypes.Add ((TLVTags_DocumentTypes)(type % 100));
+
+							oblPrintObligations.Add ((TLVTags_ObligationStates)uint.Parse (oblValues[2]));
+							oblPrintConditions.Add ((oblValues[3] == "-") ? "" : oblValues[3]);
+							oblVirtualObligations.Add ((TLVTags_ObligationStates)uint.Parse (oblValues[4]));
+							oblVirtualConditions.Add ((oblValues[5] == "-") ? "" : oblValues[5]);
+							oblTables.Add (oblValues[6]);
+							oblParents.Add ((oblValues[7] == "-") ? "" : oblValues[7]);
+
+							oblIndices[oblIndices.Count - 1].Add (oblFFDVersions.Count - 1);
+							if ((str = oblSR.ReadLine ()) == null)
+								break;
+							oblValues = str.Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
+							}
 						}
 
 					// Описания значений тегов
-					else if (values.Length == 2)
+					else if (tlvValues.Length == 2)
 						{
-						if (int.Parse (values[0]) > possibleValues.Count)
+						if (int.Parse (tlvValues[0]) > possibleValues.Count)
 							possibleValues.Add ("");
 
-						possibleValues[possibleValues.Count - 1] += (values[1] + "\r\n");
+						possibleValues[possibleValues.Count - 1] += (tlvValues[1] + "\r\n");
 						}
 
 					// Пропуски
@@ -73,18 +235,25 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("TLV tags data reading failure, point 1");
 				}
 
 			// Завершено
-			SR.Close ();
+			tlvSR.Close ();
+			oblSR.Close ();
 			}
 
 		/// <summary>
 		/// Метод возвращает описание тип тега в соответствующие свойства экземпляра TLVTags
 		/// </summary>
 		/// <param name="Tag">Номер тега или фрагмент описания</param>
+		/// <param name="FFD">Версия ФФД для определения обязательности</param>
 		/// <returns>Возвращает true в случае обнаружения</returns>
+#if ANDROID
 		public bool FindTag (string Tag)
+#else
+		public bool FindTag (string Tag, TLVTags_FFDVersions FFD)
+#endif
 			{
 			// Защита
 			if (string.IsNullOrWhiteSpace (Tag))
@@ -125,6 +294,17 @@ namespace RD_AAOW
 				lastValuesSet = possibleValues[links[i]];
 			if (lastValuesSet.EndsWith ("\r\n"))
 				lastValuesSet = lastValuesSet.Substring (0, lastValuesSet.Length - 2);
+
+#if ANDROID
+			lastObligation = "<b>Для ФФД 1.05:</b><br/><i>" + 
+				BuildObligation (i, TLVTags_FFDVersions.FFD_105).Replace ("\r\n", "<br/>") +
+				"</i><br/><br/><b>Для ФФД 1.1:</b><br/><i>" + 
+				BuildObligation (i, TLVTags_FFDVersions.FFD_110).Replace ("\r\n", "<br/>") +
+				"</i><br/><br/><b>Для ФФД 1.2:</b><br/><i>" + 
+				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace ("\r\n", "<br/>") + "</i>";
+#else
+			lastObligation = BuildObligation (i, FFD);
+#endif
 
 			return true;
 			}
@@ -225,6 +405,140 @@ namespace RD_AAOW
 			return res;
 			}
 
+		// Метод собирает требование обязательности
+		private string BuildObligation (int Index, TLVTags_FFDVersions FFD)
+			{
+			string res = "";
+
+			for (int i = 0; i < oblIndices[Index].Count; i++)
+				{
+				if (oblFFDVersions[oblIndices[Index][i]] != FFD)
+					continue;
+
+				res += "• Для ";
+
+				// Типы документов
+				switch (oblDocTypes[oblIndices[Index][i]])
+					{
+					case TLVTags_DocumentTypes.AllTypes:
+						res += "всех типов документов";
+						break;
+
+					case TLVTags_DocumentTypes.Bill:
+						res += "чеков и БСО";
+						break;
+
+					case TLVTags_DocumentTypes.BillAndCorrection:
+						res += "чеков и БСО (в том числе – коррекции)";
+						break;
+
+					case TLVTags_DocumentTypes.CloseArchive:
+						res += "отчётов о закрытии архива ФН";
+						break;
+
+					case TLVTags_DocumentTypes.CloseSession:
+						res += "отчётов о закрытии смены";
+						break;
+
+					case TLVTags_DocumentTypes.CodeAnswer:
+						res += "ответов на запросы о кодах маркировки";
+						break;
+
+					case TLVTags_DocumentTypes.CodeRequest:
+						res += "запросов о кодах маркировки";
+						break;
+
+					case TLVTags_DocumentTypes.Correction:
+						res += "чеков и БСО коррекции";
+						break;
+
+					case TLVTags_DocumentTypes.CurrentState:
+						res += "отчётов о состоянии расчётов";
+						break;
+
+					case TLVTags_DocumentTypes.OpenSession:
+						res += "отчётов об открытии смены";
+						break;
+
+					case TLVTags_DocumentTypes.OperatorConfirmation:
+						res += "подтверждений ОФД";
+						break;
+
+					case TLVTags_DocumentTypes.Registration:
+						res += "отчётов о регистрации и перерегистрации";
+						break;
+
+					case TLVTags_DocumentTypes.ReleaseAnswer:
+						res += "квитанций о реализации маркированного товара";
+						break;
+
+					case TLVTags_DocumentTypes.ReleaseRequest:
+						res += "уведомлений о реализации маркированного товара";
+						break;
+					}
+
+				// Обязательность
+				res += " ";
+				for (int j = 0; j < 2; j++)
+					{
+					TLVTags_ObligationStates os = ((j == 0) ? oblPrintObligations[oblIndices[Index][i]] :
+						oblVirtualObligations[oblIndices[Index][i]]);
+					switch (os)
+						{
+						case TLVTags_ObligationStates.Unused:
+							res += "не предусмотрен";
+							break;
+
+						case TLVTags_ObligationStates.Required:
+							res += "обязателен";
+							break;
+
+						case TLVTags_ObligationStates.RequiredWith:
+						case TLVTags_ObligationStates.RecommendedWith:
+							if (os == TLVTags_ObligationStates.RecommendedWith)
+								res += "не";
+							res += "обязателен";
+
+							string condition = ((j == 0) ? oblPrintConditions[oblIndices[Index][i]] :
+								oblVirtualConditions[oblIndices[Index][i]]);
+							bool cond = string.IsNullOrWhiteSpace (condition);
+							bool parent = string.IsNullOrWhiteSpace (oblParents[oblIndices[Index][i]]);
+
+							if (!cond || !parent)
+								{
+								res += " (";
+								if (!cond)
+									res += ("при соблюдении прим. " + condition + " к таблице " +
+										oblTables[oblIndices[Index][i]]);
+
+								if (!cond && !parent)
+									res += " и ";
+								if (!parent)
+									{
+									if (os == TLVTags_ObligationStates.RecommendedWith)
+										res += ("даже ");
+									res += ("при наличии тега(ов) " +
+										oblParents[oblIndices[Index][i]]);
+									}
+
+								res += ")";
+								}
+							break;
+						}
+
+					res += ((j == 0) ? " в печ. форме; " : " в эл. форме;\r\n");
+					}
+				}
+
+			// Завершено
+			if (res.EndsWith (";\r\n"))
+				res = res.Substring (0, res.Length - 3);
+			if (string.IsNullOrWhiteSpace (res))
+				res = "• Нет сведений об обязательности тега в данном ФФД";
+
+			return res;
+			}
+
 		/// <summary>
 		/// Возвращает последний найденный тип тега
 		/// </summary>
@@ -260,5 +574,22 @@ namespace RD_AAOW
 				}
 			}
 		private string lastValuesSet = "";
+
+		/// <summary>
+		/// Возвращает последнее найденное требование обязательности тега
+		/// </summary>
+		public string LastObligation
+			{
+			get
+				{
+				return lastObligation;
+				}
+			}
+		private string lastObligation = "";
+
+		/// <summary>
+		/// Возвращает приказ, обосновывающий обязательность реквизитов
+		/// </summary>
+		public const string ObligationBasic = "Основание: прил. №2 к приказу ФНС от 14.09.20 № ЕД-7-20/662@";
 		}
 	}

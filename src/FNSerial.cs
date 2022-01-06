@@ -43,6 +43,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("FN serial numbers data reading failure, point 1");
 				}
 
 			// Завершено

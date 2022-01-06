@@ -79,6 +79,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				throw new Exception ("Connectors data reading failure, point 1");
 				}
 
 			// Завершено

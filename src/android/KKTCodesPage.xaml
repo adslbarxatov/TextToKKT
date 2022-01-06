@@ -9,14 +9,15 @@
 		<ScrollView>
 			<StackLayout>
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+				<!--<StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
 					<Label x:Name="SelectionLabel" />
 					<StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
 						<Switch x:Name="OnlyNewCodes" />
 						<Label x:Name="OnlyNewCodesLabel" />
 					</StackLayout>
-				</StackLayout>
+				</StackLayout>-->
 
+				<Label x:Name="SelectionLabel" />
 				<Button x:Name="KKTButton" />
 
 				<StackLayout Orientation="Horizontal">
