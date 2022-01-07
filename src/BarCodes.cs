@@ -21,9 +21,29 @@ namespace RD_AAOW
 		EAN13 = 2,
 
 		/// <summary>
-		/// DataMatrix с маркировкой для сигарет
+		/// DataMatrix с маркировкой для пачек сигарет
 		/// </summary>
 		DataMatrixCigarettes = 3,
+
+		/// <summary>
+		/// DataMatrix с маркировкой для блоков сигарет
+		/// </summary>
+		DataMatrixCigarettesBlocks = 4,
+
+		/// <summary>
+		/// DataMatrix с маркировкой для лекарств
+		/// </summary>
+		DataMatrixMedicines = 5,
+
+		/// <summary>
+		/// DataMatrix с маркировкой для обуви
+		/// </summary>
+		DataMatrixShoes = 6,
+
+		/// <summary>
+		/// DataMatrix с маркировкой для молочной продукции
+		/// </summary>
+		DataMatrixMilk = 7,
 
 		/// <summary>
 		/// Неподдерживаемый тип штрих-кода
@@ -48,7 +68,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Максимальная поддерживаемая длина данных штрих-кода
 		/// </summary>
-		public const uint MaxSupportedDataLength = 29;
+		public const uint MaxSupportedDataLength = 131;
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -100,8 +120,6 @@ namespace RD_AAOW
 		private SupportedBarcodesTypes GetBarcodeType (string BarcodeData)
 			{
 			// Контроль
-			if (string.IsNullOrWhiteSpace (BarcodeData))
-				return SupportedBarcodesTypes.Unsupported;
 			string data = BarcodeData.Trim ();
 
 			// Определение типа
@@ -114,7 +132,48 @@ namespace RD_AAOW
 			if (data.Length == 29)
 				return SupportedBarcodesTypes.DataMatrixCigarettes;
 
+			if (data.Length == 41)
+				return SupportedBarcodesTypes.DataMatrixCigarettesBlocks;
+
+			if (data.Length == 83)
+				return SupportedBarcodesTypes.DataMatrixMedicines;
+
+			if (data.Length == 127)
+				return SupportedBarcodesTypes.DataMatrixShoes;
+
+			if ((data.Length == 45) || (data.Length == 51))
+				return SupportedBarcodesTypes.DataMatrixMilk;
+
 			return SupportedBarcodesTypes.Unsupported;
+			}
+
+		// Возвращает читаемое название типа штрих-кода
+		private string GetBarcodeTypeName (SupportedBarcodesTypes Type)
+			{
+			switch (Type)
+				{
+				case SupportedBarcodesTypes.EAN8:
+				case SupportedBarcodesTypes.EAN13:
+					return Type.ToString ();
+
+				case SupportedBarcodesTypes.DataMatrixCigarettes:
+					return "DataMatrix для пачек сигарет";
+
+				case SupportedBarcodesTypes.DataMatrixCigarettesBlocks:
+					return "DataMatrix для блоков сигарет";
+
+				case SupportedBarcodesTypes.DataMatrixMedicines:
+					return "DataMatrix для лекарств";
+
+				case SupportedBarcodesTypes.DataMatrixShoes:
+					return "DataMatrix для обуви";
+
+				case SupportedBarcodesTypes.DataMatrixMilk:
+					return "DataMatrix для молочной продукции";
+
+				default:
+					throw new Exception ("Unexpected barcode type, point 1");
+				}
 			}
 
 		// Контроль целостности кодов типа EAN
@@ -142,7 +201,7 @@ namespace RD_AAOW
 		private string GetEANUsage (string BarcodeData)
 			{
 			// Контроль
-			const string unknownPrefix = "Применение: неизвестно";
+			const string unknownPrefix = "применение: неизвестно";
 			if (string.IsNullOrWhiteSpace (BarcodeData) || (BarcodeData.Length < 3))
 				return unknownPrefix;
 
@@ -159,7 +218,7 @@ namespace RD_AAOW
 
 			for (int i = 0; i < rangeStart.Count; i++)
 				if ((prefix >= rangeStart[i]) && (prefix <= rangeEnd[i]))
-					return (country[i] ? "Производитель: " : "Применение: ") + descriptions[i];
+					return (country[i] ? "производитель: " : "применение: ") + descriptions[i];
 
 			return unknownPrefix;
 			}
@@ -170,22 +229,44 @@ namespace RD_AAOW
 		/// <param name="BarcodeData">Данные штрих-кода</param>
 		public string GetBarcodeDescription (string BarcodeData)
 			{
+			// Контроль
+			if (string.IsNullOrWhiteSpace (BarcodeData))
+				return "Штрих-код неполный, некорректный или не поддерживается";
+
 			// Тип штрих-кода
-			SupportedBarcodesTypes type = GetBarcodeType (BarcodeData);
+			string data = BarcodeData.Replace ("\x1D", ""); // Сброс суффиксов DataMatrix
+			SupportedBarcodesTypes type = GetBarcodeType (data);
+
 			if (type == SupportedBarcodesTypes.Unsupported)
 				return "Штрих-код неполный, некорректный или не поддерживается";
-			string res = "Тип штрих-кода: " + type.ToString () + "\r\n";
+			string res = "Тип штрих-кода: " + GetBarcodeTypeName (type) + "\r\n";
 
 			// Разбор
 			switch (type)
 				{
 				case SupportedBarcodesTypes.EAN8:
 				case SupportedBarcodesTypes.EAN13:
-					res += GetEANUsage (BarcodeData);
+					res += ("  " + GetEANUsage (data));
 					break;
 
 				case SupportedBarcodesTypes.DataMatrixCigarettes:
-					res += ParseCigarettesDataMatrix (BarcodeData);
+					res += ("\r\n" + ParseCigarettesDataMatrix (data));
+					break;
+
+				case SupportedBarcodesTypes.DataMatrixCigarettesBlocks:
+					res += ("\r\n" + ParseCigarettesBlocksDataMatrix (data));
+					break;
+
+				case SupportedBarcodesTypes.DataMatrixMedicines:
+					res += ("\r\n" + ParseMedicinesDataMatrix (data));
+					break;
+
+				case SupportedBarcodesTypes.DataMatrixShoes:
+					res += ("\r\n" + ParseShoesDataMatrix (data));
+					break;
+
+				case SupportedBarcodesTypes.DataMatrixMilk:
+					res += ("\r\n" + ParseMilkDataMatrix (data));
 					break;
 				}
 
@@ -199,24 +280,150 @@ namespace RD_AAOW
 		/// <param name="BarcodeData">Данные штрих-кода</param>
 		public string ParseCigarettesDataMatrix (string BarcodeData)
 			{
-			// Контроль
-			/*if (string.IsNullOrWhiteSpace (BarcodeData) || (BarcodeData.Length != 29))
-				return "Некорректный DataMatrix";*/
-
 			string res = "GTIN: " + BarcodeData.Substring (0, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (1, 13), true))
 				res += "EAN-13 некорректен;\r\n";
 			else if (BarcodeData.StartsWith ("000000"))
-				res += (GetEANUsage (BarcodeData.Substring (6, 8)) + ";\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (6, 8)) + "\r\n");
 			else
-				res += (GetEANUsage (BarcodeData.Substring (1, 13)) + ";\r\n");
-
+				res += (GetEANUsage (BarcodeData.Substring (1, 13)) + "\r\n");
 			res += ("Серийный номер упаковки: " + BarcodeData.Substring (14, 7) + " (" +
-				DecodeDMLine (BarcodeData.Substring (14, 7), false) + ");\r\n");
+				DecodeDMLine (BarcodeData.Substring (14, 7), false) + ")\r\n\r\n");
+
 			res += ("Максимальная розничная цена: " +
-				DecodeDMLine (BarcodeData.Substring (21, 4), true) + ";\r\n");
+				DecodeDMLine (BarcodeData.Substring (21, 4), true) + "\r\n");
 			res += ("Код проверки: " + BarcodeData.Substring (25, 4) + " (" +
 				DecodeDMLine (BarcodeData.Substring (25, 4), false) + ")");
+
+			return res;
+			}
+
+		/// <summary>
+		/// Метод возвращает описание штрих-кода DataMatrix для маркированных лекарств
+		/// (стандарт ППРФ 1556)
+		/// </summary>
+		/// <param name="BarcodeData">Данные штрих-кода</param>
+		public string ParseMedicinesDataMatrix (string BarcodeData)
+			{
+			// Контроль разметки
+			/*if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+				(BarcodeData.Substring (31, 3) != ("\x1D" + "91")) ||
+				(BarcodeData.Substring (38, 3) != ("\x1D" + "92")))*/
+			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+				(BarcodeData.Substring (31, 2) != "91") || (BarcodeData.Substring (37, 2) != "92"))
+				return "Разметка данных DataMatrix не соответствует стандарту";
+
+			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
+			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
+				res += "EAN-13 некорректен\r\n";
+			else
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
+			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + "\r\n\r\n");
+
+			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + "\r\n");
+			res += ("Код проверки:\r\n" + BarcodeData.Substring (39, 44) + "\r\n(\r\n" +
+				 ConvertFromBASE54 (BarcodeData.Substring (39, 44)) + "\r\n)");
+
+			return res;
+			}
+
+		/// <summary>
+		/// Метод возвращает описание штрих-кода DataMatrix для блоков сигарет
+		/// </summary>
+		/// <param name="BarcodeData">Данные штрих-кода</param>
+		public string ParseCigarettesBlocksDataMatrix (string BarcodeData)
+			{
+			// Контроль разметки
+			/*if ((BarcodeData.Substring (0, 1) != "\x1D") ||
+				(BarcodeData.Substring (1, 2) != "01") || (BarcodeData.Substring (17, 2) != "21") ||
+				(BarcodeData.Substring (26, 5) != ("\x1D" + "8005")) ||
+				(BarcodeData.Substring (37, 3) != ("\x1D" + "93")))*/
+			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+				(BarcodeData.Substring (25, 4) != "8005") ||
+				(BarcodeData.Substring (35, 2) != "93"))
+				return "Разметка данных DataMatrix не соответствует стандарту";
+
+			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
+			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
+				res += "EAN-13 некорректен\r\n";
+			else
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
+			res += ("Серийный номер: " + BarcodeData.Substring (18, 7) + "\r\n\r\n");
+
+			string price = "(не читается)";
+			try
+				{
+				price = (ulong.Parse (BarcodeData.Substring (29, 6)) / 100.0).ToString ("F02") + " р.";
+				}
+			catch { }
+			res += ("Максимальная розничная цена: " + price + "\r\n");
+			res += ("Код проверки: " + BarcodeData.Substring (37, 4) + " (" +
+				DecodeDMLine (BarcodeData.Substring (37, 4), false) + ")");
+
+			return res;
+			}
+
+		/// <summary>
+		/// Метод возвращает описание штрих-кода DataMatrix для обуви
+		/// </summary>
+		/// <param name="BarcodeData">Данные штрих-кода</param>
+		public string ParseShoesDataMatrix (string BarcodeData)
+			{
+			// Контроль разметки
+			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+				(BarcodeData.Substring (31, 2) != "91") || (BarcodeData.Substring (37, 2) != "92"))
+				return "Разметка данных DataMatrix не соответствует стандарту";
+
+			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
+			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
+				res += "EAN-13 некорректен;\r\n";
+			else
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
+			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + " (" +
+				DecodeDMLine (BarcodeData.Substring (18, 13), false) + ")\r\n\r\n");
+
+			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + "\r\n");
+			res += ("Код проверки:\r\n" + BarcodeData.Substring (39, 88) + "\r\n(\r\n" +
+				 ConvertFromBASE54 (BarcodeData.Substring (39, 88)) + "\r\n)");
+
+			return res;
+			}
+
+		/// <summary>
+		/// Метод возвращает описание штрих-кода DataMatrix для маркированных лекарств
+		/// </summary>
+		/// <param name="BarcodeData">Данные штрих-кода</param>
+		public string ParseMilkDataMatrix (string BarcodeData)
+			{
+			// Контроль разметки
+			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+				(BarcodeData.Substring (31, 4) != "7003") && (BarcodeData.Substring (31, 2) != "17") ||
+				(BarcodeData.Substring (39, 2) != "93") && (BarcodeData.Substring (45, 2) != "93"))
+				return "Разметка данных DataMatrix не соответствует стандарту";
+
+			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
+			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
+				res += "EAN-13 некорректен\r\n";
+			else
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
+			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + "\r\n\r\n");
+
+			res += ("Срок годности: до ");
+			int offset = 41;
+			if (BarcodeData.Substring (31, 2) == "17")
+				{
+				res += (BarcodeData.Substring (37, 2) + "." + BarcodeData.Substring (35, 2) + ".20" +
+					BarcodeData.Substring (33, 2));
+				}
+			else
+				{
+				res += (BarcodeData.Substring (39, 2) + "." + BarcodeData.Substring (37, 2) + ".20" +
+					BarcodeData.Substring (35, 2) + ", " + BarcodeData.Substring (41, 2) + ":" + BarcodeData.Substring (43, 2));
+				offset += 6;
+				}
+
+			res += ("\r\nКод проверки: " + BarcodeData.Substring (offset, 4) + " (" +
+				DecodeDMLine (BarcodeData.Substring (offset, 4), false) + ")");
 
 			return res;
 			}
@@ -225,11 +432,11 @@ namespace RD_AAOW
 		private string DecodeDMLine (string Data, bool AsPrice)
 			{
 			// Сборка числа
-			long v = 0, mul1, mul2;
+			decimal v = 0, mul1, mul2;
 
 			for (int i = 1; i <= Data.Length; i++)
 				{
-				mul1 = (long)Math.Pow (dmEncodingLine.Length, Data.Length - i);
+				mul1 = (decimal)Math.Pow (dmEncodingLine.Length, Data.Length - i);
 				if ((mul2 = dmEncodingLine.IndexOf (Data[i - 1])) < 0)
 					return "значение не читается";
 				v += mul1 * mul2;
@@ -237,9 +444,23 @@ namespace RD_AAOW
 
 			// Вывод
 			if (AsPrice)
-				return (v / 100.0).ToString ("F02") + " р.";
+				return (v / (decimal)100.0).ToString ("F02") + " р.";
 
 			return v.ToString ();
+			}
+
+		// Метод собирает hex-представление данных из строки BASE64
+		private string ConvertFromBASE54 (string Data)
+			{
+			if (string.IsNullOrWhiteSpace (Data))
+				return "";
+
+			byte[] data = Convert.FromBase64String (Data);
+			string res = "";
+			for (int i = 0; i < data.Length; i++)
+				res += (data[i].ToString ("X02") + " ");
+
+			return res.Trim ();
 			}
 		}
 	}

@@ -58,8 +58,11 @@ namespace RD_AAOW
 			conn = new Connectors ();
 
 			// Настройка контролов
-			OnlyNewCodes_CheckedChanged (null, null);
-			OnlyNewErrors_CheckedChanged (null, null);
+			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (/*OnlyNewCodes.Checked*/).ToArray ());
+			KKTListForCodes.SelectedIndex = 0;
+
+			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (/*OnlyNewErrors.Checked*/).ToArray ());
+			KKTListForErrors.SelectedIndex = 0;
 
 			LowLevelProtocol.Items.AddRange (ll.GetProtocolsNames ().ToArray ());
 			LowLevelProtocol.SelectedIndex = (int)ca.LowLevelProtocol;
@@ -87,8 +90,12 @@ namespace RD_AAOW
 
 			/*OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
 			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsLevel2;*/
-			KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
-			ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
+			try
+				{
+				KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
+				ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
+				}
+			catch { }
 
 			FNLifeSN.Text = ca.FNSerial;
 			if (ca.GenericTaxFlag)
@@ -121,7 +128,11 @@ namespace RD_AAOW
 
 			/*OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
 			OnlyNewCodes.Enabled = ca.AllowExtendedFunctionsLevel2;*/
-			KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
+			try
+				{
+				KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
+				}
+			catch { }
 			TextToConvert.Text = ca.CodesText;
 
 			KKTListForManuals.Items.AddRange (um.GetKKTList ().ToArray ());
@@ -506,13 +517,13 @@ namespace RD_AAOW
 			TextToConvert_TextChanged (null, null);
 			}
 
-		// Изменение списка ККТ
+		/*// Изменение списка ККТ
 		private void OnlyNewCodes_CheckedChanged (object sender, EventArgs e)
 			{
 			KKTListForCodes.Items.Clear ();
-			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (/*OnlyNewCodes.Checked*/).ToArray ());
+			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (OnlyNewCodes.Checked).ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
-			}
+			}*/
 
 		// Очистка полей
 		private void TextToConvertClear_Click (object sender, EventArgs e)
@@ -539,13 +550,13 @@ namespace RD_AAOW
 			ErrorCodesList.SelectedIndex = 0;
 			}
 
-		// Изменение списка ККТ
+		/*// Изменение списка ККТ
 		private void OnlyNewErrors_CheckedChanged (object sender, EventArgs e)
 			{
 			KKTListForErrors.Items.Clear ();
-			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (/*OnlyNewErrors.Checked*/).ToArray ());
+			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
-			}
+			}*/
 
 		// Поиск по тексту ошибки
 		private int lastErrorSearchOffset = 0;

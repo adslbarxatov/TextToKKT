@@ -1,6 +1,7 @@
 ﻿using Android.Widget;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -272,9 +273,18 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "OnlyNewCodesLabel", "Только новые", false);*/
 
+			string kktTypeName;
+			try
+				{
+				kktTypeName = kkmc.GetKKTTypeNames (/*onlyNewCodes.IsToggled*/)[(int)ca.KKTForCodes];
+				}
+			catch
+				{
+				kktTypeName = kkmc.GetKKTTypeNames ()[0];
+				ca.KKTForCodes = 0;
+				}
 			kktCodesKKTButton = AndroidSupport.ApplyButtonSettings (kktCodesPage, "KKTButton",
-				kkmc.GetKKTTypeNames (/*onlyNewCodes.IsToggled*/)[(int)ca.KKTForCodes],
-				kktCodesFieldBackColor, CodesKKTButton_Clicked);
+				kktTypeName, kktCodesFieldBackColor, CodesKKTButton_Clicked);
 			/*kktCodesKKTButton.FontSize *= fontSizeMultiplier;*/
 
 			kktCodesSourceTextLabel = AndroidSupport.ApplyLabelSettingsForKKT (kktCodesPage, "SourceTextLabel",
@@ -324,16 +334,32 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "OnlyNewErrorsLabel", "Только новые", false);*/
 
+			try
+				{
+				kktTypeName = kkme.GetKKTTypeNames (/*onlyNewErrors.IsToggled*/)[(int)ca.KKTForErrors];
+				}
+			catch
+				{
+				kktTypeName = kkme.GetKKTTypeNames ()[0];
+				ca.KKTForErrors = 0;
+				}
 			errorsKKTButton = AndroidSupport.ApplyButtonSettings (errorsPage, "KKTButton",
-				kkme.GetKKTTypeNames (/*onlyNewErrors.IsToggled*/)[(int)ca.KKTForErrors],
-				errorsFieldBackColor, ErrorsKKTButton_Clicked);
+				kktTypeName, errorsFieldBackColor, ErrorsKKTButton_Clicked);
 			/*errorsKKTButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ErrorCodeLabel", "Код / сообщение:", true);
 
+			try
+				{
+				kktTypeName = kkme.GetErrorCodesList (ca.KKTForErrors)[(int)ca.ErrorCode];
+				}
+			catch
+				{
+				kktTypeName = kkme.GetErrorCodesList (ca.KKTForErrors)[0];
+				ca.ErrorCode = 0;
+				}
 			errorsCodeButton = AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorCodeButton",
-				kkme.GetErrorCodesList (ca.KKTForErrors)[(int)ca.ErrorCode],
-				errorsFieldBackColor, ErrorsCodeButton_Clicked);
+				kktTypeName, errorsFieldBackColor, ErrorsCodeButton_Clicked);
 			/*errorsCodeButton.FontSize *= fontSizeMultiplier;*/
 
 			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ResultTextLabel", "Расшифровка:", true);
@@ -723,7 +749,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettingsForKKT (barCodesPage, "BarcodeFieldLabel", "Данные штрих-кода:", true);
 			barcodeField = AndroidSupport.ApplyEditorSettings (barCodesPage, "BarcodeField",
-				barCodesFieldBackColor, Keyboard.Numeric, BarCodes.MaxSupportedDataLength,
+				barCodesFieldBackColor, Keyboard.Default, BarCodes.MaxSupportedDataLength,
 				ca.BarcodeData, BarcodeText_TextChanged);
 			barcodeField.FontSize *= fontSizeMultiplier;
 
@@ -737,6 +763,9 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (barCodesPage, "Clear",
 				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Delete),
 				barCodesFieldBackColor, BarcodeClear_Clicked);
+			AndroidSupport.ApplyButtonSettings (barCodesPage, "GetFromClipboard",
+				AndroidSupport.GetDefaultButtonName (AndroidSupport.ButtonsDefaultNames.Copy),
+				barCodesFieldBackColor, BarcodeGet_Clicked);
 
 			BarcodeText_TextChanged (null, null);
 
@@ -831,7 +860,7 @@ namespace RD_AAOW
 			return Color.FromHex ("#C8C8FF");
 			}
 
-		// Отправка значения в буфер обмена
+		// Отправка значения в буфер обмена и получение значения из него
 		private void SendToClipboard (string Text)
 			{
 			try
@@ -840,11 +869,27 @@ namespace RD_AAOW
 				Toast.MakeText (Android.App.Application.Context, "Скопировано в буфер обмена",
 					ToastLength.Short).Show ();
 				}
-			catch
-				{
-				}
+			catch { }
 			}
 
+		private async Task<string> GetFromClipboard ()
+			{
+			// Запрос
+			string res = "";
+			try
+				{
+				res = await Clipboard.GetTextAsync ();
+				}
+			catch { }
+
+			// Обработка
+			if (string.IsNullOrWhiteSpace (res))
+				return "";
+
+			return res;
+			}
+
+		// Отправка значения кнопки в буфер
 		private void Field_Clicked (object sender, EventArgs e)
 			{
 			SendToClipboard (((Xamarin.Forms.Button)sender).Text);
@@ -2102,6 +2147,12 @@ namespace RD_AAOW
 		private void BarcodeClear_Clicked (object sender, EventArgs e)
 			{
 			barcodeField.Text = "";
+			}
+
+		// Получение из буфера
+		private async void BarcodeGet_Clicked (object sender, EventArgs e)
+			{
+			barcodeField.Text = await GetFromClipboard ();
 			}
 
 		#endregion

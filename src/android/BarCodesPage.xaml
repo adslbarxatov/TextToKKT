@@ -13,6 +13,7 @@
 
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="BarcodeField" />
+					<Button x:Name="GetFromClipboard" VerticalOptions="Center" />
 					<Button x:Name="Clear" VerticalOptions="Center" />
 				</StackLayout>
 
