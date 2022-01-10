@@ -296,11 +296,11 @@ namespace RD_AAOW
 				lastValuesSet = lastValuesSet.Substring (0, lastValuesSet.Length - 2);
 
 #if ANDROID
-			lastObligation = "<b>Для ФФД 1.05:</b><br/><i>" + 
+			lastObligation = "<b>Для ФФД 1.05:</b><br/><i>" +
 				BuildObligation (i, TLVTags_FFDVersions.FFD_105).Replace ("\r\n", "<br/>") +
-				"</i><br/><br/><b>Для ФФД 1.1:</b><br/><i>" + 
+				"</i><br/><br/><b>Для ФФД 1.1:</b><br/><i>" +
 				BuildObligation (i, TLVTags_FFDVersions.FFD_110).Replace ("\r\n", "<br/>") +
-				"</i><br/><br/><b>Для ФФД 1.2:</b><br/><i>" + 
+				"</i><br/><br/><b>Для ФФД 1.2:</b><br/><i>" +
 				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace ("\r\n", "<br/>") + "</i>";
 #else
 			lastObligation = BuildObligation (i, FFD);
@@ -501,24 +501,30 @@ namespace RD_AAOW
 
 							string condition = ((j == 0) ? oblPrintConditions[oblIndices[Index][i]] :
 								oblVirtualConditions[oblIndices[Index][i]]);
-							bool cond = string.IsNullOrWhiteSpace (condition);
-							bool parent = string.IsNullOrWhiteSpace (oblParents[oblIndices[Index][i]]);
+							bool cond = !string.IsNullOrWhiteSpace (condition);
+							bool parent = !string.IsNullOrWhiteSpace (oblParents[oblIndices[Index][i]]);
 
-							if (!cond || !parent)
+							if (cond || parent)
 								{
 								res += " (";
-								if (!cond)
-									res += ("при соблюдении прим. " + condition + " к таблице " +
+								if (cond)
+									res += ("при соблюдении прим. " + condition + " к табл. " +
 										oblTables[oblIndices[Index][i]]);
 
-								if (!cond && !parent)
+								if (cond && parent)
 									res += " и ";
-								if (!parent)
+
+								if (parent)
 									{
 									if (os == TLVTags_ObligationStates.RecommendedWith)
 										res += ("даже ");
-									res += ("при наличии тега(ов) " +
-										oblParents[oblIndices[Index][i]]);
+
+									res += ("при наличии тег");
+									if (oblParents[oblIndices[Index][i]].Length > 4)
+										res += "ов ";
+									else
+										res += "а ";
+									res += oblParents[oblIndices[Index][i]];
 									}
 
 								res += ")";

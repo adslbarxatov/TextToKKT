@@ -49,9 +49,14 @@ namespace RD_AAOW
 			public bool Autonomous;
 
 			/// <summary>
-			/// Флаг, указывающий на расчёт срока жизни ФН без учёта некоторых недействующих по факту ограничений
+			/// Флаг ФФД 1.2
 			/// </summary>
-			public bool DeFacto;
+			public bool FFD12;
+
+			/// <summary>
+			/// Флаг маркировочного ФН
+			/// </summary>
+			public bool MarkFN;
 			}
 
 		/// <summary>
@@ -68,8 +73,10 @@ namespace RD_AAOW
 			// Отсечение недопустимых вариантов
 			if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||               // Нельзя игнорировать
 
-				!Flags.DeFacto && !Flags.GenericTax && Flags.FN15 &&
-				!Flags.SeasonOrAgents && !Flags.Excise && !Flags.Autonomous)    // Можно игнорировать (флаг де-факто)
+				Flags.FFD12 && !Flags.GenericTax && Flags.FN15 &&
+				!Flags.SeasonOrAgents && !Flags.Excise && !Flags.Autonomous ||
+
+				Flags.FFD12 && !Flags.MarkFN)
 				{
 				res = "!";
 				}
@@ -77,7 +84,7 @@ namespace RD_AAOW
 			// Определение срока жизни
 			int length = 1110;
 
-			if (Flags.Excise && !Flags.DeFacto)     // Можно игнорировать (флаг де-факто)
+			if (Flags.Excise && Flags.FFD12)
 				{
 				length = 410;
 				}

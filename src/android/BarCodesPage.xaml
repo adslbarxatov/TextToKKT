@@ -9,13 +9,12 @@
 		<ScrollView>
 			<StackLayout>
 
-				<Label x:Name="BarcodeFieldLabel" />
-
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="BarcodeField" />
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="BarcodeFieldLabel" VerticalOptions="Center" />
 					<Button x:Name="GetFromClipboard" VerticalOptions="Center" />
 					<Button x:Name="Clear" VerticalOptions="Center" />
 				</StackLayout>
+				<Editor x:Name="BarcodeField" />
 
 				<Label x:Name="BarcodeDescriptionLabel" />
 				<Label x:Name="BarcodeDescription" />

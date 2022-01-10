@@ -15,7 +15,7 @@ namespace RD_AAOW
 	public partial class TextToKKTForm:Form
 		{
 		// Переменные
-		private KKTCodes kkmc = null;
+		private KKTCodes kkmc = null;               // Дескрипторы информационных классов
 		private KKTErrorsList kkme = null;
 		private OFD ofd = null;
 		private LowLevel ll = null;
@@ -27,11 +27,14 @@ namespace RD_AAOW
 		private BarCodes barc = null;
 		private Connectors conn = null;
 
-		private NotifyIcon ni = new NotifyIcon ();
+		private NotifyIcon ni = new NotifyIcon ();  // Дескриптор иконки в трее
 
-		private KKTSupport.FNLifeFlags fnlf;
-		private string startupLink = Environment.GetFolderPath (Environment.SpecialFolder.CommonStartup) + "\\" +
-			ProgramDescription.AssemblyMainName + ".lnk";
+		private KKTSupport.FNLifeFlags fnlf;        // Параметры вычисления срока жизни ФН
+		private string fnLifeResult = "";           // Рассчитанный срок жизни ФН
+
+		private int lastErrorSearchOffset = 0;      // Ссылки на текущие смещения в списках поиска
+		private int lastOFDSearchOffset = 0;
+		private int lastLowLevelSearchOffset = 0;
 
 		#region Главный интерфейс
 
@@ -77,7 +80,7 @@ namespace RD_AAOW
 			CableType.Items.AddRange (conn.GetCablesNames ().ToArray ());
 			CableType.SelectedIndex = 0;
 
-			this.Text = ProgramDescription.AssemblyTitle;
+			this.Text = ProgramDescription.AssemblyVisibleName;
 
 			// Получение настроек
 			this.Left = ca.WindowLeft;
@@ -182,7 +185,7 @@ namespace RD_AAOW
 
 			// Настройка иконки в трее
 			ni.Icon = Properties.TextToKKMResources.TextToKKTTray;
-			ni.Text = ProgramDescription.AssemblyMainName;
+			ni.Text = ProgramDescription.AssemblyVisibleName;
 			ni.Visible = true;
 
 			ni.ContextMenu = new ContextMenu ();
@@ -194,7 +197,7 @@ namespace RD_AAOW
 			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
-			if (!File.Exists (startupLink))
+			if (!File.Exists (RDGenerics.AutorunLinkPath))
 				ni.ContextMenu.MenuItems.Add (new MenuItem ("Добавить в &автозапуск", AddToStartup));
 
 			// Запуск файла дампа, если представлен
@@ -209,7 +212,7 @@ namespace RD_AAOW
 			WindowsShortcut.CreateStartupShortcut (Application.ExecutablePath, ProgramDescription.AssemblyMainName, "");
 
 			// Контроль
-			ni.ContextMenu.MenuItems[ni.ContextMenu.MenuItems.Count - 1].Enabled = !File.Exists (startupLink);
+			ni.ContextMenu.MenuItems[ni.ContextMenu.MenuItems.Count - 1].Enabled = !File.Exists (RDGenerics.AutorunLinkPath);
 			}
 
 		// Возврат окна приложения
@@ -251,7 +254,7 @@ namespace RD_AAOW
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
 				MessageBox.Show ("Завершите работу с модулем FNReader, чтобы выйти из приложения",
-					ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				e.Cancel = true;
 				return;
 				}
@@ -404,7 +407,7 @@ namespace RD_AAOW
 						"через оператор пакетов DPModule:\n" +
 						"• Нажмите «Да», чтобы перейти к загрузке DPModule с GitHub;\n" +
 						"• Нажмите «Нет», чтобы ознакомиться с презентацией DPModule на YouTube",
-						ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
+						ProgramDescription.AssemblyVisibleName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
 						{
 						case DialogResult.Yes:
 							Process.Start (RDGenerics.DPModuleLink);
@@ -417,7 +420,7 @@ namespace RD_AAOW
 					}
 				catch
 					{
-					MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyTitle,
+					MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyVisibleName,
 						MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					}
 
@@ -428,7 +431,7 @@ namespace RD_AAOW
 			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
 				{
 				MessageBox.Show ("Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
-					"текущей версии программы. Работа модуля невозможна", ProgramDescription.AssemblyTitle,
+					"текущей версии программы. Работа модуля невозможна", ProgramDescription.AssemblyVisibleName,
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 				return;
@@ -451,7 +454,7 @@ namespace RD_AAOW
 					{
 					ConfigAccessor.NextDumpPath = "";
 					MessageBox.Show ("Завершите работу с модулем FNReader, чтобы открыть новый файл",
-						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					}
 				else
 					{
@@ -517,14 +520,6 @@ namespace RD_AAOW
 			TextToConvert_TextChanged (null, null);
 			}
 
-		/*// Изменение списка ККТ
-		private void OnlyNewCodes_CheckedChanged (object sender, EventArgs e)
-			{
-			KKTListForCodes.Items.Clear ();
-			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (OnlyNewCodes.Checked).ToArray ());
-			KKTListForCodes.SelectedIndex = 0;
-			}*/
-
 		// Очистка полей
 		private void TextToConvertClear_Click (object sender, EventArgs e)
 			{
@@ -550,16 +545,7 @@ namespace RD_AAOW
 			ErrorCodesList.SelectedIndex = 0;
 			}
 
-		/*// Изменение списка ККТ
-		private void OnlyNewErrors_CheckedChanged (object sender, EventArgs e)
-			{
-			KKTListForErrors.Items.Clear ();
-			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (OnlyNewErrors.Checked).ToArray ());
-			KKTListForErrors.SelectedIndex = 0;
-			}*/
-
 		// Поиск по тексту ошибки
-		private int lastErrorSearchOffset = 0;
 		private void ErrorFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = kkme.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
@@ -578,6 +564,11 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				ErrorFindButton_Click (null, null);
+			}
+
+		private void ErrorClearButton_Click (object sender, EventArgs e)
+			{
+			ErrorSearchText.Text = "";
 			}
 
 		#endregion
@@ -628,7 +619,8 @@ namespace RD_AAOW
 			fnlf.SeasonOrAgents = SeasonFlag.Checked || AgentsFlag.Checked;
 			fnlf.Excise = ExciseFlag.Checked;
 			fnlf.Autonomous = AutonomousFlag.Checked;
-			fnlf.DeFacto = !FFD12Flag.Checked;
+			fnlf.FFD12 = FFD12Flag.Checked;
+			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || fns.IsFNCompatibleWithFFD12 (FNLifeSN.Text);  // Корректный ЗН ФН
 
 			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
 
@@ -648,7 +640,7 @@ namespace RD_AAOW
 
 			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
 				{
-				if (!fns.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
+				if (!fnlf.MarkFN)
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
@@ -667,7 +659,6 @@ namespace RD_AAOW
 			}
 
 		// Копирование срока действия ФН
-		private string fnLifeResult = "";
 		private void FNLifeResult_Click (object sender, EventArgs e)
 			{
 			SendToClipboard (fnLifeResult);
@@ -817,7 +808,6 @@ namespace RD_AAOW
 			}
 
 		// Поиск по названию ОФД
-		private int lastOFDSearchOffset = 0;
 		private void OFDFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = ofd.GetOFDNames ();
@@ -844,7 +834,7 @@ namespace RD_AAOW
 		// Очистка полей
 		private void OFDINNClear_Click (object sender, EventArgs e)
 			{
-			OFDINN.Text = "";
+			OFDINN.Text = OFDSearchText.Text = "";
 			}
 
 		#endregion
@@ -869,7 +859,6 @@ namespace RD_AAOW
 			}
 
 		// Поиск по тексту ошибки
-		private int lastLowLevelSearchOffset = 0;
 		private void LowLevelFindButton_Click (object sender, EventArgs e)
 			{
 			List<string> codes = ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
@@ -888,6 +877,11 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				LowLevelFindButton_Click (null, null);
+			}
+
+		private void LowLevelClearButton_Click (object sender, EventArgs e)
+			{
+			LowLevelSearchText.Text = "";
 			}
 
 		#endregion
@@ -909,6 +903,7 @@ namespace RD_AAOW
 		private void TLVClearButton_Click (object sender, EventArgs e)
 			{
 			TLVFind.Text = "";
+			TLVButton_Click (null, null);
 			}
 
 		// Поиск TLV-тега
