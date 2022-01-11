@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace RD_AAOW
 	{
@@ -22,7 +23,12 @@ namespace RD_AAOW
 		public KKTSerial ()
 			{
 			// Получение файлов
-			string buf = ProgramDescription.KKTSerialData;
+			/*string buf = ProgramDescription.KKTSerialData;*/
+#if !ANDROID
+			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.KKTSN);
+#else
+			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.KKTSN);
+#endif
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -83,6 +89,17 @@ namespace RD_AAOW
 				return "неизвестная модель ККТ";
 
 			return names[i];
+			}
+
+		/// <summary>
+		/// Возвращает делегат для метода GetKKTModel
+		/// </summary>
+		public Func<string, string> GetKKTModelDelegate
+			{
+			get
+				{
+				return GetKKTModel;
+				}
 			}
 
 		// Поиск ККТ по фрагментам ЗН

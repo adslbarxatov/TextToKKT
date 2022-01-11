@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace RD_AAOW
 	{
@@ -19,7 +20,12 @@ namespace RD_AAOW
 		public FNSerial ()
 			{
 			// Получение файлов
-			string buf = ProgramDescription.FNSerialData;
+			/*string buf = ProgramDescription.FNSerialData;*/
+#if !ANDROID
+			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.FNSN);
+#else
+			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.FNSN);
+#endif
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -62,6 +68,17 @@ namespace RD_AAOW
 					return names[i];
 
 			return "неизвестная модель ФН";
+			}
+
+		/// <summary>
+		/// Возвращает делегат для метода GetFNName
+		/// </summary>
+		public Func<string, string> GetFNNameDelegate
+			{
+			get
+				{
+				return GetFNName;
+				}
 			}
 
 		/// <summary>

@@ -376,6 +376,7 @@ namespace RD_AAOW
 		private Assembly FNReaderDLL;
 		private Type FNReaderProgram;
 		private dynamic FNReaderInstance;
+
 		private void CallFNReader (string DumpPath)
 			{
 			// Контроль
@@ -389,6 +390,7 @@ namespace RD_AAOW
 				try
 					{
 					FNReaderDLL = Assembly.LoadFile (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL);
+
 					FNReaderProgram = FNReaderDLL.GetType ("RD_AAOW.Program");
 					FNReaderInstance = Activator.CreateInstance (FNReaderProgram);
 					}
@@ -439,7 +441,8 @@ namespace RD_AAOW
 
 			// Проверки прошли успешно, запуск
 			if (FNReaderDLL != null)
-				FNReaderInstance.FNReaderEx (DumpPath);
+				FNReaderInstance.FNReaderEx (DumpPath, fns.GetFNNameDelegate, kkts.GetKKTModelDelegate,
+					ofd.GetOFDByINNDelegate);
 			}
 
 		/// <summary>

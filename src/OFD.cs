@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace RD_AAOW
 	{
@@ -52,7 +53,12 @@ namespace RD_AAOW
 		public OFD ()
 			{
 			// Получение файла символов
-			string buf = ProgramDescription.OFDData;
+			/*string buf = ProgramDescription.OFDData;*/
+#if !ANDROID
+			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.OFD);
+#else
+			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.OFD);
+#endif
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -147,6 +153,26 @@ namespace RD_AAOW
 				dnsNames[i], ip[i], ports[i], emails[i], links[i],
 				dnsNamesM[i], ipM[i], portsM[i]
 				};
+			}
+
+		/// <summary>
+		/// Возвращает делегат для метода GetOFDNameByINN
+		/// </summary>
+		public Func<string, uint, string> GetOFDByINNDelegate
+			{
+			get
+				{
+				return GetOFDByINN;
+				}
+			}
+
+		private string GetOFDByINN (string INN, uint Parameter)
+			{
+			List<string> values = GetOFDParameters (INN);
+			if (Parameter >= values.Count)
+				return "";
+
+			return values[(int)Parameter];
 			}
 
 		/// <summary>
