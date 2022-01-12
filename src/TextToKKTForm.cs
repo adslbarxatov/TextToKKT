@@ -317,7 +317,9 @@ namespace RD_AAOW
 		// Отображение справки
 		private void BHelp_Clicked (object sender, EventArgs e)
 			{
+			this.TopMost = false;
 			ProgramDescription.ShowAbout (false);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		// Дополнительные функции

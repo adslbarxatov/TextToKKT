@@ -35,7 +35,7 @@ namespace RD_AAOW
 					{
 					// Сохранение пути к вызываемому файлу и инициирование его обработки в запущенном приложении
 					ConfigAccessor.NextDumpPath = args[0];
-					IntPtr ptr = FindWindow (null, ProgramDescription.AssemblyTitle);
+					IntPtr ptr = FindWindow (null, ProgramDescription.AssemblyVisibleName);
 					SendMessage (ptr, ConfigAccessor.NextDumpPathMsg, IntPtr.Zero, IntPtr.Zero);
 					}
 				else
