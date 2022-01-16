@@ -22,28 +22,40 @@ enum FNDocumentTypes
 	CurrentState = 0x15,
 
 	// Кассовый чек
-	Bill = 0x03,
+	Bill = 0x03,	// 0x30
 
 	// Кассовый чек под ФФД 1.1
-	Bill_11 = 0x83,
+	Bill_11 = 0x83,	// 0x32
 
 	// Кассовый чек под ФФД 1.2
-	Bill_12 = 0xC3,
+	Bill_12 = 0xC3,	// 0x37
 
 	// Чек коррекции (31)
-	CorrectionBill = 0x1F,
+	CorrectionBill = 0x1F,		// 0x30
 
 	// Чек коррекции под ФФД 1.1
-	CorrectionBill_11 = 0x9F,
+	CorrectionBill_11 = 0x9F,	// 0x32
 
 	// Чек коррекции под ФФД 1.2
-	CorrectionBill_12 = 0xDF,
+	CorrectionBill_12 = 0xDF,	// x037
 
 	// БСО
 	Blank = 0x04,
 
+	// БСО под ФФД 1.1
+	Blank_11 = 0x84,
+
+	// БСО под ФФД 1.2
+	Blank_12 = 0xC4,
+
 	// БСО коррекции (41)
 	CorrectionBlank = 0x29,
+
+	// БСО коррекции под ФФД 1.1
+	CorrectionBlank_11 = 0xA9,
+
+	// БСО коррекции под ФФД 1.2
+	CorrectionBlank_12 = 0xE9,
 
 	// Закрытие смены
 	CloseSession = 0x05,
@@ -257,14 +269,19 @@ enum TLVTags
 	EncryptionFlag = 0x0420,
 
 #define PROC_ENCRYPTIONFLAG(src,dest,type)\
-		case EncryptionFlag:\
-			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s  - Шифрование фискальных данных\r\n", dest);\
-			break;
+	case EncryptionFlag:\
+		if ((REG_CAUSE (type)) && src)\
+			sprintf (dest, "%s  - Шифрование фискальных данных\r\n", dest);\
+		break;
 
 	// Признаки агента (1057)
 	AgentType = 0x0421,
-		
+
+#define PROC_AGENTTYPE(src,dest)\
+	case AgentType:\
+		sprintf (dest, "%s  Признаки агента: %s\r\n", dest, GetAgentFlags (src));\
+		break;
+
 	// Название предмета расчёта (1059)
 	PaymentObject = 0x0423,
 
@@ -292,10 +309,15 @@ enum TLVTags
 	// Сумма безналичными (1081)
 	ElectronicCashValue = 0x0439,
 
+	// Дополнительный реквизит пользователя (1084)
+	ExtraTag = 0x043C,
+	ExtraTagName = 0x043D,
+	ExtraTagValue = 0x043E,
+
 	// Количество непереданных документов (1097)
 	UnsentDocumentsCount = 0x0449,
 
-	// Количество непереданных документов (1098)
+	// Дата и время первого непереданного документа (1098)
 	FirstUnsentDocumentDate = 0x044A,
 
 	// Причина перерегистрации (1101)
@@ -516,9 +538,9 @@ enum TLVTags
 	// Версия формата фискальных документов (1209)
 	FFDVersion = 0x04B9,
 
-#define PROC_FFDVERSION(src,dest)\
+#define PROC_FFDVERSION(is_reg,src,dest)\
 		case FFDVersion:\
-			if ((src <= 4) && (src > maxFFDVersion))\
+			if (is_reg && (src <= 4) && (src > maxFFDVersion))\
 				maxFFDVersion = src;\
 			sprintf (dest, "%s  Версия ФФД: %s\r\n", dest, GetFFDVersion (src));\
 			break;
@@ -568,9 +590,9 @@ enum TLVTags
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
 
-#define PROC_EXTENDEDREGOPT(src,dest)\
+#define PROC_EXTENDEDREGOPT(src,dest,type)\
 		case ExtendedRegOptions:\
-			if (REG_CAUSE (documentType))\
+			if (REG_CAUSE (type))\
 				sprintf (dest, "%s  - Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\
 			break;
 
@@ -618,9 +640,11 @@ enum TLVTags
 
 	// Отчёт о регистрации
 	FNA_Registration = Registration + 100,
+	FNA_Registration_11_12 = Registration_11_12 + 100,
 
 	// Отчёт об изменении реквизитов регистрации
 	FNA_RegistrationChange = RegistrationChange + 100,
+	FNA_RegistrationChange_11_12 = RegistrationChange_11_12 + 100,
 
 	// Открытие смены
 	FNA_OpenSession = OpenSession + 100,

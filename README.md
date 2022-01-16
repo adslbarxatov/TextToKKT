@@ -1,5 +1,5 @@
-# TextToKKT v 8.1.2
-> PCC: 0011D81123E6D097
+# TextToKKT v 8.1.5
+> PCC: 0011E68BB707B64B
 
 
 Утилита сервис-инженера ККТ (контрольно-кассовая техника, 54-ФЗ)
@@ -41,13 +41,21 @@
 
 ## Требования
 
-- Актуальная Windows-версия утилиты доступна в [релизах проекта](https://github.com/adslbarxatov/TextToKKT/releases);
-для неё потребуется ОС Windows XP или новее, Framework 4.0 или новее;
+- Windows XP or newer / или новее;
+- [Microsoft .NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=17718);
+- [Microsoft VC++ 2010 redistributables](https://www.microsoft.com/en-us/download/details.aspx?id=26999) *(для модуля FNReader)*.
+
+Язык интерфейса: ru_ru.
+
+Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/TextToKKT/blob/master/src/FNReader/FNEnums.h).
+
+#
+
 - Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
 для неё потребуется ОС Android 5.0 или новее;
-- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/tag/v5.1) для Android 4.x
+- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.x
 или устройств без Play market;
-- Android-версия доступна также на платформе AppGallery
+- Android-версия доступна также на платформе AppGallery.
 
 &nbsp;
 
@@ -70,11 +78,6 @@
 программы и обеспечения постоянного соответствия актуальным изменениям в ФФД. Срок указан в заголовке окна компонента.
 По его истечении останутся доступными функции анализа ранее считанных данных. По истечению срока для работы с новыми данными
 необходимо получить новый экземпляр компонента**
-
-#
-
-- Язык интерфейса и руководства пользователя: ru_ru.
-- Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/TextToKKT/blob/master/src/FNReader/FNEnums.h)
 
 &nbsp;
 
