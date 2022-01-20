@@ -37,7 +37,7 @@ enum FNDocumentTypes
 	CorrectionBill_11 = 0x9F,	// 0x32
 
 	// Чек коррекции под ФФД 1.2
-	CorrectionBill_12 = 0xDF,	// x037
+	CorrectionBill_12 = 0xDF,	// 0x37
 
 	// БСО
 	Blank = 0x04,

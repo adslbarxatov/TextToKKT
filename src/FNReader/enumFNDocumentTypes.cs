@@ -23,27 +23,67 @@
 		/// <summary>
 		/// Отчёт о текущем состоянии расчётов
 		/// </summary>
-		CurrentState = 21,
+		CurrentState = 0x15,
 
 		/// <summary>
 		/// Кассовый чек
 		/// </summary>
-		Bill = 3,
+		Bill = 0x03,
+
+		/// <summary>
+		/// Кассовый чек для ФФД 1.1
+		/// </summary>
+		Bill_11 = 0x83,
+
+		/// <summary>
+		/// Кассовый чек для ФФД 1.2
+		/// </summary>
+		Bill_12 = 0xC3,
 
 		/// <summary>
 		/// Чек коррекции
 		/// </summary>
-		CorrectionBill = 31,
+		CorrectionBill = 0x1F,
+
+		/// <summary>
+		/// Чек коррекции для ФФД 1.1
+		/// </summary>
+		CorrectionBill_11 = 0x9F,
+
+		/// <summary>
+		/// Чек коррекции для ФФД 1.2
+		/// </summary>
+		CorrectionBill_12 = 0xDF,
 
 		/// <summary>
 		/// БСО
 		/// </summary>
-		Blank = 4,
+		Blank = 0x04,
+
+		/// <summary>
+		/// БСО для ФФД 1.1
+		/// </summary>
+		Blank_11 = 0x84,
+
+		/// <summary>
+		/// БСО для ФФД 1.2
+		/// </summary>
+		Blank_12 = 0xC4,
 
 		/// <summary>
 		/// БСО коррекции
 		/// </summary>
-		CorrectionBlank = 41,
+		CorrectionBlank = 0x29,
+
+		/// <summary>
+		/// БСО коррекции для ФФД 1.1
+		/// </summary>
+		CorrectionBlank_11 = 0xA9,
+
+		/// <summary>
+		/// БСО коррекции для ФФД 1.2
+		/// </summary>
+		CorrectionBlank_12 = 0xE9,
 
 		/// <summary>
 		/// Закрытие смены
