@@ -217,7 +217,7 @@ namespace RD_AAOW
 #endif
 
 				string html = hwe.Result.ToString ();
-				if (html != "")
+				if (!string.IsNullOrWhiteSpace (html))
 					{
 					DescriptionBox.Text = html;
 
@@ -290,12 +290,13 @@ namespace RD_AAOW
 				html = html.Substring (textLeft, textRight - textLeft);
 
 				// Формирование абзацных отступов
-				html = html.Replace ("<br/>", "\r\n").Replace ("</p>", "\r\n").Replace ("</li>", "\r\n").
-					Replace ("</h1>", "\r\n\r\n").Replace ("</h3>", "\r\n").Replace ("<li>", "• ");
+				/*html = html.Replace ("<br/>", "\r\n").Replace ("</p>", "\r\n").Replace ("</li>", "\r\n").
+					Replace ("</h1>", "\r\n\r\n").Replace ("</h3>", "\r\n").Replace ("<li>", "• ");*/
+				html = ApplyReplacements (html);
 
-				// Удаление вложенных тегов
+				/*// Удаление вложенных тегов
 				while (((textLeft = html.IndexOf ("<")) >= 0) && ((textRight = html.IndexOf (">", textLeft)) >= 0))
-					html = html.Replace (html.Substring (textLeft, textRight - textLeft + 1), "");
+					html = html.Replace (html.Substring (textLeft, textRight - textLeft + 1), "");*/
 
 				html = html.Substring (0, html.Length - 12);
 				}
@@ -425,20 +426,49 @@ namespace RD_AAOW
 			}
 
 		// Метод-исполнитель проверки обновлений
-		private string[][] ucReplacements = new string[][] {
-			new string[] { "<p>", "\r\n\r\n" },
+		private static string[][] htmlReplacements = new string[][] {
+			new string[] { "<p", "\r\n<" },
 			new string[] { "<li>", "\r\n• " },
 			new string[] { "</p>", "\r\n" },
-			new string[] { "<br>", "\r\n" },
+			new string[] { "<br", "\r\n<" },
 
-			new string[] { "</li>", "" },
+			/*new string[] { "</li>", "" },
 			new string[] { "<ul>", "" },
 			new string[] { "</ul>", "" },
 			new string[] { "<em>", "" },
 			new string[] { "</em>", "" },
 			new string[] { "<code>", "" },
-			new string[] { "</code>", "" }
+			new string[] { "</code>", "" },*/
+
+			new string[] { "<h1", "\r\n<" },
+			new string[] { "</h1>", "\r\n" },
+			new string[] { "<h3", "\r\n<" },
+
+			new string[] { "&gt;", "›" },
+			new string[] { "&lt;", "‹" },
+			new string[] { "&#39;", "’" }
 			};
+
+		/// <summary>
+		/// Метод выполняет пост-обработку текста лога или политики после загрузки
+		/// </summary>
+		/// <param name="Source">Исходный текст</param>
+		/// <returns>Текст с применёнными заменами символов форматирования</returns>
+		public static string ApplyReplacements (string Source)
+			{
+			string res = Source;
+
+			// Замена элементов разметки
+			for (int i = 0; i < htmlReplacements.Length; i++)
+				res = res.Replace (htmlReplacements[i][0], htmlReplacements[i][1]);
+
+			// Удаление вложенных тегов
+			int textLeft = 0, textRight = 0;
+			while (((textLeft = res.IndexOf ("<")) >= 0) && ((textRight = res.IndexOf (">", textLeft)) >= 0))
+				res = res.Replace (res.Substring (textLeft, textRight - textLeft + 1), "");
+
+			return res;
+			}
 
 		/// <summary>
 		/// Левый маркер лога изменений
@@ -487,8 +517,9 @@ namespace RD_AAOW
 				goto policy;
 
 			versionDescription = html.Substring (i, j - i);
-			for (int r = 0; r < ucReplacements.Length; r++)
-				versionDescription = versionDescription.Replace (ucReplacements[r][0], ucReplacements[r][1]);
+			/*for (int r = 0; r < ucReplacements.Length; r++)
+				versionDescription = versionDescription.Replace (ucReplacements[r][0], ucReplacements[r][1]);*/
+			versionDescription = "\r\n" + ApplyReplacements (versionDescription);
 
 			// Отображение результата
 			switch (al)
