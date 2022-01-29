@@ -166,7 +166,7 @@ namespace RD_AAOW
 						"• включите запуск от имени администратора для всех пользователей в настройках совместимости.\n\n" +
 						"После этого перезапустите программу и повторите попытку";
 
-					this.Text = AcceptMode ? "Политика разработки и соглашение пользователя" : "О программе";
+					this.Text = AcceptMode ? "Политика разработки и соглашение пользователя" : "О приложении";
 					break;
 
 				default:    // en_us
@@ -190,10 +190,10 @@ namespace RD_AAOW
 						"• enable running as administrator for all users in compatibility settings.\n\n" +
 						"Then restart the program and try again";
 
-					this.Text = AcceptMode ? "Development policy and user agreement" : "About application";
+					this.Text = AcceptMode ? "Development policy and user agreement" : "About the application";
 					break;
 				}
-			ToLaboratory.Text = "Free development lab";
+			ToLaboratory.Text = RDGenerics.AssemblyCompany;
 
 			// Запуск проверки обновлений
 			HardWorkExecutor hwe;
@@ -245,13 +245,6 @@ namespace RD_AAOW
 						ProgramDescription.AssemblyVersion);
 
 					// Контроль доступа к реестру
-					/*if (Registry.GetValue (RDGenerics.AssemblySettingsKey, LastShownVersionKey, "").ToString () !=
-						ProgramDescription.AssemblyVersion)
-						{
-						MessageBox.Show (registryFail, ProgramDescription.AssemblyTitle, MessageBoxButtons.OK,
-							MessageBoxIcon.Exclamation);
-						}*/
-
 					WindowsIdentity identity = WindowsIdentity.GetCurrent ();
 					WindowsPrincipal principal = new WindowsPrincipal (identity);
 					if (!principal.IsInRole (WindowsBuiltInRole.Administrator))
@@ -289,15 +282,8 @@ namespace RD_AAOW
 				textLeft += 6;
 				html = html.Substring (textLeft, textRight - textLeft);
 
-				// Формирование абзацных отступов
-				/*html = html.Replace ("<br/>", "\r\n").Replace ("</p>", "\r\n").Replace ("</li>", "\r\n").
-					Replace ("</h1>", "\r\n\r\n").Replace ("</h3>", "\r\n").Replace ("<li>", "• ");*/
+				// Формирование
 				html = ApplyReplacements (html);
-
-				/*// Удаление вложенных тегов
-				while (((textLeft = html.IndexOf ("<")) >= 0) && ((textRight = html.IndexOf (">", textLeft)) >= 0))
-					html = html.Replace (html.Substring (textLeft, textRight - textLeft + 1), "");*/
-
 				html = html.Substring (0, html.Length - 12);
 				}
 			else
@@ -432,14 +418,6 @@ namespace RD_AAOW
 			new string[] { "</p>", "\r\n" },
 			new string[] { "<br", "\r\n<" },
 
-			/*new string[] { "</li>", "" },
-			new string[] { "<ul>", "" },
-			new string[] { "</ul>", "" },
-			new string[] { "<em>", "" },
-			new string[] { "</em>", "" },
-			new string[] { "<code>", "" },
-			new string[] { "</code>", "" },*/
-
 			new string[] { "<h1", "\r\n<" },
 			new string[] { "</h1>", "\r\n" },
 			new string[] { "<h3", "\r\n<" },
@@ -517,8 +495,6 @@ namespace RD_AAOW
 				goto policy;
 
 			versionDescription = html.Substring (i, j - i);
-			/*for (int r = 0; r < ucReplacements.Length; r++)
-				versionDescription = versionDescription.Replace (ucReplacements[r][0], ucReplacements[r][1]);*/
 			versionDescription = "\r\n" + ApplyReplacements (versionDescription);
 
 			// Отображение результата
