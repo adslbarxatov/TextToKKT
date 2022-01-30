@@ -61,10 +61,10 @@ namespace RD_AAOW
 			conn = new Connectors ();
 
 			// Настройка контролов
-			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames (/*OnlyNewCodes.Checked*/).ToArray ());
+			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames ().ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
 
-			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames (/*OnlyNewErrors.Checked*/).ToArray ());
+			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames ().ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 
 			LowLevelProtocol.Items.AddRange (ll.GetProtocolsNames ().ToArray ());
@@ -91,8 +91,6 @@ namespace RD_AAOW
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 
-			/*OnlyNewErrors.Checked = ca.OnlyNewKKTErrors;
-			OnlyNewErrors.Enabled = ca.AllowExtendedFunctionsLevel2;*/
 			try
 				{
 				KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
@@ -129,8 +127,6 @@ namespace RD_AAOW
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
-			/*OnlyNewCodes.Checked = ca.OnlyNewKKTCodes;
-			OnlyNewCodes.Enabled = ca.AllowExtendedFunctionsLevel2;*/
 			try
 				{
 				KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
@@ -279,7 +275,6 @@ namespace RD_AAOW
 
 			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
 
-			/*ca.OnlyNewKKTErrors = OnlyNewErrors.Checked;*/
 			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
 			ca.ErrorCode = (uint)ErrorCodesList.SelectedIndex;
 
@@ -301,7 +296,6 @@ namespace RD_AAOW
 			ca.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
 			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
 
-			/*ca.OnlyNewKKTCodes = OnlyNewCodes.Checked;*/
 			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			ca.CodesText = TextToConvert.Text;
 

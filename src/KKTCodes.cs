@@ -109,13 +109,8 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод возвращает список названий ККТ
 		/// </summary>
-		/// только новых моделей ККТ</param>
-		public List<string> GetKKTTypeNames (/*bool NewOnly*/)
+		public List<string> GetKKTTypeNames ()
 			{
-			/*/// <param name="NewOnly">Флаг указывает на необходимость вернуть имена
-			if (NewOnly)
-				return names.GetRange (0, newKKTCount);*/
-
 			return names;
 			}
 

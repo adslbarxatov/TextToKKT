@@ -53,7 +53,6 @@ namespace RD_AAOW
 		public OFD ()
 			{
 			// Получение файла символов
-			/*string buf = ProgramDescription.OFDData;*/
 #if !ANDROID
 			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.OFD);
 #else

@@ -10,10 +10,10 @@
 		/// </summary>
 		Binary = 2,
 
-		/// <summary>
+		/*/// <summary>
 		/// Текстовый формат
 		/// </summary>
-		Text = 3,
+		Text = 3,*/
 
 		/// <summary>
 		/// Табличный формат

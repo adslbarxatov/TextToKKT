@@ -306,9 +306,6 @@ namespace RD_AAOW
 		public string ParseMedicinesDataMatrix (string BarcodeData)
 			{
 			// Контроль разметки
-			/*if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
-				(BarcodeData.Substring (31, 3) != ("\x1D" + "91")) ||
-				(BarcodeData.Substring (38, 3) != ("\x1D" + "92")))*/
 			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
 				(BarcodeData.Substring (31, 2) != "91") || (BarcodeData.Substring (37, 2) != "92"))
 				return "Разметка данных DataMatrix не соответствует стандарту";
@@ -334,10 +331,6 @@ namespace RD_AAOW
 		public string ParseCigarettesBlocksDataMatrix (string BarcodeData)
 			{
 			// Контроль разметки
-			/*if ((BarcodeData.Substring (0, 1) != "\x1D") ||
-				(BarcodeData.Substring (1, 2) != "01") || (BarcodeData.Substring (17, 2) != "21") ||
-				(BarcodeData.Substring (26, 5) != ("\x1D" + "8005")) ||
-				(BarcodeData.Substring (37, 3) != ("\x1D" + "93")))*/
 			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
 				(BarcodeData.Substring (25, 4) != "8005") ||
 				(BarcodeData.Substring (35, 2) != "93"))

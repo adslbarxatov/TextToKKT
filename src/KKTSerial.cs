@@ -23,7 +23,6 @@ namespace RD_AAOW
 		public KKTSerial ()
 			{
 			// Получение файлов
-			/*string buf = ProgramDescription.KKTSerialData;*/
 #if !ANDROID
 			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.KKTSN);
 #else

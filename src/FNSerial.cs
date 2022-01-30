@@ -20,7 +20,6 @@ namespace RD_AAOW
 		public FNSerial ()
 			{
 			// Получение файлов
-			/*string buf = ProgramDescription.FNSerialData;*/
 #if !ANDROID
 			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.FNSN);
 #else
