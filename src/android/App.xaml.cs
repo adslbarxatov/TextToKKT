@@ -1624,7 +1624,7 @@ namespace RD_AAOW
 				fnLifeLabel.Text = "13/15 месяцев";
 
 			if (fnLifeGenericTax.IsToggled)
-				fnLifeGenericTaxLabel.Text = "УСН / ЕНВД / ЕСХН / ПСН";
+				fnLifeGenericTaxLabel.Text = "УСН / ЕСХН / ПСН";
 			else
 				fnLifeGenericTaxLabel.Text = "ОСН / совмещение с ОСН";
 
