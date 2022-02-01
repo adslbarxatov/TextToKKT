@@ -120,7 +120,7 @@
 
 Основной интерфейс модуля представлен на рисунке ниже.
 
-![1](https://user-images.githubusercontent.com/20893717/147804740-130cdb1b-65f7-4892-9df3-9584e97a1b56.png)
+![111](https://user-images.githubusercontent.com/20893717/151995188-d004a1be-eb26-46c6-b206-8ca7e3ec02d3.png)
 
 ## 3.1. Функции, доступные при запуске
 
