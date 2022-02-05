@@ -398,29 +398,28 @@ namespace RD_AAOW
 
 			if (!result)
 				{
-				try
+				/*try
 					{
-					switch (MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
-						"Данный компонент доступен в комплекте с руководством пользователя при развёртке приложения " +
-						"через оператор пакетов DPModule:\n" +
-						"• Нажмите «Да», чтобы перейти к загрузке DPModule с GitHub;\n" +
-						"• Нажмите «Нет», чтобы ознакомиться с презентацией DPModule на YouTube",
-						ProgramDescription.AssemblyVisibleName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
-						{
-						case DialogResult.Yes:
-							Process.Start (RDGenerics.DPModuleLink);
-							break;
+					switch (*/
+				MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
+					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении» (кнопка «?»)",
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				/*)
+					{
+					case DialogResult.Yes:
+						Process.Start (RDGenerics.DPModuleDirectLink);
+						break;
 
-						case DialogResult.No:
-							Process.Start ("https://youtube.com/watch?v=RdQoc4tnZsk");
-							break;
-						}
+					case DialogResult.No:
+						Process.Start ("https://youtube.com/watch?v=RdQoc4tnZsk");
+						break;
 					}
-				catch
-					{
-					MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyVisibleName,
-						MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-					}
+				}
+			catch
+				{
+				MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyVisibleName,
+					MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				}*/
 
 				return;
 				}
