@@ -124,6 +124,32 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Возвращает делегат для параметров ОФД
+		/// </summary>
+		public Func<List<string>> GetOFDDataDelegate
+			{
+			get
+				{
+				return GetOFDData;
+				}
+			}
+
+		private List<string> GetOFDData ()
+			{
+			List<string> res = new List<string> ();
+
+			for (int i = 0; i < names.Count; i++)
+				if (!names[i].Contains ("см.") && !names[i].Contains ("анн."))
+					res.Add (names[i]);
+
+			int count = res.Count;
+			for (int i = 0; i < count; i++)
+				res.Add (inn[i]);
+
+			return res;
+			}
+
+		/// <summary>
 		/// Метод возвращает список ИНН ОФД
 		/// </summary>
 		public List<string> GetOFDINNs ()

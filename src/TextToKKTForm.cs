@@ -161,7 +161,8 @@ namespace RD_AAOW
 			TLVButton_Click (null, null);
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled = ca.AllowExtendedFunctionsLevel2;
+			RNMGenerate.Visible = RNMFromFNReader.Visible = LowLevelTab.Enabled = TLVTab.Enabled =
+				ConnectorsTab.Enabled = OFDFromFNReader.Visible = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
@@ -398,28 +399,9 @@ namespace RD_AAOW
 
 			if (!result)
 				{
-				/*try
-					{
-					switch (*/
 				MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
 					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении» (кнопка «?»)",
 					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				/*)
-					{
-					case DialogResult.Yes:
-						Process.Start (RDGenerics.DPModuleDirectLink);
-						break;
-
-					case DialogResult.No:
-						Process.Start ("https://youtube.com/watch?v=RdQoc4tnZsk");
-						break;
-					}
-				}
-			catch
-				{
-				MessageBox.Show ("Интернет-подключение недоступно", ProgramDescription.AssemblyVisibleName,
-					MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-				}*/
 
 				return;
 				}
@@ -428,8 +410,9 @@ namespace RD_AAOW
 			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
 				{
 				MessageBox.Show ("Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
-					"текущей версии программы. Работа модуля невозможна", ProgramDescription.AssemblyVisibleName,
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
+					"текущей версии программы.\n\n" +
+					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении» (кнопка «?»)",
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
 				return;
 				}
@@ -437,7 +420,7 @@ namespace RD_AAOW
 			// Проверки прошли успешно, запуск
 			if (FNReaderDLL != null)
 				FNReaderInstance.FNReaderEx (DumpPath, fns.GetFNNameDelegate, kkts.GetKKTModelDelegate,
-					ofd.GetOFDByINNDelegate);
+					ofd.GetOFDByINNDelegate, ofd.GetOFDDataDelegate);
 			}
 
 		/// <summary>
@@ -759,6 +742,49 @@ namespace RD_AAOW
 				RNMSerialFind_Click (null, null);
 			}
 
+		// Получение данных от FNReader
+		private void RNMFromFNReader_Click (object sender, EventArgs e)
+			{
+			// Контроль
+			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
+				{
+				MessageBox.Show ("Статус ФН в FNReader ещё не запрашивался или содержит не все требуемые поля",
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+				}
+
+			// Разбор
+			string status = FNReaderInstance.FNStatus;
+			int left, right;
+
+			if (((Button)sender).Name == OFDFromFNReader.Name)
+				{
+				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+					{
+					left += 9;
+					OFDINN.Text = status.Substring (left, right - left).Trim ();
+					}
+
+				return;
+				}
+
+			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+				{
+				left += 21;
+				RNMSerial.Text = status.Substring (left, right - left).Trim ();
+				}
+			if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
+				{
+				left += 27;
+				RNMValue.Text = status.Substring (left, right - left).Trim ();
+				}
+			if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
+				{
+				left += 18;
+				RNMUserINN.Text = status.Substring (left, right - left).Trim ();
+				}
+			}
+
 		#endregion
 
 		#region ОФД
@@ -767,14 +793,13 @@ namespace RD_AAOW
 		private void OFDNamesList_SelectedIndexChanged (object sender, EventArgs e)
 			{
 			string s = ofd.GetOFDINNByName (OFDNamesList.Text);
-			if (s != "")
-				OFDINN.Text = s;
+			OFDINN.Text = string.IsNullOrWhiteSpace (s) ? "" : s;
 			}
 
 		// Выбор ОФД
 		private void OFDINN_TextChanged (object sender, EventArgs e)
 			{
-			List<string> parameters = ofd.GetOFDParameters (OFDINN.Text);
+			List<string> parameters = ofd.GetOFDParameters (OFDINN.Text.Contains ("0000000000") ? "" : OFDINN.Text);
 
 			OFDNamesList.Text = parameters[1];
 
