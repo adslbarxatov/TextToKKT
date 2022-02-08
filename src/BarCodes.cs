@@ -163,7 +163,7 @@ namespace RD_AAOW
 					return "DataMatrix для блоков сигарет";
 
 				case SupportedBarcodesTypes.DataMatrixMedicines:
-					return "DataMatrix для лекарств";
+					return "DataMatrix для лекарств и остатков обуви";
 
 				case SupportedBarcodesTypes.DataMatrixShoes:
 					return "DataMatrix для обуви";
@@ -390,8 +390,10 @@ namespace RD_AAOW
 			{
 			// Контроль разметки
 			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
-				(BarcodeData.Substring (31, 4) != "7003") && (BarcodeData.Substring (31, 2) != "17") ||
-				(BarcodeData.Substring (39, 2) != "93") && (BarcodeData.Substring (45, 2) != "93"))
+				(BarcodeData.Length == 45) && ((BarcodeData.Substring (31, 2) != "17") ||
+				(BarcodeData.Substring (39, 2) != "93")) ||
+				(BarcodeData.Length == 51) && ((BarcodeData.Substring (31, 4) != "7003") ||
+				(BarcodeData.Substring (45, 2) != "93")))
 				return "Разметка данных DataMatrix не соответствует стандарту";
 
 			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
