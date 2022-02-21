@@ -295,6 +295,8 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyButtonSettings (kktCodesPage, "Clear",
 				AndroidSupport.ButtonsDefaultNames.Delete, kktCodesFieldBackColor, CodesClear_Clicked);
+			AndroidSupport.ApplyButtonSettings (kktCodesPage, "GetFromClipboard",
+				AndroidSupport.ButtonsDefaultNames.Copy, kktCodesFieldBackColor, CodesLineGet_Clicked);
 
 			SourceText_TextChanged (null, null);    // Протягивание кодов
 
@@ -1495,6 +1497,12 @@ namespace RD_AAOW
 		private void CodesClear_Clicked (object sender, EventArgs e)
 			{
 			codesSourceText.Text = "";
+			}
+
+		// Получение из буфера
+		private async void CodesLineGet_Clicked (object sender, EventArgs e)
+			{
+			codesSourceText.Text = await GetFromClipboard ();
 			}
 
 		#endregion

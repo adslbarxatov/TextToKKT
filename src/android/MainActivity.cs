@@ -21,7 +21,7 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[Activity (Label = "Text to KKT", Icon = "@mipmap/icon", Theme = "@style/MainTheme",
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity: global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+	public class MainActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
 		/// <summary>
 		/// Обработчик события создания экземпляра
@@ -87,7 +87,7 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[Activity (Theme = "@style/SplashTheme", MainLauncher = true, NoHistory = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class SplashActivity: global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+	public class SplashActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
 		/// <summary>
 		/// Обработчик события создания экземпляра
@@ -124,7 +124,7 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT", Label = "TextToKKT",
 		Icon = "@mipmap/icon", Exported = true)]
-	public class MainService: global::Android.App.Service
+	public class MainService:global::Android.App.Service
 		{
 		// Идентификаторы процесса
 		private Handler handler;
@@ -315,7 +315,7 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKTLink", Label = "TextToKKTLink",
 		Icon = "@mipmap/icon", Exported = true)]
-	public class NotificationLink: JobIntentService
+	public class NotificationLink:JobIntentService
 		{
 		/// <summary>
 		/// Конструктор (заглушка)
@@ -362,7 +362,7 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[BroadcastReceiver (Name = "com.RD_AAOW.TextToKKTBoot", Label = "TextToKKTBoot",
 		Icon = "@mipmap/icon", Exported = true)]
-	public class BootReceiver: BroadcastReceiver
+	public class BootReceiver:BroadcastReceiver
 		{
 		/// <summary>
 		/// Обработчик события наступления события окончания загрузки

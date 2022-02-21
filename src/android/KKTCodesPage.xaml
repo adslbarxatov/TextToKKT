@@ -22,6 +22,7 @@
 
 				<StackLayout Orientation="Horizontal">
 					<Label x:Name="SourceTextLabel" VerticalOptions="Center" />
+					<Button x:Name="GetFromClipboard" VerticalOptions="Center" />
 					<Button x:Name="Clear" VerticalOptions="Center" />
 				</StackLayout>
 				<Editor x:Name="SourceText" />
