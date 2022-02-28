@@ -453,6 +453,60 @@ namespace RD_AAOW
 			this.TopMost = TopFlag.Checked;
 			}
 
+		// Получение данных от FNReader
+		private void RNMFromFNReader_Click (object sender, EventArgs e)
+			{
+			// Контроль
+			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
+				{
+				MessageBox.Show ("Статус ФН в FNReader ещё не запрашивался или содержит не все требуемые поля",
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+				}
+
+			// Разбор
+			string status = FNReaderInstance.FNStatus;
+			int left, right;
+
+			if (((Button)sender).Name == OFDFromFNReader.Name)
+				{
+				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+					{
+					left += 9;
+					OFDINN.Text = status.Substring (left, right - left).Trim ();
+					}
+
+				return;
+				}
+
+			if (((Button)sender).Name == FNFromFNReader.Name)
+				{
+				if (((left = status.LastIndexOf ("номер ФН: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+					{
+					left += 10;
+					FNLifeSN.Text = status.Substring (left, right - left).Trim ();
+					}
+
+				return;
+				}
+
+			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+				{
+				left += 21;
+				RNMSerial.Text = status.Substring (left, right - left).Trim ();
+				}
+			if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
+				{
+				left += 27;
+				RNMValue.Text = status.Substring (left, right - left).Trim ();
+				}
+			if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
+				{
+				left += 18;
+				RNMUserINN.Text = status.Substring (left, right - left).Trim ();
+				}
+			}
+
 		#endregion
 
 		#region Коды символов ККТ
@@ -740,49 +794,6 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				RNMSerialFind_Click (null, null);
-			}
-
-		// Получение данных от FNReader
-		private void RNMFromFNReader_Click (object sender, EventArgs e)
-			{
-			// Контроль
-			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
-				{
-				MessageBox.Show ("Статус ФН в FNReader ещё не запрашивался или содержит не все требуемые поля",
-					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				return;
-				}
-
-			// Разбор
-			string status = FNReaderInstance.FNStatus;
-			int left, right;
-
-			if (((Button)sender).Name == OFDFromFNReader.Name)
-				{
-				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
-					{
-					left += 9;
-					OFDINN.Text = status.Substring (left, right - left).Trim ();
-					}
-
-				return;
-				}
-
-			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
-				{
-				left += 21;
-				RNMSerial.Text = status.Substring (left, right - left).Trim ();
-				}
-			if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
-				{
-				left += 27;
-				RNMValue.Text = status.Substring (left, right - left).Trim ();
-				}
-			if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
-				{
-				left += 18;
-				RNMUserINN.Text = status.Substring (left, right - left).Trim ();
-				}
 			}
 
 		#endregion
