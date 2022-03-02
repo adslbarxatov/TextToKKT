@@ -468,6 +468,7 @@ namespace RD_AAOW
 			string status = FNReaderInstance.FNStatus;
 			int left, right;
 
+			// Раздел параметров ОФД
 			if (((Button)sender).Name == OFDFromFNReader.Name)
 				{
 				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
@@ -479,6 +480,7 @@ namespace RD_AAOW
 				return;
 				}
 
+			// Раздел срока жизни ФН
 			if (((Button)sender).Name == FNFromFNReader.Name)
 				{
 				if (((left = status.LastIndexOf ("номер ФН: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
@@ -487,9 +489,29 @@ namespace RD_AAOW
 					FNLifeSN.Text = status.Substring (left, right - left).Trim ();
 					}
 
+				if ((left = status.LastIndexOf ("Регистрация")) < 0)
+					return;
+
+				if (status.IndexOf ("обложение: ОСН", left) >= 0)
+					GenericTaxFlag.Checked = true;
+				else
+					OtherTaxFlag.Checked = true;
+
+				if (status.IndexOf ("Режим товаров", left) >= 0)
+					GoodsFlag.Checked = true;
+				else
+					ServicesFlag.Checked = true;
+
+				AutonomousFlag.Checked = (status.IndexOf ("Автономный", left) >= 0);
+				ExciseFlag.Checked = (status.IndexOf ("подакцизн", left) >= 0);
+				FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
+				AgentsFlag.Checked = (status.IndexOf ("агент", left) >= 0);
+				// Дату и сезонный режим не запрашиваем
+
 				return;
 				}
 
+			// Раздел контроля ЗН ККТ, РНМ и ИНН
 			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
 				{
 				left += 21;
