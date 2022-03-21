@@ -361,7 +361,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyButtonSettings (aboutPage, "AppPage", "Страница проекта",
 				aboutFieldBackColor, AppButton_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (aboutPage, "ADPPage", "Политика разработки и EULA",
+			AndroidSupport.ApplyButtonSettings (aboutPage, "ADPPage", "Политика и EULA",
 				aboutFieldBackColor, ADPButton_Clicked, false);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "DevPage", "Спросить разработчика",
 				aboutFieldBackColor, DevButton_Clicked, false);
@@ -372,6 +372,9 @@ namespace RD_AAOW
 				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked, false);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked, false);
+
+			// SupportedLanguages.ru_ru
+			AndroidSupport.ApplyLabelSettingsForKKT (aboutPage, "Alert", RDGenerics.RuAlertMessage, false, false);
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
@@ -1939,7 +1942,7 @@ namespace RD_AAOW
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			List<string> comm = new List<string> { "Приветственная страница", "ВКонтакте", "Telegram" };
+			List<string> comm = new List<string> { "Приветственная страница", "FDL на VK.com", "FDL в Telegram" };
 			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm.ToArray ());
 
 			if (!comm.Contains (res))

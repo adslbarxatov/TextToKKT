@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Security.Principal;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace RD_AAOW
@@ -172,7 +171,14 @@ namespace RD_AAOW
 						"Также Вы можете ознакомиться с презентацией DPModule на YouTube, нажав кнопку «Нет»";
 					packageFail = "Не удалось загрузить пакет развёртки. Проверьте Ваше подключение к Интернету";
 					fileWriteFail = "Не удалось сохранить пакет развёртки. Проверьте Ваши права доступа";
-					startDownload = "Начать загрузку пакета?\n\nПакет развёртки будет сохранён на Рабочем столе";
+					startDownload = "Начать загрузку пакета?\n\nПакет развёртки будет сохранён на Рабочем столе " +
+						"и запущен автоматически";
+
+					/*ToLaboratoryCombo.Items.Add ("Приветственная страница");
+					ToLaboratoryCombo.Items.Add ("FDL в Telegram");
+					ToLaboratoryCombo.Items.Add ("FDL на VK.com");*/
+					ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (false));
+					ToLaboratoryCombo.SelectedIndex = 0;
 
 					this.Text = AcceptMode ? "Политика разработки и соглашение пользователя" : "О приложении";
 					break;
@@ -183,7 +189,7 @@ namespace RD_AAOW
 					UpdatesPageButton.Text = "Checking updates...";
 					ADPButton.Text = AcceptMode ? "Open in &browser" : "&Policy and EULA";
 					ExitButton.Text = AcceptMode ? "&Accept" : "&OK";
-					AskDeveloper.Text = "Ask &developer";
+					AskDeveloper.Text = "Ask the &developer";
 					MisacceptButton.Text = "&Decline";
 
 					if (!desciptionHasBeenUpdated)
@@ -203,12 +209,18 @@ namespace RD_AAOW
 						"after installing it. Also you can view the DPModule presentation on YouTube by pressing “No” button";
 					packageFail = "Failed to download deployment package. Check your internet connection";
 					fileWriteFail = "Failed to save deployment package. Check your user access rights";
-					startDownload = "Download the package?\n\nThe deployment package will be saved on the Desktop";
+					startDownload = "Download the package?\n\nThe deployment package will be saved on the Desktop " +
+						"and started automatically";
+
+					/*ToLaboratoryCombo.Items.Add ("FDL’s welcome page");
+					ToLaboratoryCombo.Items.Add ("FDL on VK.com");
+					ToLaboratoryCombo.Items.Add ("FDL on Telegram");*/
+					ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (true));
+					ToLaboratoryCombo.SelectedIndex = 0;
 
 					this.Text = AcceptMode ? "Development policy and user agreement" : "About the application";
 					break;
 				}
-			ToLaboratory.Text = RDGenerics.AssemblyCompany;
 
 			// Запуск проверки обновлений
 			HardWorkExecutor hwe;
@@ -379,28 +391,20 @@ namespace RD_AAOW
 
 		private void ToLaboratory_Click (object sender, EventArgs e)
 			{
-			string msg;
-			if (al == SupportedLanguages.ru_ru)
-				msg = "• «Да» – перейти на страницу Лаборатории в ВКонтакте;\n" +
-					"• «Нет» – перейти на начальную страницу Лаборатории";
-			else
-				msg = "• “Yes” – go to Laboratory’s page in Telegram;\n" +
-					"• “No” – go to Laboratory’s welcome page";
-
 			string link;
-			switch (MessageBox.Show (msg, ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNoCancel,
-				MessageBoxIcon.Question))
+			switch (ToLaboratoryCombo.SelectedIndex)
 				{
-				case DialogResult.Yes:
-					link = (al == SupportedLanguages.ru_ru) ? RDGenerics.LabVKLink : RDGenerics.LabTGLink;
-					break;
-
-				case DialogResult.No:
+				default:
 					link = RDGenerics.DPModuleLink;
 					break;
 
-				default:
-					return;
+				case 1:
+					link = RDGenerics.LabTGLink;
+					break;
+
+				case 2:
+					link = RDGenerics.LabVKLink;
+					break;
 				}
 
 			try
@@ -797,7 +801,7 @@ policy:
 
 			// Завершено. Отображение сообщения
 			((BackgroundWorker)sender).ReportProgress (-1, downloadSuccess);
-			Thread.Sleep (500);
+			/*Thread.Sleep (500);*/
 
 			e.Result = 0;
 			return;
@@ -980,6 +984,65 @@ policy:
 					{
 					Registry.SetValue ("HKEY_CLASSES_ROOT\\" + fileExt + "file", "NoOpen", "");
 					}
+				}
+			catch
+				{
+				return false;
+				}
+
+			return true;
+			}
+
+		/// <summary>
+		/// Метод выполняет регистрацию указанного протокола и привязывает его к текущему приложению
+		/// </summary>
+		/// <param name="ProtocolCode">Имя протокола; если передаётся расширение, точка отсекается</param>
+		/// <param name="ProtocolName">Название протокола</param>
+		/// <param name="ShowWarning">Флаг указывает, что необходимо отобразить предупреждение перед регистрацией</param>
+		/// <param name="FileIcon">Ресурс, хранящий значок формата файла</param>
+		/// <returns>Возвращает true в случае успеха</returns>
+		public static bool RegisterProtocol (string ProtocolCode, string ProtocolName, Icon FileIcon, bool ShowWarning)
+			{
+			// Подготовка
+			string protocol = ProtocolCode.ToLower ().Replace (".", "");
+
+			// Контроль
+			if (ShowWarning)
+				{
+				string msg = "Warning: required protocols will be registered using current app location.\n\n" +
+					"Make sure you will not change location of this application before using this feature.\n\n" +
+					"Do you want to continue?";
+
+				if (Localization.CurrentLanguage == SupportedLanguages.ru_ru)
+					msg = "Предупреждение: необходимые протоколы будут зарегистрированы с использованием " +
+						"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
+						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";
+
+				if (MessageBox.Show (msg, ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo,
+					MessageBoxIcon.Exclamation) == DialogResult.No)
+					return false;
+				}
+
+			// Выполнение
+			try
+				{
+				// Запись значка
+				FileStream FS = new FileStream (protocol + ".ico", FileMode.Create);
+				FileIcon.Save (FS);
+				FS.Close ();
+
+				// Запись значений реестра
+				Registry.SetValue ("HKEY_CLASSES_ROOT\\" + protocol, "", ProtocolName);
+				Registry.SetValue ("HKEY_CLASSES_ROOT\\" + protocol, "URL Protocol", "");
+
+				Registry.SetValue ("HKEY_CLASSES_ROOT\\" + protocol + "\\DefaultIcon", "", RDGenerics.AppStartupPath +
+					protocol + ".ico");
+
+				Registry.SetValue ("HKEY_CLASSES_ROOT\\" + protocol + "\\shell", "", "open");
+				Registry.SetValue ("HKEY_CLASSES_ROOT\\" + protocol + "\\shell\\open", "Icon",
+					RDGenerics.AppStartupPath + protocol + ".ico");
+				Registry.SetValue ("HKEY_CLASSES_ROOT\\" + protocol + "\\shell\\open\\command", "",
+					"\"" + Application.ExecutablePath + "\" \"%1\"");
 				}
 			catch
 				{
