@@ -80,8 +80,8 @@ namespace RD_AAOW
 
 		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult, cableTypeButton,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
-			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, ofdFNSButton,
-			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdDNSNameKButton, ofdIPKButton, ofdPortKButton,
+			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, /*ofdFNSButton,*/
+			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, /*ofdDNSNameKButton, ofdIPKButton, ofdPortKButton,*/
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -561,11 +561,14 @@ namespace RD_AAOW
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameKLabel", "Адрес ОКП:", true, false);
-			ofdDNSNameKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
+			/*ofdDNSNameKButton = */
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
 				ofdFieldBackColor, Field_Clicked, true);
-			ofdIPKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPK", OFD.OKPIP,
+			/*ofdIPKButton = */
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPK", OFD.OKPIP,
 				ofdFieldBackColor, Field_Clicked, true);
-			ofdPortKButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
+			/*ofdPortKButton = */
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
 				ofdFieldBackColor, Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDEmailLabel", "E-mail ОФД:", true, false);
@@ -577,7 +580,14 @@ namespace RD_AAOW
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", true, false);
-			ofdFNSButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
+			/*ofdFNSButton = */
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
+				ofdFieldBackColor, Field_Clicked, true);
+
+			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDYaDNSLabel", "Яндекс DNS:", true, false);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDYaDNS1", OFD.YandexDNSReq,
+				ofdFieldBackColor, Field_Clicked, true);
+			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDYaDNS2", OFD.YandexDNSAlt,
 				ofdFieldBackColor, Field_Clicked, true);
 
 			AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
@@ -1942,28 +1952,16 @@ namespace RD_AAOW
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			List<string> comm = new List<string> { "Приветственная страница", "FDL на VK.com", "FDL в Telegram" };
-			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm.ToArray ());
+			string[] comm = RDGenerics.GetCommunitiesNames (false);
+			string res = await aboutPage.DisplayActionSheet ("Выберите сообщество", "Отмена", null, comm);
 
-			if (!comm.Contains (res))
+			res = RDGenerics.GetCommunityLink (res, false);
+			if (string.IsNullOrWhiteSpace (res))
 				return;
 
 			try
 				{
-				switch (comm.IndexOf (res))
-					{
-					case 1:
-						await Launcher.OpenAsync (RDGenerics.LabVKLink);
-						break;
-
-					case 2:
-						await Launcher.OpenAsync (RDGenerics.LabTGLink);
-						break;
-
-					case 0:
-						await Launcher.OpenAsync (RDGenerics.DPModuleLink);
-						break;
-					}
+				await Launcher.OpenAsync (res);
 				}
 			catch
 				{

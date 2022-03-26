@@ -48,6 +48,16 @@ namespace RD_AAOW
 		public const string OKPPort = "26101";
 
 		/// <summary>
+		/// Предпочитаемый DNS Яндекс (РФ)
+		/// </summary>
+		public const string YandexDNSReq = "77.88.8.8";
+
+		/// <summary>
+		/// Альтернативный DNS Яндекс (РФ)
+		/// </summary>
+		public const string YandexDNSAlt = "77.88.8.1";
+
+		/// <summary>
 		/// Конструктор. Инициализирует таблицу ОФД
 		/// </summary>
 		public OFD ()

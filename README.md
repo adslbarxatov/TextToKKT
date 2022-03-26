@@ -1,5 +1,5 @@
-# TextToKKT v 8.5.5
-> PCC: 000F5E87B2EE214C
+# TextToKKT v 8.5.6
+> PCC: 000F6487C9C7D555
 
 
 Утилита сервис-инженера ККТ (контрольно-кассовая техника, 54-ФЗ)
@@ -42,8 +42,8 @@
 ## Требования
 
 - Windows XP or newer / или новее;
-- [Microsoft .NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=17718);
-- [Microsoft VC++ 2010 redistributables](https://www.microsoft.com/en-us/download/details.aspx?id=26999) *(для модуля FNReader)*.
+- [Microsoft .NET Framework 4.0](https://microsoft.com/en-us/download/details.aspx?id=17718);
+- [Microsoft VC++ 2010 redistributables](https://microsoft.com/en-us/download/details.aspx?id=26999) *(для модуля FNReader)*.
 
 Язык интерфейса: ru_ru.
 

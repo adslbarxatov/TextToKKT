@@ -86,6 +86,12 @@
 					<Button x:Name="OFDNalogSite" />
 				</StackLayout>
 
+				<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+					<Label x:Name="OFDYaDNSLabel" VerticalOptions="Center" />
+					<Button x:Name="OFDYaDNS1" />
+					<Button x:Name="OFDYaDNS2" />
+				</StackLayout>
+
 				<Label x:Name="OFDHelpLabel" />
 
 				<Label />

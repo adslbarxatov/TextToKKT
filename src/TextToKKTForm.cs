@@ -124,6 +124,8 @@ namespace RD_AAOW
 			OFDDNSNameK.Text = OFD.OKPSite;
 			OFDIPK.Text = OFD.OKPIP;
 			OFDPortK.Text = OFD.OKPPort;
+			OFDYaDNS1.Text = OFD.YandexDNSReq;
+			OFDYaDNS2.Text = OFD.YandexDNSAlt;
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
