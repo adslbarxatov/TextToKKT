@@ -1,4 +1,4 @@
-﻿// Общие перечисления
+// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -590,6 +590,16 @@ enum TLVTags
 	// Итоги по признакам (1232, 1233)
 	TotalsRevIncoming2 = 0x04D0,
 	TotalsRevOutcoming2 = 0x04D1,
+
+	// Отраслевые реквизиты чека и предмета расчёта (1260, 1261)
+	IndustryPropsForObject = 0x04EC,
+	IndustryPropsForBill = 0x04ED,
+		
+	// Отраслевые реквизиты чека и предмета расчёта (1262 - 1265)
+	IndustryProps_FOIV_ID = 0x04EE,
+	IndustryProps_Date = 0x04EF,
+	IndustryProps_Number = 0x04F0,
+	IndustryProps_Content = 0x04F1,
 
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
