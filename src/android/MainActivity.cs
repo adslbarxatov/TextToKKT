@@ -234,7 +234,7 @@ namespace RD_AAOW.Droid
 
 			// Прикрепление ссылки для перехода в основное приложение
 			masterIntent = new Intent (this, typeof (NotificationLink));
-			masterPendingIntent = PendingIntent.GetService (this, 0, masterIntent, 0);
+			masterPendingIntent = PendingIntent.GetService (this, 0, masterIntent, PendingIntentFlags.Immutable);	// Android S+ req
 			notBuilder.SetContentIntent (masterPendingIntent);
 
 			// Стартовое сообщение
@@ -353,7 +353,8 @@ namespace RD_AAOW.Droid
 			AndroidSupport.StopRequested = false;
 			Intent mainActivity = new Intent (this, typeof (MainActivity));
 			mainActivity.PutExtra ("Tab", 0);
-			PendingIntent.GetActivity (this, 0, mainActivity, PendingIntentFlags.UpdateCurrent).Send ();
+			PendingIntent.GetActivity (this, 0, mainActivity, 
+				PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable).Send ();   // Android S+ req
 			}
 		}
 
