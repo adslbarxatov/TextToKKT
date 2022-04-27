@@ -1039,6 +1039,8 @@ namespace RD_AAOW
 					{
 					kktCodesResultText.Text += (s + "   ");
 					}
+
+				kktCodesResultText.Text += (((i + 1) % 5 != 0) ? "   " : "\n");
 				}
 
 			// Означает успех/ошибку преобразования

@@ -163,7 +163,7 @@ namespace RD_AAOW
 					return "DataMatrix для блоков сигарет";
 
 				case SupportedBarcodesTypes.DataMatrixMedicines:
-					return "DataMatrix для лекарств и остатков обуви";
+					return "DataMatrix для лекарств, остатков обуви и одежды";
 
 				case SupportedBarcodesTypes.DataMatrixShoes:
 					return "DataMatrix для обуви";

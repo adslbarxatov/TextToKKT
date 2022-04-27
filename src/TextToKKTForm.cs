@@ -560,13 +560,15 @@ namespace RD_AAOW
 
 				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b[0])) == KKTCodes.EmptyCode)
 					{
-					ResultText.Text += "xxx\t";
+					ResultText.Text += "xxx";
 					res = false;
 					}
 				else
 					{
-					ResultText.Text += (s + "\t");
+					ResultText.Text += s;
 					}
+
+				ResultText.Text += (((i + 1) % 5 != 0) ? "\t" : "\r\n");
 				}
 
 			// Означает успех/ошибку преобразования
