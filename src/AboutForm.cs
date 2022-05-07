@@ -20,13 +20,116 @@ namespace RD_AAOW
 		private string projectLink, updatesLink, userManualLink;
 		private SupportedLanguages al;
 		private string updatesMessage = "", updatesMessageForText = "", description = "",
-			policyLoaderCaption = "", registryFail = "",
-			dpModuleAbsence = "", startDownload = "", packageFail = "", fileWriteFail = "";
+			policyLoaderCaption = "", registryFail = "", dpModuleAbsence = "", 
+			startDownload = "", packageFail = "", fileWriteFail = "", versionDescription = "", 
+			adpRevision = "";
+		private bool accepted = false;              // Флаг принятия Политики
 
-		private string versionDescription = "";
+		private static string[][] locale = new string[][] { new string [] {
 
-		private bool accepted = false;                                              // Флаг принятия Политики
-		private string adpRevision = "";                                            // Последняя версия ADP
+			"&Руководство",
+			"&О проекте",
+			"Поиск обновлений...",
+			"Открыть в &браузере",		// 03
+			"&Политика и EULA",
+			"&Принять",
+			"&ОК",
+			"Спросить ра&зработчика",	// 07
+			"О&тклонить",
+
+			"Не удалось получить текст Политики. Попробуйте использовать кнопку перехода в браузер",
+			"[Проверка обновлений...]\r\n\r\n",
+			"Подготовка к запуску...",	// 11
+
+			" не может сохранить настройки в реестре Windows. Оно не будет работать корректно.\n\n" +
+			"Попробуйте выполнить следующие изменения в свойствах исполняемого файла:\n" +
+			"• разблокируйте приложение в общих свойствах (кнопка «Разблокировать»);\n" +
+			"• включите запуск от имени администратора для всех пользователей в настройках совместимости.\n\n" +
+			"После этого перезапустите программу и повторите попытку",
+
+			"Инструмент развёртки пакетов DPModule не найден на этом ПК. Перейти к его загрузке?" +
+			"\n\nВы можете обновить этот продукт прямо из DPModule или вернуться сюда после его установки. " +
+			"Также Вы можете ознакомиться с презентацией DPModule на YouTube, нажав кнопку «Нет»",
+
+			"Не удалось загрузить пакет развёртки. Проверьте Ваше подключение к Интернету",
+			"Не удалось сохранить пакет развёртки. Проверьте Ваши права доступа",
+
+			"Начать загрузку пакета?\n\nПакет развёртки будет сохранён на Рабочем столе " +
+			"и запущен автоматически",	// 16
+
+			"Политика разработки и соглашение пользователя",
+			"О приложении",
+			"Версия актуальна",
+			"[Версия актуальна, см. описание в конце]",		// 20
+			"&Доступна {0:S}",
+			"[Доступна {0:S}, см. описание в конце]",
+			"Сервер" + "\xA0" + "недоступен",
+			"[Страница обновлений недоступна]",		// 24
+
+			"Загрузка установочного пакета:",
+			"Успешно",
+
+			"Предупреждение: необходимые расширения файлов будут зарегистрированы с использованием " +
+			"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
+			"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?",
+
+			"Предупреждение: необходимые протоколы будут зарегистрированы с использованием " +
+			"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
+			"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?",		// 28
+
+			}, new string [] {
+
+			"&User manual",
+			"Project’s &webpage",
+			"Checking updates...",
+			"Open in &browser",			// 03
+			"&Policy and EULA",
+			"&Accept",
+			"&OK",
+			"Ask the &developer",		// 07
+			"&Decline",
+
+			"Failed to get Policy text. Try button to open it in browser",
+			"[Checking for updates...]\r\n\r\n",
+			"Preparing for launch...",	// 11
+		
+			" cannot save settings in the Windows registry. It will not work properly.\n\n" +
+			"Try the following changes to properties of the executable file:\n" +
+			"• unblock the app in general properties (“Unblock” button);\n" +
+			"• enable running as administrator for all users in compatibility settings.\n\n" +
+			"Then restart the program and try again",
+
+			"DPModule, the packages deployment tool isn’t installed on this PC. " +
+			"Download it?\n\nYou can update this product directly from DPModule or come back here " +
+			"after installing it. Also you can view the DPModule presentation on YouTube by pressing “No” button",
+
+			"Failed to download deployment package. Check your internet connection",
+			"Failed to save deployment package. Check your user access rights",
+
+			"Download the package?\n\nThe deployment package will be saved on the Desktop " +
+			"and started automatically",	// 16
+
+			"Development policy and user agreement",
+			"About the application",
+			"App is up-to-date",
+			"[Version is up to date, see description below]",	// 20
+			"{0:S} a&vailable",
+			"[{0:S} is available, see description below]",
+			"Not" + "\xA0" + "available",
+			"[Updates page is unavailable]",	// 24
+
+			"Downloading deployment package:",
+			"Success",
+
+			"Warning: required file extensions will be registered using current app location.\n\n" +
+			"Make sure you will not change location of this application before using this feature.\n\n" +
+			"Do you want to continue?",
+
+			"Warning: required protocols will be registered using current app location.\n\n" +
+			"Make sure you will not change location of this application before using this feature.\n\n" +
+			"Do you want to continue?",			// 28
+
+			} };
 
 		/// <summary>
 		/// Ключ реестра, хранящий версию, на которой отображалась справка
@@ -120,9 +223,7 @@ namespace RD_AAOW
 					helpShownAt = Registry.GetValue (RDGenerics.AssemblySettingsKey,
 						LastShownVersionKey, "").ToString ();
 					}
-				catch
-					{
-					}
+				catch { }
 
 				// Если поле пустое, устанавливается минимальное значение
 				if (adpRevision == "")
@@ -142,84 +243,92 @@ namespace RD_AAOW
 				return 1;
 
 			// Настройка контролов
-			switch (al)
+			/*switch (al)
 				{
-				case SupportedLanguages.ru_ru:
-					UserManualButton.Text = "&Руководство";
-					ProjectPageButton.Text = "&О проекте";
-					UpdatesPageButton.Text = "Поиск обновлений...";
-					ADPButton.Text = AcceptMode ? "Открыть в &браузере" : "&Политика и EULA";
-					ExitButton.Text = AcceptMode ? "&Принять" : "&ОК";
-					AskDeveloper.Text = "Спросить ра&зработчика";
-					MisacceptButton.Text = "О&тклонить";
+				case SupportedLanguages.ru_ru:*/
+			UserManualButton.Text = locale[(int)al][0];     /*"&Руководство";*/
+			ProjectPageButton.Text = locale[(int)al][1];    /*"&О проекте";*/
+			UpdatesPageButton.Text = locale[(int)al][2];    /*"Поиск обновлений...";*/
+			ADPButton.Text = locale[(int)al][AcceptMode ? 3 : 4];   /*"Открыть в &браузере" : "&Политика и EULA";*/
+			ExitButton.Text = locale[(int)al][AcceptMode ? 5 : 6];  /*"&Принять" : "&ОК";*/
+			AskDeveloper.Text = locale[(int)al][7];                 /*"Спросить ра&зработчика";*/
+			MisacceptButton.Text = locale[(int)al][8];              /*"О&тклонить";*/
 
-					if (!desciptionHasBeenUpdated)
-						DescriptionBox.Text = AcceptMode ? "Не удалось получить текст Политики. " +
-						"Попробуйте использовать кнопку перехода в браузер" :
-						"[Проверка обновлений...]\r\n\r\n" + description;
+			if (!desciptionHasBeenUpdated)
+				DescriptionBox.Text = locale[(int)al][AcceptMode ? 9 : 10] + description;
+			/*AcceptMode ? "Не удалось получить текст Политики. " +
+			"Попробуйте использовать кнопку перехода в браузер" :
+			"[Проверка обновлений...]\r\n\r\n" + description;*/
 
-					policyLoaderCaption = "Подготовка к запуску...";
-					registryFail = ProgramDescription.AssemblyMainName +
-						" не может сохранить настройки в реестре Windows. Оно не будет работать корректно.\n\n" +
-						"Попробуйте выполнить следующие изменения в свойствах исполняемого файла:\n" +
-						"• разблокируйте приложение в общих свойствах (кнопка «Разблокировать»);\n" +
-						"• включите запуск от имени администратора для всех пользователей в настройках совместимости.\n\n" +
-						"После этого перезапустите программу и повторите попытку";
+			policyLoaderCaption = locale[(int)al][11];      /*"Подготовка к запуску...";*/
+			registryFail = ProgramDescription.AssemblyMainName + locale[(int)al][12];
+			/*" не может сохранить настройки в реестре Windows. Оно не будет работать корректно.\n\n" +
+			"Попробуйте выполнить следующие изменения в свойствах исполняемого файла:\n" +
+			"• разблокируйте приложение в общих свойствах (кнопка «Разблокировать»);\n" +
+			"• включите запуск от имени администратора для всех пользователей в настройках совместимости.\n\n" +
+			"После этого перезапустите программу и повторите попытку";*/
 
-					dpModuleAbsence = "Инструмент развёртки пакетов DPModule не найден на этом ПК. Перейти к его загрузке?" +
-						"\n\nВы можете обновить этот продукт прямо из DPModule или вернуться сюда после его установки. " +
-						"Также Вы можете ознакомиться с презентацией DPModule на YouTube, нажав кнопку «Нет»";
-					packageFail = "Не удалось загрузить пакет развёртки. Проверьте Ваше подключение к Интернету";
-					fileWriteFail = "Не удалось сохранить пакет развёртки. Проверьте Ваши права доступа";
-					startDownload = "Начать загрузку пакета?\n\nПакет развёртки будет сохранён на Рабочем столе " +
-						"и запущен автоматически";
+			dpModuleAbsence = locale[(int)al][13];
+			/*"Инструмент развёртки пакетов DPModule не найден на этом ПК. Перейти к его загрузке?" +
+			"\n\nВы можете обновить этот продукт прямо из DPModule или вернуться сюда после его установки. " +
+			"Также Вы можете ознакомиться с презентацией DPModule на YouTube, нажав кнопку «Нет»";*/
+			packageFail = locale[(int)al][14];
+			/*"Не удалось загрузить пакет развёртки. Проверьте Ваше подключение к Интернету";*/
+			fileWriteFail = locale[(int)al][15];
+			/*"Не удалось сохранить пакет развёртки. Проверьте Ваши права доступа";*/
+			startDownload = locale[(int)al][16];
+			/*"Начать загрузку пакета?\n\nПакет развёртки будет сохранён на Рабочем столе " +
+			"и запущен автоматически";*/
 
-					ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (false));
-					ToLaboratoryCombo.SelectedIndex = 0;
+			if (ToLaboratoryCombo.Items.Count < 1)
+				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (al != SupportedLanguages.ru_ru));
+			ToLaboratoryCombo.SelectedIndex = 0;
 
-					this.Text = AcceptMode ? "Политика разработки и соглашение пользователя" : "О приложении";
-					break;
+			this.Text = locale[(int)al][AcceptMode ? 17 : 18];
+			/*"Политика разработки и соглашение пользователя" : "О приложении";*/
+			/*	break;
 
-				default:    // en_us
-					UserManualButton.Text = "&User manual";
-					ProjectPageButton.Text = "Project’s &webpage";
-					UpdatesPageButton.Text = "Checking updates...";
-					ADPButton.Text = AcceptMode ? "Open in &browser" : "&Policy and EULA";
-					ExitButton.Text = AcceptMode ? "&Accept" : "&OK";
-					AskDeveloper.Text = "Ask the &developer";
-					MisacceptButton.Text = "&Decline";
+			default:    // en_us
+				UserManualButton.Text = "&User manual";
+				ProjectPageButton.Text = "Project’s &webpage";
+				UpdatesPageButton.Text = "Checking updates...";
+				ADPButton.Text = AcceptMode ? "Open in &browser" : "&Policy and EULA";
+				ExitButton.Text = AcceptMode ? "&Accept" : "&OK";
+				AskDeveloper.Text = "Ask the &developer";
+				MisacceptButton.Text = "&Decline";
 
-					if (!desciptionHasBeenUpdated)
-						DescriptionBox.Text = AcceptMode ? "Failed to get Policy text. Try button to open it in browser" :
-							"[Checking for updates...]\r\n\r\n" + description;
+				if (!desciptionHasBeenUpdated)
+					DescriptionBox.Text = AcceptMode ? "Failed to get Policy text. Try button to open it in browser" :
+						"[Checking for updates...]\r\n\r\n" + description;
 
-					policyLoaderCaption = "Preparing for launch...";
-					registryFail = ProgramDescription.AssemblyMainName +
-						" cannot save settings in the Windows registry. It will not work properly.\n\n" +
-						"Try the following changes to properties of the executable file:\n" +
-						"• unblock the app in general properties (“Unblock” button);\n" +
-						"• enable running as administrator for all users in compatibility settings.\n\n" +
-						"Then restart the program and try again";
+				policyLoaderCaption = "Preparing for launch...";
+				registryFail = ProgramDescription.AssemblyMainName +
+					" cannot save settings in the Windows registry. It will not work properly.\n\n" +
+					"Try the following changes to properties of the executable file:\n" +
+					"• unblock the app in general properties (“Unblock” button);\n" +
+					"• enable running as administrator for all users in compatibility settings.\n\n" +
+					"Then restart the program and try again";
 
-					dpModuleAbsence = "DPModule, the packages deployment tool isn’t installed on this PC. " +
-						"Download it?\n\nYou can update this product directly from DPModule or come back here " +
-						"after installing it. Also you can view the DPModule presentation on YouTube by pressing “No” button";
-					packageFail = "Failed to download deployment package. Check your internet connection";
-					fileWriteFail = "Failed to save deployment package. Check your user access rights";
-					startDownload = "Download the package?\n\nThe deployment package will be saved on the Desktop " +
-						"and started automatically";
+				dpModuleAbsence = "DPModule, the packages deployment tool isn’t installed on this PC. " +
+					"Download it?\n\nYou can update this product directly from DPModule or come back here " +
+					"after installing it. Also you can view the DPModule presentation on YouTube by pressing “No” button";
+				packageFail = "Failed to download deployment package. Check your internet connection";
+				fileWriteFail = "Failed to save deployment package. Check your user access rights";
+				startDownload = "Download the package?\n\nThe deployment package will be saved on the Desktop " +
+					"and started automatically";
 
-					ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (true));
-					ToLaboratoryCombo.SelectedIndex = 0;
+				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (true));
+				ToLaboratoryCombo.SelectedIndex = 0;
 
-					this.Text = AcceptMode ? "Development policy and user agreement" : "About the application";
-					break;
-				}
+				this.Text = AcceptMode ? "Development policy and user agreement" : "About the application";
+				break;
+			}*/
 
 			// Запуск проверки обновлений
 			HardWorkExecutor hwe;
 			if (!AcceptMode)
 				{
+				UpdatesPageButton.Enabled = false;
 #if DPMODULE
 				hwe = new HardWorkExecutor (UpdatesChecker, null, null, false, false, false);
 #else
@@ -559,8 +668,12 @@ namespace RD_AAOW
 			bool htmlError = true;  // Сбрасывается при успешной загрузке
 
 			// Разбор ответа (извлечение версии)
-			string[] htmlMarkers = { "</a>" + ProgramDescription.AssemblyMainName, "</h1>",
-								   ChangeLogMarkerLeft, ChangeLogMarkerRight };
+			string[] htmlMarkers = {
+				"</a>" + ProgramDescription.AssemblyMainName,
+				"</h1>",
+				ChangeLogMarkerLeft,
+				ChangeLogMarkerRight
+				};
 
 			int i = html.IndexOf (htmlMarkers[0]);
 			if (i < 0)
@@ -592,34 +705,35 @@ namespace RD_AAOW
 			versionDescription = "\r\n" + ApplyReplacements (versionDescription);
 
 			// Отображение результата
-			switch (al)
+			/*switch (al)
 				{
-				case SupportedLanguages.ru_ru:
-					if (ProgramDescription.AssemblyTitle.EndsWith (version))
-						{
-						updatesMessage = "Версия актуальна";
-						updatesMessageForText = "[Версия актуальна, см. описание в конце]";
-						}
-					else
-						{
-						updatesMessage = "&Доступна " + version;
-						updatesMessageForText = "[Доступна " + version + ", см. описание в конце]";
-						}
-					break;
-
-				default:    // en_us
-					if (ProgramDescription.AssemblyTitle.EndsWith (version))
-						{
-						updatesMessage = "App is up-to-date";
-						updatesMessageForText = "[Version is up to date, see description below]";
-						}
-					else
-						{
-						updatesMessage = version + " a&vailable";
-						updatesMessageForText = "[" + version + " is available, see description below]";
-						}
-					break;
+				case SupportedLanguages.ru_ru:*/
+			if (ProgramDescription.AssemblyTitle.EndsWith (version))
+				{
+				updatesMessage = locale[(int)al][19];           /*"Версия актуальна";*/
+				updatesMessageForText = locale[(int)al][20];    /*"[Версия актуальна, см. описание в конце]";*/
 				}
+			else
+				{
+				updatesMessage = string.Format (locale[(int)al][21], version);      /*"&Доступна " + version;*/
+				updatesMessageForText = string.Format (locale[(int)al][22], version);
+				/*"[Доступна " + version + ", см. описание в конце]";*/
+				}
+			/*break;
+
+			default:    // en_us
+			if (ProgramDescription.AssemblyTitle.EndsWith (version))
+				{
+				updatesMessage = "App is up-to-date";
+				updatesMessageForText = "[Version is up to date, see description below]";
+				}
+			else
+				{
+				updatesMessage = version + " a&vailable";
+				updatesMessageForText = "[" + version + " is available, see description below]";
+				}
+			break;
+			}*/
 			htmlError = false;
 
 // Получение обновлений Политики (ошибки игнорируются)
@@ -654,18 +768,18 @@ policy:
 				}
 
 			// Есть проблема при загрузке страницы. Отмена
-			switch (al)
+			/*switch (al)
 				{
-				case SupportedLanguages.ru_ru:
-					updatesMessage = "Недоступны";
-					updatesMessageForText = "[Страница обновлений недоступна]";
-					break;
+				case SupportedLanguages.ru_ru:*/
+			updatesMessage = locale[(int)al][23];           /*"Недоступны";*/
+			updatesMessageForText = locale[(int)al][24];    /*"[Страница обновлений недоступна]";*/
+			/*break;
 
-				default:    // en_us
-					updatesMessage = "Unavailable";
-					updatesMessageForText = "[Updates page is unavailable]";
-					break;
-				}
+			default:    // en_us
+			updatesMessage = "Unavailable";
+			updatesMessageForText = "[Updates page is unavailable]";
+			break;
+			}*/
 
 			e.Result = -2;
 			return;
@@ -681,13 +795,13 @@ policy:
 
 			// Инициализация полосы загрузки
 			SupportedLanguages al = Localization.CurrentLanguage;
-			string downloadMessage = "Downloading deployment package:",
-				downloadSuccess = "Success";
+			string downloadMessage = locale[(int)al][25];   /*"Downloading deployment package:",*/
+			string downloadSuccess = locale[(int)al][26];   /*"Success";
 			if (al == SupportedLanguages.ru_ru)
 				{
 				downloadMessage = "Загрузка установочного пакета:";
 				downloadSuccess = "Успешно";
-				}
+				}*/
 
 			string report = downloadMessage + "\n" + Path.GetFileName (paths[1]);
 			((BackgroundWorker)sender).ReportProgress ((int)HardWorkExecutor.ProgressBarSize, report);
@@ -795,7 +909,6 @@ policy:
 
 			// Завершено. Отображение сообщения
 			((BackgroundWorker)sender).ReportProgress (-1, downloadSuccess);
-			/*Thread.Sleep (500);*/
 
 			e.Result = 0;
 			return;
@@ -938,17 +1051,17 @@ policy:
 			// Контроль
 			if (ShowWarning)
 				{
-				string msg = "Warning: required file extensions will be registered using current app location.\n\n" +
+				/*string msg = "Warning: required file extensions will be registered using current app location.\n\n" +
 					"Make sure you will not change location of this application before using this feature.\n\n" +
 					"Do you want to continue?";
 
 				if (Localization.CurrentLanguage == SupportedLanguages.ru_ru)
 					msg = "Предупреждение: необходимые расширения файлов будут зарегистрированы с использованием " +
 						"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
-						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";
+						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";*/
 
-				if (MessageBox.Show (msg, ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo,
-					MessageBoxIcon.Exclamation) == DialogResult.No)
+				if (MessageBox.Show (locale[(int)Localization.CurrentLanguage][27], ProgramDescription.AssemblyTitle,
+					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
 					return false;
 				}
 
@@ -1003,17 +1116,17 @@ policy:
 			// Контроль
 			if (ShowWarning)
 				{
-				string msg = "Warning: required protocols will be registered using current app location.\n\n" +
+				/*string msg = "Warning: required protocols will be registered using current app location.\n\n" +
 					"Make sure you will not change location of this application before using this feature.\n\n" +
 					"Do you want to continue?";
 
 				if (Localization.CurrentLanguage == SupportedLanguages.ru_ru)
 					msg = "Предупреждение: необходимые протоколы будут зарегистрированы с использованием " +
 						"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
-						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";
+						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";*/
 
-				if (MessageBox.Show (msg, ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo,
-					MessageBoxIcon.Exclamation) == DialogResult.No)
+				if (MessageBox.Show (locale[(int)Localization.CurrentLanguage][28], ProgramDescription.AssemblyTitle,
+					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
 					return false;
 				}
 

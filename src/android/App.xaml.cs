@@ -1997,9 +1997,16 @@ namespace RD_AAOW
 			{
 			if (ca.TestPass (unlockField.Text))
 				{
-				unlockField.IsEnabled = false;
-				unlockLabel.Text = ConfigAccessor.UnlockMessage;
-				unlockLabel.HorizontalTextAlignment = TextAlignment.Center;
+				unlockLabel.Text = ca.LockMessage;
+				if (!ca.AllowExtendedFunctionsLevel2)
+					{
+					unlockField.Text = "";
+					}
+				else
+					{
+					unlockField.IsEnabled = false;
+					unlockLabel.HorizontalTextAlignment = TextAlignment.Center;
+					}
 				}
 			}
 

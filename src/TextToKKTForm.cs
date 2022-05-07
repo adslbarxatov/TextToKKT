@@ -360,9 +360,16 @@ namespace RD_AAOW
 			{
 			if (ca.TestPass (UnlockField.Text))
 				{
-				UnlockField.Enabled = false;
-				UnlockLabel.Text = ConfigAccessor.UnlockMessage;
-				UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
+				UnlockLabel.Text = ca.LockMessage;
+				if (!ca.AllowExtendedFunctionsLevel2)
+					{
+					UnlockField.Text = "";
+					}
+				else
+					{
+					UnlockField.Enabled = false;
+					UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
+					}
 				}
 			}
 
