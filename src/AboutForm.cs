@@ -20,8 +20,8 @@ namespace RD_AAOW
 		private string projectLink, updatesLink, userManualLink;
 		private SupportedLanguages al;
 		private string updatesMessage = "", updatesMessageForText = "", description = "",
-			policyLoaderCaption = "", registryFail = "", dpModuleAbsence = "", 
-			startDownload = "", packageFail = "", fileWriteFail = "", versionDescription = "", 
+			policyLoaderCaption = "", registryFail = "", dpModuleAbsence = "",
+			startDownload = "", packageFail = "", fileWriteFail = "", versionDescription = "",
 			adpRevision = "";
 		private bool accepted = false;              // Флаг принятия Политики
 
@@ -243,86 +243,29 @@ namespace RD_AAOW
 				return 1;
 
 			// Настройка контролов
-			/*switch (al)
-				{
-				case SupportedLanguages.ru_ru:*/
-			UserManualButton.Text = locale[(int)al][0];     /*"&Руководство";*/
-			ProjectPageButton.Text = locale[(int)al][1];    /*"&О проекте";*/
-			UpdatesPageButton.Text = locale[(int)al][2];    /*"Поиск обновлений...";*/
-			ADPButton.Text = locale[(int)al][AcceptMode ? 3 : 4];   /*"Открыть в &браузере" : "&Политика и EULA";*/
-			ExitButton.Text = locale[(int)al][AcceptMode ? 5 : 6];  /*"&Принять" : "&ОК";*/
-			AskDeveloper.Text = locale[(int)al][7];                 /*"Спросить ра&зработчика";*/
-			MisacceptButton.Text = locale[(int)al][8];              /*"О&тклонить";*/
+			UserManualButton.Text = locale[(int)al][0];
+			ProjectPageButton.Text = locale[(int)al][1];
+			UpdatesPageButton.Text = locale[(int)al][2];
+			ADPButton.Text = locale[(int)al][AcceptMode ? 3 : 4];
+			ExitButton.Text = locale[(int)al][AcceptMode ? 5 : 6];
+			AskDeveloper.Text = locale[(int)al][7];
+			MisacceptButton.Text = locale[(int)al][8];
 
 			if (!desciptionHasBeenUpdated)
 				DescriptionBox.Text = locale[(int)al][AcceptMode ? 9 : 10] + description;
-			/*AcceptMode ? "Не удалось получить текст Политики. " +
-			"Попробуйте использовать кнопку перехода в браузер" :
-			"[Проверка обновлений...]\r\n\r\n" + description;*/
 
-			policyLoaderCaption = locale[(int)al][11];      /*"Подготовка к запуску...";*/
+			policyLoaderCaption = locale[(int)al][11];
 			registryFail = ProgramDescription.AssemblyMainName + locale[(int)al][12];
-			/*" не может сохранить настройки в реестре Windows. Оно не будет работать корректно.\n\n" +
-			"Попробуйте выполнить следующие изменения в свойствах исполняемого файла:\n" +
-			"• разблокируйте приложение в общих свойствах (кнопка «Разблокировать»);\n" +
-			"• включите запуск от имени администратора для всех пользователей в настройках совместимости.\n\n" +
-			"После этого перезапустите программу и повторите попытку";*/
-
 			dpModuleAbsence = locale[(int)al][13];
-			/*"Инструмент развёртки пакетов DPModule не найден на этом ПК. Перейти к его загрузке?" +
-			"\n\nВы можете обновить этот продукт прямо из DPModule или вернуться сюда после его установки. " +
-			"Также Вы можете ознакомиться с презентацией DPModule на YouTube, нажав кнопку «Нет»";*/
 			packageFail = locale[(int)al][14];
-			/*"Не удалось загрузить пакет развёртки. Проверьте Ваше подключение к Интернету";*/
 			fileWriteFail = locale[(int)al][15];
-			/*"Не удалось сохранить пакет развёртки. Проверьте Ваши права доступа";*/
 			startDownload = locale[(int)al][16];
-			/*"Начать загрузку пакета?\n\nПакет развёртки будет сохранён на Рабочем столе " +
-			"и запущен автоматически";*/
 
 			if (ToLaboratoryCombo.Items.Count < 1)
 				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (al != SupportedLanguages.ru_ru));
 			ToLaboratoryCombo.SelectedIndex = 0;
 
 			this.Text = locale[(int)al][AcceptMode ? 17 : 18];
-			/*"Политика разработки и соглашение пользователя" : "О приложении";*/
-			/*	break;
-
-			default:    // en_us
-				UserManualButton.Text = "&User manual";
-				ProjectPageButton.Text = "Project’s &webpage";
-				UpdatesPageButton.Text = "Checking updates...";
-				ADPButton.Text = AcceptMode ? "Open in &browser" : "&Policy and EULA";
-				ExitButton.Text = AcceptMode ? "&Accept" : "&OK";
-				AskDeveloper.Text = "Ask the &developer";
-				MisacceptButton.Text = "&Decline";
-
-				if (!desciptionHasBeenUpdated)
-					DescriptionBox.Text = AcceptMode ? "Failed to get Policy text. Try button to open it in browser" :
-						"[Checking for updates...]\r\n\r\n" + description;
-
-				policyLoaderCaption = "Preparing for launch...";
-				registryFail = ProgramDescription.AssemblyMainName +
-					" cannot save settings in the Windows registry. It will not work properly.\n\n" +
-					"Try the following changes to properties of the executable file:\n" +
-					"• unblock the app in general properties (“Unblock” button);\n" +
-					"• enable running as administrator for all users in compatibility settings.\n\n" +
-					"Then restart the program and try again";
-
-				dpModuleAbsence = "DPModule, the packages deployment tool isn’t installed on this PC. " +
-					"Download it?\n\nYou can update this product directly from DPModule or come back here " +
-					"after installing it. Also you can view the DPModule presentation on YouTube by pressing “No” button";
-				packageFail = "Failed to download deployment package. Check your internet connection";
-				fileWriteFail = "Failed to save deployment package. Check your user access rights";
-				startDownload = "Download the package?\n\nThe deployment package will be saved on the Desktop " +
-					"and started automatically";
-
-				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (true));
-				ToLaboratoryCombo.SelectedIndex = 0;
-
-				this.Text = AcceptMode ? "Development policy and user agreement" : "About the application";
-				break;
-			}*/
 
 			// Запуск проверки обновлений
 			HardWorkExecutor hwe;
@@ -705,35 +648,16 @@ namespace RD_AAOW
 			versionDescription = "\r\n" + ApplyReplacements (versionDescription);
 
 			// Отображение результата
-			/*switch (al)
-				{
-				case SupportedLanguages.ru_ru:*/
 			if (ProgramDescription.AssemblyTitle.EndsWith (version))
 				{
-				updatesMessage = locale[(int)al][19];           /*"Версия актуальна";*/
-				updatesMessageForText = locale[(int)al][20];    /*"[Версия актуальна, см. описание в конце]";*/
+				updatesMessage = locale[(int)al][19];
+				updatesMessageForText = locale[(int)al][20];
 				}
 			else
 				{
-				updatesMessage = string.Format (locale[(int)al][21], version);      /*"&Доступна " + version;*/
+				updatesMessage = string.Format (locale[(int)al][21], version);
 				updatesMessageForText = string.Format (locale[(int)al][22], version);
-				/*"[Доступна " + version + ", см. описание в конце]";*/
 				}
-			/*break;
-
-			default:    // en_us
-			if (ProgramDescription.AssemblyTitle.EndsWith (version))
-				{
-				updatesMessage = "App is up-to-date";
-				updatesMessageForText = "[Version is up to date, see description below]";
-				}
-			else
-				{
-				updatesMessage = version + " a&vailable";
-				updatesMessageForText = "[" + version + " is available, see description below]";
-				}
-			break;
-			}*/
 			htmlError = false;
 
 // Получение обновлений Политики (ошибки игнорируются)
@@ -768,18 +692,8 @@ policy:
 				}
 
 			// Есть проблема при загрузке страницы. Отмена
-			/*switch (al)
-				{
-				case SupportedLanguages.ru_ru:*/
-			updatesMessage = locale[(int)al][23];           /*"Недоступны";*/
-			updatesMessageForText = locale[(int)al][24];    /*"[Страница обновлений недоступна]";*/
-			/*break;
-
-			default:    // en_us
-			updatesMessage = "Unavailable";
-			updatesMessageForText = "[Updates page is unavailable]";
-			break;
-			}*/
+			updatesMessage = locale[(int)al][23];
+			updatesMessageForText = locale[(int)al][24];
 
 			e.Result = -2;
 			return;
@@ -795,13 +709,8 @@ policy:
 
 			// Инициализация полосы загрузки
 			SupportedLanguages al = Localization.CurrentLanguage;
-			string downloadMessage = locale[(int)al][25];   /*"Downloading deployment package:",*/
-			string downloadSuccess = locale[(int)al][26];   /*"Success";
-			if (al == SupportedLanguages.ru_ru)
-				{
-				downloadMessage = "Загрузка установочного пакета:";
-				downloadSuccess = "Успешно";
-				}*/
+			string downloadMessage = locale[(int)al][25];
+			string downloadSuccess = locale[(int)al][26];
 
 			string report = downloadMessage + "\n" + Path.GetFileName (paths[1]);
 			((BackgroundWorker)sender).ReportProgress ((int)HardWorkExecutor.ProgressBarSize, report);
@@ -1049,21 +958,9 @@ policy:
 			string fileExt = FileExtension.ToLower ().Replace (".", "");
 
 			// Контроль
-			if (ShowWarning)
-				{
-				/*string msg = "Warning: required file extensions will be registered using current app location.\n\n" +
-					"Make sure you will not change location of this application before using this feature.\n\n" +
-					"Do you want to continue?";
-
-				if (Localization.CurrentLanguage == SupportedLanguages.ru_ru)
-					msg = "Предупреждение: необходимые расширения файлов будут зарегистрированы с использованием " +
-						"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
-						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";*/
-
-				if (MessageBox.Show (locale[(int)Localization.CurrentLanguage][27], ProgramDescription.AssemblyTitle,
-					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-					return false;
-				}
+			if (ShowWarning && (MessageBox.Show (locale[(int)Localization.CurrentLanguage][27], ProgramDescription.AssemblyTitle,
+				MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No))
+				return false;
 
 			// Выполнение
 			try
@@ -1114,21 +1011,9 @@ policy:
 			string protocol = ProtocolCode.ToLower ().Replace (".", "");
 
 			// Контроль
-			if (ShowWarning)
-				{
-				/*string msg = "Warning: required protocols will be registered using current app location.\n\n" +
-					"Make sure you will not change location of this application before using this feature.\n\n" +
-					"Do you want to continue?";
-
-				if (Localization.CurrentLanguage == SupportedLanguages.ru_ru)
-					msg = "Предупреждение: необходимые протоколы будут зарегистрированы с использованием " +
-						"текущего местоположения приложения.\n\nУбедитесь, что вы не будете менять расположение " +
-						"этого приложения перед использованием этой функции.\n\nВы хотите продолжить?";*/
-
-				if (MessageBox.Show (locale[(int)Localization.CurrentLanguage][28], ProgramDescription.AssemblyTitle,
-					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-					return false;
-				}
+			if (ShowWarning && (MessageBox.Show (locale[(int)Localization.CurrentLanguage][28], ProgramDescription.AssemblyTitle,
+				MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No))
+				return false;
 
 			// Выполнение
 			try
