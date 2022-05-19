@@ -22,7 +22,9 @@ namespace RD_AAOW
 
 			dnsNamesM = new List<string> (),
 			ipM = new List<string> (),
-			portsM = new List<string> ();
+			portsM = new List<string> (),
+
+			disabledMessages = new List<string> ();
 		private const string notFound = "[не найдено]";
 		private const string notFoundFlag = "?";
 		private const string equivalentFlag = "=";
@@ -82,7 +84,7 @@ namespace RD_AAOW
 					{
 					line++;
 					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-					if (values.Length != 10)
+					if (values.Length != 11)
 						continue;
 
 					inn.Add (values[0]);
@@ -114,6 +116,8 @@ namespace RD_AAOW
 						portsM.Add (ports[ports.Count - 1]);
 					else
 						portsM.Add (values[9]);
+
+					disabledMessages.Add ((values[10] == "-") ? "" : values[10]);
 					}
 				}
 			catch
@@ -149,8 +153,8 @@ namespace RD_AAOW
 			List<string> res = new List<string> ();
 
 			for (int i = 0; i < names.Count; i++)
-				if (!names[i].Contains ("см.") && !names[i].Contains ("анн."))
-					res.Add (names[i]);
+				/*if (!names[i].Contains ("см.") && !names[i].Contains ("анн."))*/
+				res.Add (names[i]);
 
 			int count = res.Count;
 			for (int i = 0; i < count; i++)
@@ -176,17 +180,17 @@ namespace RD_AAOW
 			{
 			// Защита
 			if (INN.Contains ("0000000000"))
-				return new List<string> { "?", "Без ОФД", "", "", "", "", "", "", "", "" };
+				return new List<string> { "?", "Без ОФД", "", "", "", "", "", "", "", "", "" };
 
 			if (!inn.Contains (INN))
-				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "", "", "", "" };
+				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "", "", "", "", "" };
 
 			// Возврат
 			int i = inn.IndexOf (INN);
 			return new List<string> {
 				inn[i], names[i],
 				dnsNames[i], ip[i], ports[i], emails[i], links[i],
-				dnsNamesM[i], ipM[i], portsM[i]
+				dnsNamesM[i], ipM[i], portsM[i], disabledMessages[i]
 				};
 			}
 

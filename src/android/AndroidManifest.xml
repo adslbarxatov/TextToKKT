@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- texttokkt.huawei -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="600821" android:versionName="8.7.3">
+	android:installLocation="internalOnly" android:versionCode="600822" android:versionName="8.8">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
 

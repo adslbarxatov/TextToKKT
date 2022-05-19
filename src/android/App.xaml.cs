@@ -75,13 +75,13 @@ namespace RD_AAOW
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
-			barcodeDescriptionLabel, rnmTip;
+			barcodeDescriptionLabel, rnmTip, ofdDisabledLabel;
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult, cableTypeButton,
 			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
-			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton, /*ofdFNSButton,*/
-			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, /*ofdDNSNameKButton, ofdIPKButton, ofdPortKButton,*/
+			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
+			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -561,13 +561,10 @@ namespace RD_AAOW
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDDNSNameKLabel", "Адрес ОКП:", true, false);
-			/*ofdDNSNameKButton = */
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
 				ofdFieldBackColor, Field_Clicked, true);
-			/*ofdIPKButton = */
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPK", OFD.OKPIP,
 				ofdFieldBackColor, Field_Clicked, true);
-			/*ofdPortKButton = */
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
 				ofdFieldBackColor, Field_Clicked, true);
 
@@ -580,7 +577,6 @@ namespace RD_AAOW
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:", true, false);
-			/*ofdFNSButton = */
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
 				ofdFieldBackColor, Field_Clicked, true);
 
@@ -601,6 +597,9 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSearchButton",
 				AndroidSupport.ButtonsDefaultNames.Find, ofdFieldBackColor, OFD_Find);
+
+			ofdDisabledLabel = AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDDisabledLabel",
+				"Аннулирован", errorColor);
 
 			OFDINN_TextChanged (null, null); // Протягивание значений
 
@@ -1835,6 +1834,10 @@ namespace RD_AAOW
 			ofdIPMButton.Text = parameters[8];
 			ofdPortMButton.Text = parameters[9];
 
+			// Обработка аннулированных ОФД
+			ofdDisabledLabel.IsEnabled = ofdDisabledLabel.IsVisible = !string.IsNullOrWhiteSpace (parameters[10]);
+			if (ofdDisabledLabel.IsEnabled)
+				ofdDisabledLabel.Text = parameters[10];
 			}
 
 		private async void OFDName_Clicked (object sender, EventArgs e)

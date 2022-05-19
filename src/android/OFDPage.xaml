@@ -25,6 +25,8 @@
 
 				<Label />
 
+				<Label x:Name="OFDDisabledLabel" HorizontalOptions="Center" />
+
 				<FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center">
 
 					<StackLayout HorizontalOptions="Center">

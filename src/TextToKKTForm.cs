@@ -856,6 +856,11 @@ namespace RD_AAOW
 			OFDDNSNameM.Text = parameters[7];
 			OFDIPM.Text = parameters[8];
 			OFDPortM.Text = parameters[9];
+
+			// Обработка аннулированных ОФД
+			OFDDisabledLabel.Enabled = OFDDisabledLabel.Visible = !string.IsNullOrWhiteSpace (parameters[10]);
+			if (OFDDisabledLabel.Enabled)
+				OFDDisabledLabel.Text = parameters[10] + "\n";
 			}
 
 		// Копирование в буфер обмена
