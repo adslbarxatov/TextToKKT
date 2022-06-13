@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace RD_AAOW
@@ -563,9 +562,10 @@ namespace RD_AAOW
 			for (int i = 0; i < TextToConvert.Text.Length; i++)
 				{
 				string s;
-				byte[] b = Encoding.GetEncoding (1251).GetBytes (text, i, 1);
+				/*byte[] b = Encoding.GetEncoding (1251).GetBytes (text, i, 1);*/
+				byte b = KKTSupport.CharToCP1251 (text[i]);
 
-				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b[0])) == KKTCodes.EmptyCode)
+				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b)) == KKTCodes.EmptyCode)
 					{
 					ResultText.Text += "xxx";
 					res = false;
@@ -1011,6 +1011,9 @@ namespace RD_AAOW
 		// Ввод штрих-кода
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
+			BarcodeData.Text = BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
+			BarcodeData.SelectionStart = BarcodeData.Text.Length;
+
 			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
 			}
 

@@ -65,6 +65,11 @@ namespace RD_AAOW
 		// Константы для DataMatrix
 		private const string dmEncodingLine = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"%&'*+-./_,:;=<>?";
 
+		// Строка преобразования русской раскладки в английскую
+		private const string REEncodingString = "•••••••••\x09\x0A••\x0D•••••••••••••••••• !@#$%&'()*+?-/|0123456789^" +
+			"$<=>&@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ЂЃ‚ѓ„…†‡€‰Љ‹ЊЌЋЏђ‘’“”•–—™љ›њќћџ ЎўЈ¤Ґ¦" +
+			"§~©Є«¬•®Ї°±Ііґµ¶·`#є»јЅѕїF<DULT:PBQRKVYJGHCNEA{WXIO}SM\">Zf,dult;pbqrkvyjghcnea[wxio]sm'.z";
+
 		/// <summary>
 		/// Максимальная поддерживаемая длина данных штрих-кода
 		/// </summary>
@@ -456,6 +461,39 @@ namespace RD_AAOW
 				res += (data[i].ToString ("X02") + " ");
 
 			return res.Trim ();
+			}
+
+		/// <summary>
+		/// Метод меняет раскладку клавиатуры в данных штрих-кода (при необходимости)
+		/// </summary>
+		/// <param name="Data">Данные штрих-кода</param>
+		/// <returns>Преобразованные данные</returns>
+		public static string ConvertFromRussianKeyboard (string Data)
+			{
+			// Контроль состава штрих-кода
+			if (string.IsNullOrWhiteSpace (Data))
+				return Data;
+
+			byte[] data = new byte[Data.Length];
+			for (int i = 0; i < Data.Length; i++)
+				data[i] = KKTSupport.CharToCP1251 (Data[i]);
+
+			bool needsDecoding = false;
+			for (int i = 0; i < data.Length; i++)
+				if (data[i] > 127)
+					{
+					needsDecoding = true;
+					break;
+					}
+			if (!needsDecoding)
+				return Data;
+
+			// Рекодировка
+			string result = "";
+			for (int i = 0; i < data.Length; i++)
+				result += REEncodingString[data[i]];
+
+			return result;
 			}
 		}
 	}
