@@ -66,9 +66,14 @@ namespace RD_AAOW
 		private const string dmEncodingLine = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"%&'*+-./_,:;=<>?";
 
 		// Строка преобразования русской раскладки в английскую
-		private const string REEncodingString = "•••••••••\x09\x0A••\x0D•••••••••••••••••• !@#$%&'()*+?-/|0123456789^" +
-			"$<=>&@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ЂЃ‚ѓ„…†‡€‰Љ‹ЊЌЋЏђ‘’“”•–—™љ›њќћџ ЎўЈ¤Ґ¦" +
-			"§~©Є«¬•®Ї°±Ііґµ¶·`#є»јЅѕїF<DULT:PBQRKVYJGHCNEA{WXIO}SM\">Zf,dult;pbqrkvyjghcnea[wxio]sm'.z";
+		private const string REEncodingString = "?????????\x09\x0A??\x0D???????????????\x1D??" +
+			" !@#$%&'()*+?-/|0123456789^$<=>&" +
+			"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" +
+			"`abcdefghijklmnopqrstuvwxyz{|}~?" +
+			"ЂЃ‚ѓ„…†‡€‰Љ‹ЊЌЋЏђ‘’“”•–—?™љ›њќћџ" +
+			" ЎўЈ¤Ґ¦§~©Є«¬?®Ї°±Ііґµ¶·`#є»јЅѕї" +
+			"F<DULT:PBQRKVYJGHCNEA{WXIO}SM\">Z" +
+			"f,dult;pbqrkvyjghcnea[wxio]sm'.z";
 
 		/// <summary>
 		/// Максимальная поддерживаемая длина данных штрих-кода
@@ -324,7 +329,7 @@ namespace RD_AAOW
 
 			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + "\r\n");
 			res += ("Код проверки:\r\n" + BarcodeData.Substring (39, 44) + "\r\n(\r\n" +
-				 ConvertFromBASE54 (BarcodeData.Substring (39, 44)) + "\r\n)");
+				 ConvertFromBASE64 (BarcodeData.Substring (39, 44)) + "\r\n)");
 
 			return res;
 			}
@@ -382,7 +387,7 @@ namespace RD_AAOW
 
 			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + "\r\n");
 			res += ("Код проверки:\r\n" + BarcodeData.Substring (39, 88) + "\r\n(\r\n" +
-				 ConvertFromBASE54 (BarcodeData.Substring (39, 88)) + "\r\n)");
+				 ConvertFromBASE64 (BarcodeData.Substring (39, 88)) + "\r\n)");
 
 			return res;
 			}
@@ -450,12 +455,21 @@ namespace RD_AAOW
 			}
 
 		// Метод собирает hex-представление данных из строки BASE64
-		private string ConvertFromBASE54 (string Data)
+		private string ConvertFromBASE64 (string Data)
 			{
 			if (string.IsNullOrWhiteSpace (Data))
 				return "";
 
-			byte[] data = Convert.FromBase64String (Data);
+			byte[] data;
+			try
+				{
+				data = Convert.FromBase64String (Data);
+				}
+			catch
+				{
+				return "";
+				}
+
 			string res = "";
 			for (int i = 0; i < data.Length; i++)
 				res += (data[i].ToString ("X02") + " ");

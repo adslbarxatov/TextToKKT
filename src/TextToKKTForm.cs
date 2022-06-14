@@ -1011,8 +1011,12 @@ namespace RD_AAOW
 		// Ввод штрих-кода
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
-			BarcodeData.Text = BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
-			BarcodeData.SelectionStart = BarcodeData.Text.Length;
+			string s = BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
+			if (s != BarcodeData.Text)
+				{
+				BarcodeData.Text = s;
+				BarcodeData.SelectionStart = BarcodeData.Text.Length;
+				}
 
 			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
 			}
