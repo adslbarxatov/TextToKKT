@@ -151,7 +151,7 @@ namespace RD_AAOW
 			if (data.Length == 127)
 				return SupportedBarcodesTypes.DataMatrixShoes;
 
-			if ((data.Length == 45) || (data.Length == 51))
+			if ((data.Length == 45) || (data.Length == 51) || (data.Length == 30))
 				return SupportedBarcodesTypes.DataMatrixMilk;
 
 			return SupportedBarcodesTypes.Unsupported;
@@ -247,9 +247,10 @@ namespace RD_AAOW
 			string data = BarcodeData.Replace ("\x1D", ""); // Сброс суффиксов DataMatrix
 			SupportedBarcodesTypes type = GetBarcodeType (data);
 
+			string res = "Длина данных (без спецсимволов): " + data.Length.ToString () + "\r\n";
 			if (type == SupportedBarcodesTypes.Unsupported)
-				return "Штрих-код неполный, некорректный или не поддерживается";
-			string res = "Тип штрих-кода: " + GetBarcodeTypeName (type) + "\r\n";
+				return res + "Штрих-код неполный, некорректный или не поддерживается";
+			res += "Тип штрих-кода: " + GetBarcodeTypeName (type) + "\r\n";
 
 			// Разбор
 			switch (type)
@@ -399,32 +400,52 @@ namespace RD_AAOW
 		public string ParseMilkDataMatrix (string BarcodeData)
 			{
 			// Контроль разметки
-			if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
-				(BarcodeData.Length == 45) && ((BarcodeData.Substring (31, 2) != "17") ||
-				(BarcodeData.Substring (39, 2) != "93")) ||
-				(BarcodeData.Length == 51) && ((BarcodeData.Substring (31, 4) != "7003") ||
-				(BarcodeData.Substring (45, 2) != "93")))
-				return "Разметка данных DataMatrix не соответствует стандарту";
+			if (BarcodeData.Length != 30)
+				{
+				if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+					(BarcodeData.Length == 45) && ((BarcodeData.Substring (31, 2) != "17") ||
+					(BarcodeData.Substring (39, 2) != "93")) ||
+					(BarcodeData.Length == 51) && ((BarcodeData.Substring (31, 4) != "7003") ||
+					(BarcodeData.Substring (45, 2) != "93")))
+					return "Разметка данных DataMatrix не соответствует стандарту";
+				}
+			else
+				{
+				if ((BarcodeData.Substring (0, 2) != "01") || (BarcodeData.Substring (16, 2) != "21") ||
+					(BarcodeData.Substring (24, 2) != "93"))
+					return "Разметка данных DataMatrix не соответствует стандарту";
+				}
 
 			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
 				res += "EAN-13 некорректен\r\n";
 			else
 				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
-			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + "\r\n\r\n");
 
-			res += ("Срок годности: до ");
 			int offset = 41;
-			if (BarcodeData.Substring (31, 2) == "17")
+			if (BarcodeData.Length != 30)
 				{
-				res += (BarcodeData.Substring (37, 2) + "." + BarcodeData.Substring (35, 2) + ".20" +
-					BarcodeData.Substring (33, 2));
+				res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + "\r\n\r\n");
+
+				res += ("Срок годности: до ");
+				if (BarcodeData.Substring (31, 2) == "17")
+					{
+					res += (BarcodeData.Substring (37, 2) + "." + BarcodeData.Substring (35, 2) + ".20" +
+						BarcodeData.Substring (33, 2));
+					}
+				else
+					{
+					res += (BarcodeData.Substring (39, 2) + "." + BarcodeData.Substring (37, 2) + ".20" +
+						BarcodeData.Substring (35, 2) + ", " + BarcodeData.Substring (41, 2) + ":" +
+						BarcodeData.Substring (43, 2));
+					offset += 6;
+					}
 				}
 			else
 				{
-				res += (BarcodeData.Substring (39, 2) + "." + BarcodeData.Substring (37, 2) + ".20" +
-					BarcodeData.Substring (35, 2) + ", " + BarcodeData.Substring (41, 2) + ":" + BarcodeData.Substring (43, 2));
-				offset += 6;
+				res += ("Серийный номер: " + BarcodeData.Substring (18, 6) + "\r\n");
+
+				offset = 26;
 				}
 
 			res += ("\r\nКод проверки: " + BarcodeData.Substring (offset, 4) + " (" +
