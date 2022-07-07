@@ -1004,6 +1004,16 @@ namespace RD_AAOW
 				TLVButton_Click (null, null);
 			}
 
+		// Выбор ФФД
+		private void TLVFFD_Changed (object sender, EventArgs e)
+			{
+			if ((TLVDescription.Text.Length >= 4) && (TLVDescription.Text != "(не найдено)") &&
+				(TLVDescription.Text.Substring (0, 4) != TLVFind.Text))
+				TLVFind.Text = TLVDescription.Text.Substring (0, 4);
+
+			TLVButton_Click (null, null);
+			}
+
 		#endregion
 
 		#region Штрих-коды

@@ -1,6 +1,42 @@
 ﻿namespace RD_AAOW
 	{
 	/// <summary>
+	/// Поддерживаемые версии ФФД
+	/// </summary>
+	public enum FFDVersions
+		{
+		/// <summary>
+		/// ФФД 1.0 альфа
+		/// </summary>
+		FFD_1_0_a = 0,
+
+		/// <summary>
+		/// ФФД 1.0 бета
+		/// </summary>
+		FFD_1_0_b = 1,
+
+		/// <summary>
+		/// ФФД 1.05
+		/// </summary>
+		FFD_1_05 = 2,
+
+		/// <summary>
+		/// ФФД 1.1
+		/// </summary>
+		FFD_1_1 = 3,
+
+		/// <summary>
+		/// ФФД 1.2
+		/// </summary>
+		FFD_1_2 = 4,
+
+		/// <summary>
+		/// Неизвестная или неподдерживаемая версия
+		/// </summary>
+		Unknown = 255
+		}
+
+	/// <summary>
 	/// Возможные типы фискальных документов
 	/// </summary>
 	public enum FNDocumentTypes
@@ -124,5 +160,94 @@
 		/// Неизвестный тип документа
 		/// </summary>
 		UnknownType = 255
+		}
+
+	/// <summary>
+	/// Форматы дампов ФН
+	/// </summary>
+	public enum FNDumpTypes
+		{
+		/// <summary>
+		/// Бинарный формат
+		/// </summary>
+		Binary = 2,
+
+		/// <summary>
+		/// Табличный формат
+		/// </summary>
+		CSV = 1
+		}
+
+	/// <summary>
+	/// Возможные кассовые операции
+	/// </summary>
+	public enum FNOperationTypes
+		{
+		/// <summary>
+		/// Приход
+		/// </summary>
+		Incoming = 1,
+
+		/// <summary>
+		/// Возврат прихода
+		/// </summary>
+		ReverseIncoming = 2,
+
+		/// <summary>
+		/// Расход
+		/// </summary>
+		Outcoming = 3,
+
+		/// <summary>
+		/// Возврат расхода
+		/// </summary>
+		ReverseOutcoming = 4,
+
+		/// <summary>
+		/// Неизвестная операция
+		/// </summary>
+		UnknownType = 255
+		}
+
+	/// <summary>
+	/// Возможные режимы считывания данных ФН
+	/// </summary>
+	public enum FNReadingTypes
+		{
+		/// <summary>
+		/// COM-порт
+		/// </summary>
+		COM = 0,
+
+		/// <summary>
+		/// Дамп ФН новой версии
+		/// </summary>
+		FSD_4_0 = 1,
+
+		/// <summary>
+		/// Дамп ФН из программы FNArc
+		/// </summary>
+		FNC_1_2_0_1 = 2
+		}
+
+	/// <summary>
+	/// Режимы работы методов обмена с ОФД
+	/// </summary>
+	public enum OFDModes
+		{
+		/// <summary>
+		/// Фискальные документы
+		/// </summary>
+		Documents = 0,
+
+		/// <summary>
+		/// Коды маркировки
+		/// </summary>
+		Marks = 1,
+
+		/// <summary>
+		/// Ключи проверки кодов маркировки
+		/// </summary>
+		Keys = 2
 		}
 	}
