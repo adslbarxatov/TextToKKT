@@ -6,7 +6,6 @@ using Android.OS;
 using Android.Support.V4.App;
 using Android.Views;
 using System;
-using System.Threading.Tasks;
 
 #if DEBUG
 [assembly: Application (Debuggable = true)]
@@ -19,7 +18,12 @@ namespace RD_AAOW.Droid
 	/// <summary>
 	/// Класс описывает загрузчик приложения
 	/// </summary>
-	[Activity (Label = "Text to KKT", Icon = "@mipmap/icon", Theme = "@style/MainTheme",
+	[Activity (Label = "Text to KKT",
+		/*Icon = "@mipmap/icon",
+		Theme = "@style/MainTheme",*/
+		Icon = "@drawable/launcher_foreground",
+		Theme = "@style/SplashTheme",
+		MainLauncher = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class MainActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
@@ -32,6 +36,10 @@ namespace RD_AAOW.Droid
 			TabLayoutResource = Resource.Layout.Tabbar;
 			ToolbarResource = Resource.Layout.Toolbar;
 
+			// Отмена темы для splash screen
+			base.SetTheme (Resource.Style.MainTheme);
+
+			// Инициализация и запуск
 			base.OnCreate (savedInstanceState);
 			global::Xamarin.Forms.Forms.Init (this, savedInstanceState);
 
@@ -44,8 +52,8 @@ namespace RD_AAOW.Droid
 			else
 				StartService (mainService);
 
-			// Запуск
-			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn); // Запрет на переход в ждущий режим
+			// Запрет на переход в ждущий режим
+			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn); 
 			LoadApplication (new App ());
 			}
 
@@ -82,11 +90,11 @@ namespace RD_AAOW.Droid
 			}
 		}
 
-	/// <summary>
+	/*/// <summary>
 	/// Класс описывает экран-заставку приложения
 	/// </summary>
-	[Activity (Theme = "@style/SplashTheme", MainLauncher = true, NoHistory = true/*,
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation*/)]
+	[Activity (Theme = "@style/SplashTheme", MainLauncher = true, NoHistory = true,
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class SplashActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
 		/// <summary>
@@ -116,13 +124,15 @@ namespace RD_AAOW.Droid
 				});
 			startup.Start ();
 			}
-		}
+		}*/
 
 	/// <summary>
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
-	[Service (Name = "com.RD_AAOW.TextToKKT", Label = "TextToKKT",
-		Icon = "@mipmap/icon", Exported = true)]
+	[Service (Name = "com.RD_AAOW.TextToKKT",
+		Label = "TextToKKT",
+		/*Icon = "@mipmap/icon",*/
+		Exported = true)]
 	public class MainService:global::Android.App.Service
 		{
 		// Идентификаторы процесса
@@ -312,8 +322,10 @@ namespace RD_AAOW.Droid
 	/// <summary>
 	/// Класс описывает задание на открытие приложения
 	/// </summary>
-	[Service (Name = "com.RD_AAOW.TextToKKTLink", Label = "TextToKKTLink",
-		Icon = "@mipmap/icon", Exported = true)]
+	[Service (Name = "com.RD_AAOW.TextToKKTLink",
+		Label = "TextToKKTLink",
+		/*Icon = "@mipmap/icon",*/
+		Exported = true)]
 	public class NotificationLink:JobIntentService
 		{
 		/// <summary>
@@ -360,8 +372,10 @@ namespace RD_AAOW.Droid
 	/// <summary>
 	/// Класс описывает приёмник события окончания загрузки ОС
 	/// </summary>
-	[BroadcastReceiver (Name = "com.RD_AAOW.TextToKKTBoot", Label = "TextToKKTBoot",
-		Icon = "@mipmap/icon", Exported = true)]
+	[BroadcastReceiver (Name = "com.RD_AAOW.TextToKKTBoot",
+		Label = "TextToKKTBoot",
+		/*Icon = "@mipmap/icon",*/
+		Exported = true)]
 	public class BootReceiver:BroadcastReceiver
 		{
 		/// <summary>
