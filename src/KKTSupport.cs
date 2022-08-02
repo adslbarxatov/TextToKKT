@@ -95,6 +95,10 @@ namespace RD_AAOW
 				else
 					length = 560;
 				}
+			else if (!Flags.FN15 && Flags.GenericTax && Flags.Goods)
+				{
+				length = 560;   // Нововведение ФН-М 36
+				}
 			else if (Flags.FN15)
 				{
 				length = Flags.FNExactly13 ? 410 : 470;

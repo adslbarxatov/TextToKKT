@@ -163,7 +163,8 @@ namespace RD_AAOW
 
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = RNMFromFNReader.Visible = LowLevelTab.Enabled = TLVTab.Enabled =
-				ConnectorsTab.Enabled = OFDFromFNReader.Visible = ca.AllowExtendedFunctionsLevel2;
+				ConnectorsTab.Enabled = OFDFromFNReader.Visible = PrintFullUserManual.Visible =
+				ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
@@ -965,6 +966,34 @@ namespace RD_AAOW
 			{
 			UMOperationText.Text = um.GetManual ((uint)KKTListForManuals.SelectedIndex,
 				(uint)OperationsListForManuals.SelectedIndex);
+			}
+
+		// Печать инструкции
+		private void PrintUserManual_Click (object sender, EventArgs e)
+			{
+			// Контроль
+			if (FNReaderInstance == null)
+				FNReader_Click (null, null);
+
+			if (FNReaderInstance == null)
+				return;
+
+			// Сборка задания на печать
+			bool cashier = ((Button)sender).Name.Contains ("Cashier");
+			string text = KKTListForManuals.Text + " (" + (cashier ? "для кассиров" : "полная") + ")";
+			text += "\n\n<> – индикация на дисплее, [] – кнопки клавиатуры";
+
+			uint operationsCount = cashier ? UserManuals.OperationsForCashiers :
+				(uint)OperationsListForManuals.Items.Count;
+
+			for (int i = 0; i < operationsCount; i++)
+				{
+				text += ("\n\n\n" + OperationsListForManuals.Items[i] + "\n\n");
+				text += um.GetManual ((uint)KKTListForManuals.SelectedIndex, (uint)i);
+				}
+
+			// Печать
+			FNReaderInstance.PrintText (text);
 			}
 
 		#endregion

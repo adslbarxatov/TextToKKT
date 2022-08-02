@@ -26,6 +26,17 @@ namespace RD_AAOW
 			}
 		private List<string> availableOperations = new List<string> ();
 
+		/// <summary>
+		/// Возвращает количество операций, допустимых для кассира (неспециалиста)
+		/// </summary>
+		public static uint OperationsForCashiers
+			{
+			get
+				{
+				return (uint)operationTypes1.Length;
+				}
+			}
+
 		private static string[] operationTypes1 = new string[] {
 			"Открытие смены",
 			"Продажа по коду товара",
