@@ -10,7 +10,11 @@
 			<StackLayout x:Name="UserManualLayout">
 
 				<Label x:Name="SelectionLabel" />
-				<Button x:Name="KKTButton" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Button x:Name="KKTButton" VerticalOptions="Center" />
+					<Button x:Name="PrintButton" VerticalOptions="Center" />
+				</StackLayout>
 
 				<Label x:Name="HelpLabel" />
 

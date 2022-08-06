@@ -1,5 +1,18 @@
 ﻿using System;
+using System.IO;
 using System.Text;
+
+#if ANDROID
+using Android.Graphics;
+using Android.OS;
+using Android.Print;
+using Android.Print.Pdf;
+using Android.Runtime;
+#else
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Windows.Forms;
+#endif
 
 namespace RD_AAOW
 	{
@@ -916,5 +929,374 @@ namespace RD_AAOW
 					return 0;
 				}
 			}
+
+		/// <summary>
+		/// Возвращает число символов в строке для формата печати руководств пользователя
+		/// </summary>
+		public const int ManualA4CharPerLine = 99;
+
+#if ANDROID
+
+		/// <summary>
+		/// Метод выводит на печать руководство пользователя
+		/// </summary>
+		/// <param name="TextForPrinting">Текст для печати</param>
+		/// <param name="PrintingManager">Дескриптор сервиса управления печатью</param>
+		/// <param name="ForCashier">Флаг сокращённого варианта руководства (для кассира)</param>
+		public static void PrintManual (string TextForPrinting, PrintManager PrintingManager, bool ForCashier)
+			{
+			PrintingManager.Print ("Manual.pdf", new CustomPrintDocumentAdapter (TextForPrinting, ForCashier), null);
+			}
+
+#else
+
+		// Параметры печатного документа
+		private static StringReader printStream;
+		private static int charactersPerLine;      // Зависимое значение
+		private static PrinterTypes internalPrinterType;
+		private static uint pageNumber;
+
+		private static Font printFont;             // Зависимое значение
+		private static Brush printBrush = new SolidBrush (Color.FromArgb (0, 0, 0));
+
+		/// <summary>
+		/// Метод выводит произвольный текст на печать с указанными настройками
+		/// </summary>
+		/// <param name="TextForPrinting">Текст для печати</param>
+		/// <param name="PrinterType">Пользовательский тип принтера</param>
+		/// <returns>Возвращает текст ошибки или null в случае успеха</returns>
+		public static string PrintText (string TextForPrinting, PrinterTypes PrinterType)
+			{
+			// Контроль
+			if (string.IsNullOrWhiteSpace (TextForPrinting))
+				return "No text specified";
+			string txt = TextForPrinting;
+			internalPrinterType = PrinterType;
+			pageNumber = 0;
+
+			// Удаление отступов (только для чековой ленты)
+			int pageLength = 0;
+			if ((internalPrinterType != PrinterTypes.DefaultA4) && (internalPrinterType != PrinterTypes.ManualA4))
+				{
+				while (txt.Contains ("\n "))
+					txt = txt.Replace ("\n ", "\n");
+
+				// Расчёт примерной длины страницы (A4 или менее)
+				string chk = txt.Replace ("\n", "");
+				pageLength = 14 * (txt.Length - chk.Length); // ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
+				if (pageLength > 1170)  // ~300000 / 254, А4
+					pageLength = 1170;
+				}
+
+			// Создание потока и запуск диалога
+			printStream = new StringReader (txt);
+
+			PrintDocument pd = new PrintDocument ();
+			pd.PrintPage += new PrintPageEventHandler (PrintPage);
+
+			// Размер бумаги (считается в сотых долях дюйма)
+			switch (internalPrinterType)
+				{
+				case PrinterTypes.Receipt57mm:
+				case PrinterTypes.Receipt57mmThin:
+					pd.DefaultPageSettings.PaperSize = new PaperSize ("Receipt57", 225, pageLength);    // 57000 / 254
+					break;
+
+				case PrinterTypes.Receipt80mm:
+				case PrinterTypes.Receipt80mmThin:
+					pd.DefaultPageSettings.PaperSize = new PaperSize ("Receipt80", 315, pageLength);    // 80000 / 254
+					break;
+				}
+
+			PrintDialog spd = new PrintDialog ();
+			spd.AllowCurrentPage = spd.AllowPrintToFile = spd.AllowSelection = spd.AllowSomePages = false;
+			spd.PrintToFile = spd.ShowHelp = false;
+			spd.ShowNetwork = true;
+			spd.UseEXDialog = true;
+			spd.Document = pd;
+
+			if (spd.ShowDialog () == DialogResult.OK)
+				{
+				try
+					{
+					pd.PrinterSettings = spd.PrinterSettings;
+					pd.Print ();
+					}
+				catch (Exception ex)
+					{
+					return ex.Message;
+					}
+				}
+
+			// Успешно
+			printStream.Close ();
+			pd.Dispose ();
+			txt = null;
+			return null;
+			}
+
+		// Обработчик событий принтера
+		private static void PrintPage (object sender, PrintPageEventArgs ev)
+			{
+			// Инициализация
+			if (printFont != null)
+				printFont.Dispose ();
+
+			// Вычисление числа строк на странице и параметров шрифта
+			float leftMargin, topMargin, linesPerPage, yPos;
+			pageNumber++;
+
+			switch (internalPrinterType)
+				{
+				case PrinterTypes.DefaultA4:
+				default:
+					printFont = new Font ("Courier New", 10, FontStyle.Bold);
+					charactersPerLine = 80;
+					leftMargin = topMargin = 70;
+					linesPerPage = ev.MarginBounds.Height / printFont.GetHeight (ev.Graphics);
+					break;
+
+				case PrinterTypes.ManualA4:
+					printFont = new Font ("Consolas", 9, FontStyle.Bold);
+					charactersPerLine = ManualA4CharPerLine;
+					leftMargin = topMargin = 70;
+					linesPerPage = ev.MarginBounds.Height / printFont.GetHeight (ev.Graphics);
+					break;
+
+				case PrinterTypes.Receipt80mm:
+				case PrinterTypes.Receipt80mmThin:
+					printFont = new Font ("Courier New", 7,
+						(internalPrinterType == PrinterTypes.Receipt80mm) ? FontStyle.Bold : FontStyle.Regular);
+					charactersPerLine = 47;
+					leftMargin = topMargin = 0;
+					linesPerPage = 102;
+					break;
+
+				case PrinterTypes.Receipt57mm:
+				case PrinterTypes.Receipt57mmThin:
+					printFont = new Font ("Courier New", 6,
+						(internalPrinterType == PrinterTypes.Receipt57mm) ? FontStyle.Bold : FontStyle.Regular);
+					charactersPerLine = 39;
+					leftMargin = topMargin = 0;
+					linesPerPage = 118;
+					break;
+				}
+
+			// Печать строк
+			string line = "";
+			if (pageNumber == 1)
+				{
+				line = "• " + ProgramDescription.AssemblyMainName + " • v " + ProgramDescription.AssemblyVersion + " •";
+				line = line.PadLeft ((charactersPerLine - line.Length) / 2 + line.Length) + " ".PadLeft (charactersPerLine / 2);
+				}
+
+			int count = 0;
+			while (count < linesPerPage)
+				{
+				if (line == "")
+					line = printStream.ReadLine ();
+				if (line == null)
+					break;
+
+				yPos = topMargin + (count * printFont.GetHeight (ev.Graphics));
+				ev.Graphics.DrawString ((line.Length > charactersPerLine) ? line.Substring (0, charactersPerLine) : line,
+					printFont, printBrush, leftMargin, yPos, new StringFormat ());
+				count++;
+
+				if (line.Length > charactersPerLine)
+					{
+					// Обрезка напечатанной части
+					line = line.Substring (charactersPerLine);
+
+					// Отступ для переносимых строк (вложенность)
+					if ((internalPrinterType != PrinterTypes.DefaultA4) && (internalPrinterType != PrinterTypes.ManualA4))
+						line = "  " + line;
+					}
+				else
+					{
+					line = "";
+					}
+				}
+
+			// Переход на следующую страницу при необходимости
+			ev.HasMorePages = line != null;
+			}
+
+
+#endif
+
+#if UMPRINT || ANDROID
+
+		/// <summary>
+		/// Метод формирует руководство пользователя для ККТ
+		/// </summary>
+		/// <param name="Manuals">Активный экземпляр оператора руководств ККТ</param>
+		/// <param name="ManualNumber">Номер руководства</param>
+		/// <param name="ForCashier">Флаг указывает на сокращённый вариант руководства (для кассира)</param>
+		/// <returns>Возвращает инструкцию пользователя</returns>
+		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, bool ForCashier)
+			{
+			string text = "Инструкция к ККТ " + Manuals.GetKKTList ()[(int)ManualNumber] +
+				" (" + (ForCashier ? "для кассиров" : "полная") + ")";
+			text = text.PadLeft ((ManualA4CharPerLine - text.Length) / 2 + text.Length);
+
+			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
+			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
+			text += ("\n" + tmp);
+
+			string[] operations = Manuals.OperationTypes;
+			uint operationsCount = ForCashier ? UserManuals.OperationsForCashiers :
+				(uint)operations.Length;
+
+			for (int i = 0; i < operationsCount; i++)
+				{
+				text += ((i != 0 ? "\n" : "") + "\n\n" + operations[i] + "\n\n");
+				text += Manuals.GetManual (ManualNumber, (uint)i);
+				}
+
+			return text;
+			}
+
+#endif
 		}
+
+#if ANDROID
+
+	/// <summary>
+	/// Класс описывает сборщик задания на печать
+	/// </summary>
+	public class CustomPrintDocumentAdapter:PrintDocumentAdapter
+		{
+		// Переменные
+		private PrintedPdfDocument document;
+		private int pagesCount;
+		private int pageNumber;
+		private Paint p;
+		private StringReader printStream;
+		private string text, name;
+
+		private float leftMargin = 60;
+		private float topMargin = 60;
+		private float linesPerPage = 67;
+		private float lineHeight = 11.0f;
+		private float fontSize = 9.0f;
+
+		/// <summary>
+		/// Конструктор. Создаёт сборщик задания
+		/// </summary>
+		/// <param name="ForCashier">Вариант задания для кассира (сокращённый)</param>
+		/// <param name="Text">Текст для печати</param>
+		public CustomPrintDocumentAdapter (string Text, bool ForCashier)
+			{
+			pagesCount = ForCashier ? 1 : 2;
+			text = Text;
+
+			int i = text.IndexOf ("\n");
+			if (i >= 0)
+				name = text.Substring (0, i).Trim ();
+			else
+				name = "Руководство";
+			name += ".pdf";
+			}
+
+		/// <summary>
+		/// Метод-обработчик вызова функции печати
+		/// </summary>
+		public override void OnLayout (PrintAttributes oldAttributes, PrintAttributes newAttributes,
+			CancellationSignal cancellationSignal, LayoutResultCallback callback, Bundle extras)
+			{
+			// Инициализация документа
+			document = new PrintedPdfDocument (Android.App.Application.Context, newAttributes);
+
+			PrintDocumentInfo.Builder pdb = new PrintDocumentInfo.Builder (name);
+			pdb.SetContentType (PrintContentType.Document);
+			pdb.SetPageCount (pagesCount);
+
+			// Настройка кисти
+			p = new Paint ();
+			p.Color = Color.Black;
+			p.SetStyle (Paint.Style.Fill);
+			p.StrokeWidth = 1.0f;
+			p.Dither = false;
+			p.SetTypeface (Typeface.Monospace);
+			p.TextSize = fontSize;
+
+			// Завершение
+			PrintDocumentInfo pdi = pdb.Build ();
+			callback.OnLayoutFinished (pdi, true);
+			}
+
+		/// <summary>
+		/// Метод-сборщик задания на печать
+		/// </summary>
+		public override void OnWrite (PageRange[] pages, ParcelFileDescriptor destination,
+			CancellationSignal cancellationSignal, WriteResultCallback callback)
+			{
+			// Формирование страниц
+			printStream = new StringReader (text);
+			for (pageNumber = 0; pageNumber < pagesCount; pageNumber++)
+				{
+				PrintedPdfDocument.Page page = document.StartPage (pageNumber);
+				BuildPage (page.Canvas);
+				document.FinishPage (page);
+				}
+
+			// Запись файла PDF
+			Java.IO.FileOutputStream javaStream = new Java.IO.FileOutputStream (destination.FileDescriptor);
+			OutputStreamInvoker osi = new OutputStreamInvoker (javaStream);
+
+			document.WriteTo (osi);
+
+			osi.Close ();
+			javaStream.Close ();
+
+			// Завершено
+			/*document.Close ();
+			document.Dispose ();*/
+			printStream.Close ();
+			printStream.Dispose ();
+
+			callback.OnWriteFinished (pages);
+			}
+
+		// Сборщик страницы
+		private void BuildPage (Canvas g)
+			{
+			// Вычисление числа строк на странице и параметров шрифта
+			float yPos;
+
+			// Печать строк
+			string line = "";
+			if (pageNumber == 0)
+				{
+				line = "• " + ProgramDescription.AssemblyMainName + " • v " + ProgramDescription.AssemblyVersion + " •";
+				line = line.PadLeft ((KKTSupport.ManualA4CharPerLine - line.Length) / 2 + line.Length) +
+					" ".PadLeft (KKTSupport.ManualA4CharPerLine / 2);
+				}
+
+			int count = 0;
+			while (count < linesPerPage)
+				{
+				if (line == "")
+					line = printStream.ReadLine ();
+				if (line == null)
+					break;
+
+				yPos = topMargin + count * lineHeight;
+				g.DrawText ((line.Length > KKTSupport.ManualA4CharPerLine) ?
+					line.Substring (0, KKTSupport.ManualA4CharPerLine) : line, leftMargin, yPos, p);
+				count++;
+
+				if (line.Length > KKTSupport.ManualA4CharPerLine)
+					// Обрезка напечатанной части
+					line = line.Substring (KKTSupport.ManualA4CharPerLine);
+				else
+					line = "";
+				}
+
+			// Завершено
+			}
+		}
+
+#endif
 	}

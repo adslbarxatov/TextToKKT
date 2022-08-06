@@ -1,4 +1,5 @@
-﻿using Android.Widget;
+﻿using Android.Print;
+using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -104,6 +105,7 @@ namespace RD_AAOW
 		private ConfigAccessor ca;
 		private KKTSupport.FNLifeFlags fnlf;
 		private double fontSizeMultiplier = 1.2;
+		private PrintManager pm;
 
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
@@ -127,12 +129,13 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Точка входа приложения
 		/// </summary>
-		public App ()
+		public App (PrintManager PrintingManager)
 			{
 			// Инициализация
 			InitializeComponent ();
 			ca = new ConfigAccessor (0, 0);
 			um = new UserManuals (ca.ExtendedFunctions);
+			pm = PrintingManager;
 
 			// Переход в статус запуска для отмены вызова из оповещения
 			AndroidSupport.AppIsRunning = true;
@@ -246,6 +249,8 @@ namespace RD_AAOW
 
 			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "KKTButton",
 				"   ", userManualsFieldBackColor, UserManualsKKTButton_Clicked, true);
+			AndroidSupport.ApplyButtonSettings (userManualsPage, "PrintButton",
+				AndroidSupport.ButtonsDefaultNames.Select, userManualsFieldBackColor, PrintManual_Clicked);
 
 			AndroidSupport.ApplyTipLabelSettings (userManualsPage, "HelpLabel",
 				"<...> – индикация на экране, [...] – клавиши ККТ", untoggledSwitchColor);
@@ -1580,6 +1585,28 @@ namespace RD_AAOW
 
 			for (int i = 0; i < operationTextLabels.Count; i++)
 				operationTextLabels[i].Text = um.GetManual ((uint)idx, (uint)i);
+			}
+
+		// Печать руководства пользователя
+		private async void PrintManual_Clicked (object sender, EventArgs e)
+			{
+			// Выбор варианта (если доступно)
+			int idx = 0;
+
+			if (ca.AllowExtendedFunctionsLevel2)
+				{
+				List<string> modes = new List<string> { "Для кассира", "Полная" };
+
+				string res = await userManualsPage.DisplayActionSheet ("Формат инструкции:", "Отмена",
+					null, modes.ToArray ());
+				idx = modes.IndexOf (res);
+				if (idx < 0)
+					return;
+				}
+
+			// Печать
+			string text = KKTSupport.BuildUserManual (um, ca.KKTForManuals, idx == 0);
+			KKTSupport.PrintManual (text, pm, idx == 0);
 			}
 
 		#endregion

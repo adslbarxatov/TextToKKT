@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
+using Android.Print;
 using Android.Support.V4.App;
 using Android.Views;
 using System;
@@ -19,8 +20,6 @@ namespace RD_AAOW.Droid
 	/// Класс описывает загрузчик приложения
 	/// </summary>
 	[Activity (Label = "Text to KKT",
-		/*Icon = "@mipmap/icon",
-		Theme = "@style/MainTheme",*/
 		Icon = "@drawable/launcher_foreground",
 		Theme = "@style/SplashTheme",
 		MainLauncher = true,
@@ -53,8 +52,8 @@ namespace RD_AAOW.Droid
 				StartService (mainService);
 
 			// Запрет на переход в ждущий режим
-			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn); 
-			LoadApplication (new App ());
+			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
+			LoadApplication (new App ((PrintManager)this.GetSystemService (Service.PrintService)));
 			}
 
 		/// <summary>
@@ -62,8 +61,6 @@ namespace RD_AAOW.Droid
 		/// </summary>
 		protected override void OnStop ()
 			{
-			Intent mainService = new Intent (this, typeof (MainService));
-
 			// Запрос на остановку при необходимости
 			if (!AndroidSupport.AllowServiceToStart)
 				AndroidSupport.StopRequested = true;
@@ -90,48 +87,11 @@ namespace RD_AAOW.Droid
 			}
 		}
 
-	/*/// <summary>
-	/// Класс описывает экран-заставку приложения
-	/// </summary>
-	[Activity (Theme = "@style/SplashTheme", MainLauncher = true, NoHistory = true,
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class SplashActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
-		{
-		/// <summary>
-		/// Обработчик события создания экземпляра
-		/// </summary>
-		protected override void OnCreate (Bundle savedInstanceState)
-			{
-			base.OnCreate (savedInstanceState);
-			}
-
-		/// <summary>
-		/// Prevent the back button from canceling the startup process
-		/// </summary>
-		public override void OnBackPressed ()
-			{
-			}
-
-		/// <summary>
-		/// Launches the startup task
-		/// </summary>
-		protected override void OnResume ()
-			{
-			base.OnResume ();
-			Task startup = new Task (() =>
-				{
-					StartActivity (new Intent (Application.Context, typeof (MainActivity)));
-				});
-			startup.Start ();
-			}
-		}*/
-
 	/// <summary>
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT",
 		Label = "TextToKKT",
-		/*Icon = "@mipmap/icon",*/
 		Exported = true)]
 	public class MainService:global::Android.App.Service
 		{
@@ -324,7 +284,6 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKTLink",
 		Label = "TextToKKTLink",
-		/*Icon = "@mipmap/icon",*/
 		Exported = true)]
 	public class NotificationLink:JobIntentService
 		{
@@ -374,7 +333,6 @@ namespace RD_AAOW.Droid
 	/// </summary>
 	[BroadcastReceiver (Name = "com.RD_AAOW.TextToKKTBoot",
 		Label = "TextToKKTBoot",
-		/*Icon = "@mipmap/icon",*/
 		Exported = true)]
 	public class BootReceiver:BroadcastReceiver
 		{
