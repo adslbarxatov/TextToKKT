@@ -250,4 +250,40 @@
 		/// </summary>
 		Keys = 2
 		}
+
+	/// <summary>
+	/// Доступные типы принтеров
+	/// </summary>
+	public enum PrinterTypes
+		{
+		/// <summary>
+		/// Стандартный для А4
+		/// </summary>
+		DefaultA4 = 0,
+
+		/// <summary>
+		/// Чековый для ленты 80 мм
+		/// </summary>
+		Receipt80mm = 1,
+
+		/// <summary>
+		/// Чековый для ленты 80 мм, тонкий шрифт
+		/// </summary>
+		Receipt80mmThin = 11,
+
+		/// <summary>
+		/// Чековый для ленты 57 мм
+		/// </summary>
+		Receipt57mm = 2,
+
+		/// <summary>
+		/// Чековый для ленты 57 мм, тонкий шрифт
+		/// </summary>
+		Receipt57mmThin = 12,
+
+		/// <summary>
+		/// Дополнительный для А4
+		/// </summary>
+		ManualA4 = 3,
+		}
 	}

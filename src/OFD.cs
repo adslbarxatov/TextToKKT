@@ -153,7 +153,6 @@ namespace RD_AAOW
 			List<string> res = new List<string> ();
 
 			for (int i = 0; i < names.Count; i++)
-				/*if (!names[i].Contains ("см.") && !names[i].Contains ("анн."))*/
 				res.Add (names[i]);
 
 			int count = res.Count;

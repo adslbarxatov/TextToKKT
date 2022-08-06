@@ -563,7 +563,6 @@ namespace RD_AAOW
 			for (int i = 0; i < TextToConvert.Text.Length; i++)
 				{
 				string s;
-				/*byte[] b = Encoding.GetEncoding (1251).GetBytes (text, i, 1);*/
 				byte b = KKTSupport.CharToCP1251 (text[i]);
 
 				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b)) == KKTCodes.EmptyCode)
@@ -980,15 +979,19 @@ namespace RD_AAOW
 
 			// Сборка задания на печать
 			bool cashier = ((Button)sender).Name.Contains ("Cashier");
-			string text = KKTListForManuals.Text + " (" + (cashier ? "для кассиров" : "полная") + ")";
-			text += "\n\n<> – индикация на дисплее, [] – кнопки клавиатуры";
+			string text = "Инструкция к ККТ " + KKTListForManuals.Text + " (" + (cashier ? "для кассиров" : "полная") + ")";
+			text = text.PadLeft ((99 - text.Length) / 2 + text.Length);
+
+			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
+			tmp = tmp.PadLeft ((99 - tmp.Length) / 2 + tmp.Length);
+			text += ("\n" + tmp);
 
 			uint operationsCount = cashier ? UserManuals.OperationsForCashiers :
 				(uint)OperationsListForManuals.Items.Count;
 
 			for (int i = 0; i < operationsCount; i++)
 				{
-				text += ("\n\n\n" + OperationsListForManuals.Items[i] + "\n\n");
+				text += ((i != 0 ? "\n" : "") + "\n\n" + OperationsListForManuals.Items[i] + "\n\n");
 				text += um.GetManual ((uint)KKTListForManuals.SelectedIndex, (uint)i);
 				}
 
