@@ -327,6 +327,23 @@ namespace RD_AAOW
 				}
 			}
 
+		/// <summary>
+		/// Метод устанавливает локализованные подписи для всех контролов, входящих в состав 
+		/// указанного контейнера (только Text)
+		/// </summary>
+		/// <param name="Container">Контейнер типа GroupBox</param>
+		/// <param name="Language">Требуемый язык локализации</param>
+		public static void SetControlsText (GroupBox Container, SupportedLanguages Language)
+			{
+			for (int i = 0; i < Container.Controls.Count; i++)
+				{
+				if (GetControlText (Container.Name, Container.Controls[i].Name, Language) != null)
+					{
+					Container.Controls[i].Text = GetControlText (Container.Name, Container.Controls[i].Name, Language);
+					}
+				}
+			}
+
 #endif
 
 		/// <summary>

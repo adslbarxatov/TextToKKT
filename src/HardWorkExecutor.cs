@@ -247,6 +247,9 @@ namespace RD_AAOW
 				newPercentage = oldPercentage = (int)ProgressBarSize;
 
 				AbortButton.Visible = AbortButton.Enabled = AllowAbort;
+				if (AbortButton.Enabled)
+					AbortButton.FlatAppearance.MouseDownBackColor = greenColor;
+
 				StateLabel.Text = Caption;
 				if (CaptionInTheCenter)
 					StateLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -294,7 +297,7 @@ namespace RD_AAOW
 		// Метод обрабатывает изменение состояния процесса
 		private void ProgressChanged (object sender, ProgressChangedEventArgs e)
 			{
-			// Обновление ProgressBar
+			// Обновление прогрессбара
 			if (e.ProgressPercentage > ProgressBarSize)
 				newPercentage = (int)ProgressBarSize;
 			else if (e.ProgressPercentage < 0)
@@ -302,6 +305,7 @@ namespace RD_AAOW
 			else
 				newPercentage = e.ProgressPercentage;
 
+			// Обновление текста над прогрессбаром
 			StateLabel.Text = (string)e.UserState;
 			}
 
@@ -372,6 +376,8 @@ namespace RD_AAOW
 				frameGreenGrey.Dispose ();
 			if (frameBack != null)
 				frameBack.Dispose ();
+			if (frameDark != null)
+				frameDark.Dispose ();
 			}
 
 		// Отрисовка прогресс-бара

@@ -965,23 +965,28 @@ namespace RD_AAOW
 			}
 
 		// Поиск по тексту ошибки
-		private int lastErrorSearchOffset2 = 0;
+		private int lastErrorSearchOffset = 0;
 		private void Errors_Find (object sender, EventArgs e)
 			{
 			List<string> codes = kkme.GetErrorCodesList (ca.KKTForErrors);
 			string text = errorSearchText.Text.ToLower ();
 
-			lastErrorSearchOffset2++;
+			lastErrorSearchOffset++;
 			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastErrorSearchOffset2) % codes.Count].ToLower ().Contains (text))
+				{
+				int j = (i + lastErrorSearchOffset) % codes.Count;
+				if (codes[j].ToLower ().Contains (text) ||
+					kkme.GetErrorText (ca.KKTForErrors, (uint)j).ToLower ().Contains (text))
 					{
-					lastErrorSearchOffset2 = (i + lastErrorSearchOffset2) % codes.Count;
+					lastErrorSearchOffset = (i + lastErrorSearchOffset) % codes.Count;
 
-					errorsCodeButton.Text = codes[lastErrorSearchOffset2];
-					ca.ErrorCode = (uint)lastErrorSearchOffset2;
+					errorsCodeButton.Text = codes[lastErrorSearchOffset];
+					ca.ErrorCode = (uint)lastErrorSearchOffset;
 					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+
 					return;
 					}
+				}
 			}
 
 		private void Errors_Clear (object sender, EventArgs e)

@@ -265,6 +265,11 @@ enum TLVTags
 	// Применённая СНО (1055)
 	AppliedTaxSystem = 0x041F,
 
+#define PROC_APPTAX(src,dest)	\
+		case AppliedTaxSystem:\
+			sprintf (dest, "%s  Применённая СНО: %s\r\n", dest, GetTaxFlags (src));\
+			break;
+
 	// Флаг шифрования (1056)
 	EncryptionFlag = 0x0420,
 
@@ -291,9 +296,8 @@ enum TLVTags
 	// Флаги систем налогообложения (1062)
 	TaxFlags = 0x0426,
 
-#define PROC_TAXFLAGS(src,dest)	\
+#define PROC_REGTAXFLAGS(src,dest)	\
 		case TaxFlags:\
-		case AppliedTaxSystem:\
 			sprintf (dest, "%s  Налогообложение: %s\r\n", dest, GetTaxFlags (src));\
 			break;
 
@@ -712,6 +716,7 @@ enum TLVTags
 	FNMSignature = 201,
 		
 	// ФП сообщения
+	FNA12Signature = 300,
 	FNASignature = 301,
 
 	// Заголовок выгрузки данных регистрации

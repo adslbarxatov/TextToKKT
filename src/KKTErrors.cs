@@ -167,8 +167,8 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Создаёт объект-ошибку
 		/// </summary>
-		/// <param name="Code"></param>
-		/// <param name="Text"></param>
+		/// <param name="Code">Код или сообщение об ошибке</param>
+		/// <param name="Text">Текст ошибки</param>
 		public KKTError (string Code, string Text)
 			{
 			errorCode = string.IsNullOrWhiteSpace (Code) ? "—" : Code;

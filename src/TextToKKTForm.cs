@@ -621,11 +621,15 @@ namespace RD_AAOW
 
 			lastErrorSearchOffset++;
 			for (int i = 0; i < codes.Count; i++)
-				if (codes[(i + lastErrorSearchOffset) % codes.Count].ToLower ().Contains (text))
+				{
+				int j = (i + lastErrorSearchOffset) % codes.Count;
+				if (codes[j].ToLower ().Contains (text) ||
+					kkme.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j).ToLower ().Contains (text))
 					{
-					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = (i + lastErrorSearchOffset) % codes.Count;
+					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = j;
 					return;
 					}
+				}
 			}
 
 		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
