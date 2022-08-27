@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- texttokkt.huawei -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="600906" android:versionName="9.4.5">
+	android:installLocation="internalOnly" android:versionCode="600907" android:versionName="9.5">
 
-	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
+	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="31" />
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

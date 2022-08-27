@@ -599,5 +599,10 @@ namespace RD_AAOW
 		/// Возвращает приказ, обосновывающий обязательность реквизитов
 		/// </summary>
 		public const string ObligationBasic = "Основание: прил. №2 к приказу ФНС от 14.09.20 № ЕД-7-20/662@";
+
+		/// <summary>
+		/// Возвращает активную ссылку на приказ, обосновывающий обязательность реквизитов
+		/// </summary>
+		public const string ObligationBasicLink = "https://nalog.gov.ru/rn77/about_fts/docs/10020801/";
 		}
 	}

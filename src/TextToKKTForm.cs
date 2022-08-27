@@ -158,7 +158,7 @@ namespace RD_AAOW
 			TLV_FFDCombo.SelectedIndex = (int)ca.FFDForTLV;
 
 			TLVFind.Text = ca.TLVData;
-			TLV_ObligationBasic.Text = TLVTags.ObligationBasic;
+			TLV_ObligationBase.Text = TLVTags.ObligationBasic;
 			TLVButton_Click (null, null);
 
 			// Блокировка расширенных функций при необходимости
@@ -1050,6 +1050,16 @@ namespace RD_AAOW
 				TLVFind.Text = TLVDescription.Text.Substring (0, 4);
 
 			TLVButton_Click (null, null);
+			}
+
+		// Ссылка на приказ-обоснование обязательности тегов
+		private void TLVObligationBase_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				Process.Start (TLVTags.ObligationBasicLink);
+				}
+			catch { }
 			}
 
 		#endregion
