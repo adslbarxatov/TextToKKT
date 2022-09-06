@@ -55,7 +55,7 @@
   для неё потребуется ОС Android 5.0 или новее;
 - Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.x
   или устройств без Play market;
-- Android-версия доступна также на платформе AppGallery.
+- Android-версия доступна также на платформе [AppGallery](https://appgallery.cloud.huawei.com/ag/n/app/C102663035?channelId=GitHub&id=f4e62031e4b84ebb937a8b75c08fc543&s=E90E5D1DB649783589F6F3EA42475CFECAABFFF996E407E61BACB2268DB9867C&detailType=0&v=&callType=AGDLINK&installType=0000).
 
 &nbsp;
 
