@@ -1,8 +1,5 @@
 ﻿using System.Globalization;
-#if ANDROID
-	using Xamarin.Essentials;
-#else
-	using Microsoft.Win32;
+#if !ANDROID
 	using System.Windows.Forms;
 #endif
 
@@ -91,16 +88,8 @@ namespace RD_AAOW
 			// Установка
 			set
 				{
-				try
-					{
-					currentLanguage = value.ToString ();
-#if ANDROID
-					Preferences.Set (LanguageValueName, currentLanguage);
-#else
-					Registry.SetValue (RDGenerics.AssemblySettingsKey, LanguageValueName, currentLanguage);
-#endif
-					}
-				catch { }
+				currentLanguage = value.ToString ();
+				RDGenerics.SetAppSettingsValue (LanguageValueName, currentLanguage);
 				}
 			}
 		private static string currentLanguage = "";
@@ -119,19 +108,7 @@ namespace RD_AAOW
 		// Метод запрашивает настройку из реестра
 		private static string GetCurrentLanguage ()
 			{
-			// Получение значения
-			string lang = "";
-			try
-				{
-#if ANDROID
-				lang = Preferences.Get (LanguageValueName, "");
-#else
-				lang = Registry.GetValue (RDGenerics.AssemblySettingsKey, LanguageValueName, "").ToString ();
-#endif
-				}
-			catch { }
-
-			return lang;
+			return RDGenerics.GetAppSettingsValue (LanguageValueName);
 			}
 
 		/// <summary>

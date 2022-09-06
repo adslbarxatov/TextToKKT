@@ -158,7 +158,7 @@ namespace RD_AAOW
 			TLV_FFDCombo.SelectedIndex = (int)ca.FFDForTLV;
 
 			TLVFind.Text = ca.TLVData;
-			TLV_ObligationBase.Text = TLVTags.ObligationBasic;
+			TLV_ObligationBase.Text = TLVTags.ObligationBase;
 			TLVButton_Click (null, null);
 
 			// Блокировка расширенных функций при необходимости
@@ -1057,7 +1057,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start (TLVTags.ObligationBasicLink);
+				Process.Start (TLVTags.ObligationBaseLink);
 				}
 			catch { }
 			}

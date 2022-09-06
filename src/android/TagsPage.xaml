@@ -29,7 +29,7 @@
 				<Label x:Name="TLVObligationLabel" />
 				<Label x:Name="TLVObligation" />
 
-				<Label x:Name="TLVObligationHelpLabel" />
+				<Button x:Name="TLVObligationHelpLabel" />
 
 				<Label />
 

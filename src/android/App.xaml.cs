@@ -107,6 +107,9 @@ namespace RD_AAOW
 		private double fontSizeMultiplier = 1.2;
 		private PrintManager pm;
 
+		private const string noBrowserError = "Веб-браузер отсутствует на этом устройстве";
+		private const string noPostError = "Почтовый агент отсутствует на этом устройстве";
+
 		// Локальный оформитель страниц приложения
 		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor, uint HeaderNumber)
 			{
@@ -647,8 +650,10 @@ namespace RD_AAOW
 			tlvObligationLabel.HorizontalTextAlignment = TextAlignment.Start;
 			tlvObligationLabel.TextType = TextType.Html;
 
-			AndroidSupport.ApplyTipLabelSettings (tagsPage, "TLVObligationHelpLabel",
-				TLVTags.ObligationBasic, untoggledSwitchColor);
+			/*AndroidSupport.ApplyTipLabelSettings (tagsPage, "TLVObligationHelpLabel",
+				TLVTags.ObligationBasic, untoggledSwitchColor);*/
+			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVObligationHelpLabel",
+				TLVTags.ObligationBase, tagsMasterBackColor, TLVObligationBase_Click, false);
 
 			TLVFind_Clicked (null, null);
 
@@ -753,7 +758,7 @@ namespace RD_AAOW
 		private async void AcceptPolicy ()
 			{
 			// Политика
-			if (Preferences.Get (firstStartRegKey, "") != "")
+			if (RDGenerics.GetAppSettingsValue (firstStartRegKey) != "")
 				return;
 
 			while (!await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyTitle,
@@ -769,7 +774,7 @@ namespace RD_AAOW
 				}
 
 			// Вступление
-			Preferences.Set (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
+			RDGenerics.SetAppSettingsValue (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
 
 			await ((CarouselPage)MainPage).CurrentPage.DisplayAlert (ProgramDescription.AssemblyVisibleName,
 					"Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!\r\n\r\n" +
@@ -1456,8 +1461,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				await aboutPage.DisplayAlert (ProgramDescription.AssemblyVisibleName,
-					"Веб-браузер отсутствует на этом устройстве", "OK");
+				Toast.MakeText (Android.App.Application.Context, noBrowserError, ToastLength.Long).Show ();
 				}
 			}
 
@@ -1470,8 +1474,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
-					ToastLength.Long).Show ();
+				Toast.MakeText (Android.App.Application.Context, noBrowserError, ToastLength.Long).Show ();
 				}
 			}
 
@@ -1484,8 +1487,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
-					ToastLength.Long).Show ();
+				Toast.MakeText (Android.App.Application.Context, noBrowserError, ToastLength.Long).Show ();
 				}
 			}
 
@@ -1498,8 +1500,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
-					ToastLength.Long).Show ();
+				Toast.MakeText (Android.App.Application.Context, noBrowserError, ToastLength.Long).Show ();
 				}
 			}
 
@@ -1519,8 +1520,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				Toast.MakeText (Android.App.Application.Context, "Веб-браузер отсутствует на этом устройстве",
-					ToastLength.Long).Show ();
+				Toast.MakeText (Android.App.Application.Context, noBrowserError, ToastLength.Long).Show ();
 				}
 			}
 
@@ -1539,8 +1539,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				Toast.MakeText (Android.App.Application.Context, "Почтовый агент отсутствует на этом устройстве",
-					ToastLength.Long).Show ();
+				Toast.MakeText (Android.App.Application.Context, noPostError, ToastLength.Long).Show ();
 				}
 			}
 
@@ -1639,6 +1638,19 @@ namespace RD_AAOW
 			{
 			tlvTag.Text = "";
 			TLVFind_Clicked (null, null);
+			}
+
+		// Ссылка на приказ-обоснование обязательности тегов
+		private async void TLVObligationBase_Click (object sender, EventArgs e)
+			{
+			try
+				{
+				await Launcher.OpenAsync (TLVTags.ObligationBaseLink);
+				}
+			catch
+				{
+				Toast.MakeText (Android.App.Application.Context, noBrowserError, ToastLength.Long).Show ();
+				}
 			}
 
 		#endregion
