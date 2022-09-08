@@ -1,5 +1,5 @@
-# TextToKKT v 9.5.2
-> PCC: 001215CF63B7365A
+# TextToKKT v 9.5.142
+> PCC: 001221CEA4E7966D
 
 
 Утилита сервис-инженера ККТ (контрольно-кассовая техника, 54-ФЗ)
@@ -43,7 +43,7 @@
 
 - Windows XP or newer / или новее;
 - [Microsoft .NET Framework 4.0](https://microsoft.com/en-us/download/details.aspx?id=17718);
-- [Microsoft VC++ 2010 redistributables](https://microsoft.com/en-us/download/details.aspx?id=26999) *(для модуля FNReader)*.
+- [Microsoft Visual C++ 2015 – 2022 redistributable](https://aka.ms/vs/17/release/vc_redist.x86.exe) *(для модуля FNReader)*.
 
 Язык интерфейса: ru_ru.
 
@@ -51,10 +51,8 @@
 
 #
 
-- Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT);
-  для неё потребуется ОС Android 5.0 или новее;
-- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.x
-  или устройств без Play market;
+- Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT); для неё потребуется ОС Android 5.0 или новее;
+- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.x или устройств без Play market;
 - Android-версия доступна также на платформе [AppGallery](https://appgallery.cloud.huawei.com/ag/n/app/C102663035?channelId=GitHub&id=f4e62031e4b84ebb937a8b75c08fc543&s=E90E5D1DB649783589F6F3EA42475CFECAABFFF996E407E61BACB2268DB9867C&detailType=0&v=&callType=AGDLINK&installType=0000).
 
 &nbsp;
@@ -63,7 +61,7 @@
 
 ## Требования к оборудованию для работы модуля FNReader
 
-Работа программы протестирована на всех моделях ФН из реестра ФНС.
+Работа программы протестирована на всех моделях ФН из реестра ФНС, включая вышедшие из обращения и МГМ.
 При соблюдении производителями существующего аппаратного протокола чтения данных работа с будущими моделями ФН также будет возможна.
 
 Работа программы возможна при наличии следующих аппаратных адаптеров:
