@@ -650,8 +650,6 @@ namespace RD_AAOW
 			tlvObligationLabel.HorizontalTextAlignment = TextAlignment.Start;
 			tlvObligationLabel.TextType = TextType.Html;
 
-			/*AndroidSupport.ApplyTipLabelSettings (tagsPage, "TLVObligationHelpLabel",
-				TLVTags.ObligationBasic, untoggledSwitchColor);*/
 			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVObligationHelpLabel",
 				TLVTags.ObligationBase, tagsMasterBackColor, TLVObligationBase_Click, false);
 

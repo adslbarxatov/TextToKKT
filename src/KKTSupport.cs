@@ -1251,8 +1251,6 @@ namespace RD_AAOW
 			javaStream.Close ();
 
 			// Завершено
-			/*document.Close ();
-			document.Dispose ();*/
 			printStream.Close ();
 			printStream.Dispose ();
 

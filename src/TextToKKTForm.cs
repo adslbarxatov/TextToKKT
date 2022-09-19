@@ -974,34 +974,11 @@ namespace RD_AAOW
 		// Печать инструкции
 		private void PrintUserManual_Click (object sender, EventArgs e)
 			{
-			/*// Контроль
-			if (FNReaderInstance == null)
-				FNReader_Click (null, null);
-
-			if (FNReaderInstance == null)
-				return;*/
-
 			// Сборка задания на печать
 			string text = KKTSupport.BuildUserManual (um, (uint)KKTListForManuals.SelectedIndex,
 				((Button)sender).Name.Contains ("Cashier"));
-			/*string text = "Инструкция к ККТ " + KKTListForManuals.Text + " (" + (cashier ? "для кассиров" : "полная") + ")";
-			text = text.PadLeft ((99 - text.Length) / 2 + text.Length);
-
-			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
-			tmp = tmp.PadLeft ((99 - tmp.Length) / 2 + tmp.Length);
-			text += ("\n" + tmp);
-
-			uint operationsCount = cashier ? UserManuals.OperationsForCashiers :
-				(uint)OperationsListForManuals.Items.Count;
-
-			for (int i = 0; i < operationsCount; i++)
-				{
-				text += ((i != 0 ? "\n" : "") + "\n\n" + OperationsListForManuals.Items[i] + "\n\n");
-				text += um.GetManual ((uint)KKTListForManuals.SelectedIndex, (uint)i);
-				}*/
 
 			// Печать
-			/*FNReaderInstance.PrintText (text);*/
 			KKTSupport.PrintText (text, PrinterTypes.ManualA4);
 			}
 

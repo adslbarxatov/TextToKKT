@@ -63,7 +63,11 @@ namespace RD_AAOW
 		private List<bool> country = new List<bool> ();
 
 		// Константы для DataMatrix
-		private const string dmEncodingLine = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"%&'*+-./_,:;=<>?";
+		private const string dmEncodingLine = "ABCDEFGHIJKLMNOP" +
+			"QRSTUVWXYZabcdef" +
+			"ghijklmnopqrstuv" +
+			"wxyz0123456789!\"" +
+			"%&'*+-./_,:;=<>?";
 
 		// Строка преобразования русской раскладки в английскую
 		private const string REEncodingString = "?????????\x09\x0A??\x0D???????????????\x1D??" +
@@ -173,7 +177,7 @@ namespace RD_AAOW
 					return "DataMatrix для блоков сигарет";
 
 				case SupportedBarcodesTypes.DataMatrixMedicines:
-					return "DataMatrix для лекарств, остатков обуви и одежды";
+					return "DataMatrix для лекарств, остатков обуви, одежды и парфюмерии";
 
 				case SupportedBarcodesTypes.DataMatrixShoes:
 					return "DataMatrix для обуви";
