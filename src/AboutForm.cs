@@ -13,7 +13,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает интерфейс отображения сведений о программе
 	/// </summary>
-	public partial class AboutForm:Form
+	public partial class AboutForm: Form
 		{
 		// Переменные
 		private string projectLink, updatesLink, userManualLink;
@@ -341,7 +341,8 @@ namespace RD_AAOW
 		// Метод получает Политику разработки
 		private void PolicyLoader (object sender, DoWorkEventArgs e)
 			{
-			string html = GetHTML (RDGenerics.ADPLink + (al == SupportedLanguages.ru_ru ? "/ru" : ""));
+			/*string html = GetHTML (RDGenerics.ADPLink + (al == SupportedLanguages.ru_ru ? "/ru" : ""));*/
+			string html = GetHTML (RDGenerics.GetADPLink (al == SupportedLanguages.ru_ru));
 			int textLeft, textRight;
 
 			if (((textLeft = html.IndexOf ("code\">")) >= 0) &&
@@ -424,7 +425,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start (RDGenerics.ADPLink);
+				Process.Start (RDGenerics.GetADPLink (al == SupportedLanguages.ru_ru));
 				}
 			catch { }
 			}
@@ -435,7 +436,7 @@ namespace RD_AAOW
 			switch (ToLaboratoryCombo.SelectedIndex)
 				{
 				default:
-					link = RDGenerics.DPModuleLink;
+					link = RDGenerics.GetDPModuleLink (al == SupportedLanguages.ru_ru);
 					break;
 
 				case 1:
@@ -650,7 +651,7 @@ namespace RD_AAOW
 
 // Получение обновлений Политики (ошибки игнорируются)
 policy:
-			html = GetHTML (RDGenerics.ADPLink);
+			html = GetHTML (RDGenerics.GetADPLink (al == SupportedLanguages.ru_ru));
 			if (((i = html.IndexOf ("<title")) >= 0) && ((j = html.IndexOf ("</title", i)) >= 0))
 				{
 				// Обрезка

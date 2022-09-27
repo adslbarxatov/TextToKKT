@@ -1481,7 +1481,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (RDGenerics.ADPLink);
+				await Launcher.OpenAsync (RDGenerics.GetADPLink (true));
 				}
 			catch
 				{

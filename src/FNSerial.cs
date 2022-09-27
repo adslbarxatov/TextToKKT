@@ -29,7 +29,7 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { ';' };
+			char[] splitters = new char[] { '\t' };
 
 			try
 				{
@@ -86,7 +86,8 @@ namespace RD_AAOW
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNCompatibleWithFFD12 (string FNSerialNumber)
 			{
-			return GetFNName (FNSerialNumber).Contains ("1М");
+			string name = GetFNName (FNSerialNumber);
+			return name.Contains ("1М") || name.Contains ("2М");
 			}
 
 		/// <summary>
