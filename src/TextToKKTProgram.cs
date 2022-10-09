@@ -26,6 +26,10 @@ namespace RD_AAOW
 			Application.EnableVisualStyles ();
 			Application.SetCompatibleTextRenderingDefault (false);
 
+			// Язык интерфейса и контроль XPR
+			if (!Localization.IsXPRClassAcceptable)
+				return;
+
 			// Проверка запуска единственной копии
 			bool result;
 			Mutex instance = new Mutex (true, ProgramDescription.AssemblyTitle, out result);

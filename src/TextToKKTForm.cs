@@ -329,16 +329,6 @@ namespace RD_AAOW
 			catch { }
 			}
 
-		// Копирование в буфер обмена
-		private void SendToClipboard (string Text)
-			{
-			try
-				{
-				Clipboard.SetData (DataFormats.Text, Text);
-				}
-			catch { }
-			}
-
 		// Запрос цвета, соответствующего статусу поддержки
 		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
 			{
@@ -733,7 +723,7 @@ namespace RD_AAOW
 		// Копирование срока действия ФН
 		private void FNLifeResult_Click (object sender, EventArgs e)
 			{
-			SendToClipboard (fnLifeResult);
+			RDGenerics.SendToClipboard (fnLifeResult);
 			}
 
 		// Очистка полей
@@ -870,17 +860,17 @@ namespace RD_AAOW
 		// Копирование в буфер обмена
 		private void OFDDNSName_Click (object sender, EventArgs e)
 			{
-			SendToClipboard (((Button)sender).Text);
+			RDGenerics.SendToClipboard (((Button)sender).Text);
 			}
 
 		private void OFDNameCopy_Click (object sender, EventArgs e)
 			{
-			SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'));
+			RDGenerics.SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'));
 			}
 
 		private void OFDINNCopy_Click (object sender, EventArgs e)
 			{
-			SendToClipboard (OFDINN.Text);
+			RDGenerics.SendToClipboard (OFDINN.Text);
 			}
 
 		// Поиск по названию ОФД
