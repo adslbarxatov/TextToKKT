@@ -16,13 +16,14 @@ namespace RD_AAOW
 		private List<string> serialSamples = new List<string> ();
 		private List<uint> serialOffsets = new List<uint> ();
 		private List<List<FFDSupportStatuses>> ffdSupport = new List<List<FFDSupportStatuses>> ();
+		private List<string> regions = new List<string> ();
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
 		public KKTSerial ()
 			{
-			// Получение файлов
+			// Получение файла заводских номеров и моделей
 #if !ANDROID
 			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.KKTSN);
 #else
@@ -75,6 +76,59 @@ namespace RD_AAOW
 
 			// Завершено
 			SR.Close ();
+
+			// Получение файла регионов
+#if !ANDROID
+			buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.Regions);
+#else
+			buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.Regions);
+#endif
+			SR = new StringReader (buf);
+
+			try
+				{
+				// Чтение параметров
+				while ((str = SR.ReadLine ()) != null)
+					regions.Add (str == "-" ? "" : str);
+				}
+			catch
+				{
+				throw new Exception ("KKT serial numbers data reading failure, point 2");
+				}
+
+			// Завершено
+			SR.Close ();
+			}
+
+		/// <summary>
+		/// Метод возвращает название региона по коду ИНН
+		/// </summary>
+		/// <param name="INN">ИНН пользователя</param>
+		/// <returns>Возвращает название региона</returns>
+		public string GetRegionName (string INN)
+			{
+			// Контроль
+			const string ur = "(неизвестный регион)";
+			if (INN.Length < 2)
+				return ur;
+
+			// Извлечение индекса
+			int number = 0;
+			try
+				{
+				number = int.Parse (INN.Substring (0, 2)) - 1;
+				}
+			catch
+				{
+				return ur;
+				}
+
+			// Контроль
+			if ((number < 0) || (number >= regions.Count) || string.IsNullOrWhiteSpace (regions[number]))
+				return ur;
+
+			// Успешно
+			return regions[number];
 			}
 
 		/// <summary>

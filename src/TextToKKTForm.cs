@@ -11,7 +11,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает главную форму программы
 	/// </summary>
-	public partial class TextToKKTForm:Form
+	public partial class TextToKKTForm: Form
 		{
 		// Переменные
 		private KKTCodes kkmc = null;               // Дескрипторы информационных классов
@@ -779,12 +779,13 @@ namespace RD_AAOW
 				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 			else
 				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);   // Не ошибка
-			RegionLabel.Text = KKTSupport.GetRegionName (RNMUserINN.Text);
+			RegionLabel.Text = kkts.GetRegionName (RNMUserINN.Text);
 
 			// РН
 			if (RNMValue.Text.Length < 10)
 				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
-			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
+			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text,
+				RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
 				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 			else
 				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);

@@ -240,7 +240,8 @@ namespace RD_AAOW
 		/// Метод формирует полный регистрационный номер ККТ
 		/// </summary>
 		/// <param name="INN">ИНН пользователя</param>
-		/// <param name="RNMFirstPart">Первая часть (10 цифр) регистрационного номера ККТ (порядковый номер в ФНС)</param>
+		/// <param name="RNMFirstPart">Первая часть (10 цифр) регистрационного номера ККТ 
+		/// (порядковый номер в ФНС)</param>
 		/// <param name="Serial">Заводской номер ККТ</param>
 		/// <returns>Возвращает полный регистрационный номер (с проверочным кодом)</returns>
 		public static string GetFullRNM (string INN, string Serial, string RNMFirstPart)
@@ -266,7 +267,7 @@ namespace RD_AAOW
 			return RNMFirstPart.PadLeft (10, '0') + crc.ToString ().PadLeft (6, '0');
 			}
 
-		/// <summary>
+		/*/// <summary>
 		/// Метод возвращает название региона по коду ИНН
 		/// </summary>
 		/// <param name="INN">ИНН пользователя</param>
@@ -463,7 +464,7 @@ namespace RD_AAOW
 				default:
 					return "неизвестный регион";
 				}
-			}
+			}*/
 
 		/// <summary>
 		/// Метод-преобразователь символов в коды CP1251

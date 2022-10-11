@@ -30,21 +30,21 @@ namespace RD_AAOW
 			if (!Localization.IsXPRClassAcceptable)
 				return;
 
-			// Проверка запуска единственной копии
+			// Проверка запуска единственной копии (особая обработка)
 			bool result;
 			Mutex instance = new Mutex (true, ProgramDescription.AssemblyTitle, out result);
 			if (!result)
 				{
+				// Сохранение пути к вызываемому файлу и инициирование его обработки в уже запущенном приложении
 				if (args.Length > 0)
 					{
-					// Сохранение пути к вызываемому файлу и инициирование его обработки в запущенном приложении
 					ConfigAccessor.NextDumpPath = args[0];
 					IntPtr ptr = FindWindow (null, ProgramDescription.AssemblyVisibleName);
 					SendMessage (ptr, ConfigAccessor.NextDumpPathMsg, IntPtr.Zero, IntPtr.Zero);
 					}
 				else
 					{
-					MessageBox.Show ("Программа " + ProgramDescription.AssemblyTitle + " уже запущена",
+					MessageBox.Show ("Программа " + ProgramDescription.AssemblyMainName + " уже запущена",
 						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					}
 

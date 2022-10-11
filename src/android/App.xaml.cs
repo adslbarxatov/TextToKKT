@@ -765,14 +765,6 @@ namespace RD_AAOW
 			if (RDGenerics.GetAppSettingsValue (firstStartRegKey) != "")
 				return;
 
-			/*while (!await ((CarouselPage)MainPage).CurrentPage.DiplayAlert (ProgramDescription.AssemblyTitle,
-					"Перед началом работы с этим инструментом Вы должны принять Политику разработки приложений и " +
-					"Пользовательское соглашение. Хотите открыть их тексты в браузере?\r\n\r\n" +
-					"• Нажмите «Принять», если Вы уже ознакомились и полностью приняли их;\r\n" +
-					"• Нажмите «Читать», если хотите открыть их в браузере;\r\n" +
-					"• Чтобы отклонить их, закройте приложение",
-
-					"Принять", "Читать"))*/
 			while (!await AndroidSupport.ShowMessage
 				("Перед началом работы с этим инструментом Вы должны принять Политику разработки приложений и " +
 				"Пользовательское соглашение. Хотите открыть их тексты в браузере?\r\n\r\n" +
@@ -788,25 +780,6 @@ namespace RD_AAOW
 			// Вступление
 			RDGenerics.SetAppSettingsValue (firstStartRegKey, ProgramDescription.AssemblyVersion); // Только после принятия
 
-			/*await ((CarouselPage)MainPage).CurrentPage.DiplayAlert (ProgramDescription.AssemblyVisibleName,
-					"Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!\r\n\r\n" +
-
-					"На этой странице находится перечень функций приложения, " +
-					"который позволяет перейти к нужному разделу. " +
-					"Вернуться сюда можно с помощью кнопки «Назад». Перемещение " +
-					"между разделами также доступно по свайпу влево-вправо",
-
-					"Далее");
-
-			await ((CarouselPage)MainPage).CurrentPage.DiplayAlert (ProgramDescription.AssemblyVisibleName,
-					"Часть функций скрыта от рядовых пользователей. Чтобы открыть " +
-					"расширенный функционал для специалистов, " +
-					"перейдите на страницу «О приложении» и ответьте на несколько " +
-					"простых вопросов. Вопросы для расширенного " +
-					"и полного набора опций отличаются",
-
-					"ОК");*/
-
 			await AndroidSupport.ShowMessage ("Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!\r\n\r\n" +
 
 				"На этой странице находится перечень функций приложения, который позволяет перейти " +
@@ -816,12 +789,10 @@ namespace RD_AAOW
 				"Далее");
 
 			await AndroidSupport.ShowMessage ("Часть функций скрыта от рядовых пользователей. Чтобы открыть " +
-					"расширенный функционал для специалистов, " +
-					"перейдите на страницу «О приложении» и ответьте на несколько " +
-					"простых вопросов. Вопросы для расширенного " +
-					"и полного набора опций отличаются",
+				"расширенный функционал для специалистов, перейдите на страницу «О приложении» и ответьте " +
+				"на несколько простых вопросов. Вопросы для расширенного и полного набора опций отличаются",
 
-					"ОК");
+				"ОК");
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
@@ -843,7 +814,6 @@ namespace RD_AAOW
 		// Отправка значения кнопки в буфер
 		private void Field_Clicked (object sender, EventArgs e)
 			{
-			/*SendToClipboard (((Xamarin.Forms.Button)sender).Text);*/
 			RDGenerics.SendToClipboard (((Xamarin.Forms.Button)sender).Text);
 			}
 
@@ -936,11 +906,8 @@ namespace RD_AAOW
 			// Запрос модели ККТ
 			List<string> list = kkme.GetKKTTypeNames ();
 
-			/*string res = await errorsPage.DiplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-				list.ToArray ());*/
-			string res = await AndroidSupport.ShowList ("Выберите модель ККТ:", "Отмена", list.ToArray ());
-
 			// Установка модели
+			string res = await AndroidSupport.ShowList ("Выберите модель ККТ:", "Отмена", list.ToArray ());
 			if (list.IndexOf (res) < 0)
 				return;
 
@@ -961,11 +928,8 @@ namespace RD_AAOW
 			// Запрос кода ошибки
 			List<string> list = kkme.GetErrorCodesList (ca.KKTForErrors);
 
-			/*string res = await errorsPage.DiplayActionSheet ("Выберите код/текст ошибки:", "Отмена", null,
-				list.ToArray ());*/
-			string res = await AndroidSupport.ShowList ("Выберите код или текст ошибки:", "Отмена", list.ToArray ());
-
 			// Установка результата
+			string res = await AndroidSupport.ShowList ("Выберите код или текст ошибки:", "Отмена", list.ToArray ());
 			if (list.IndexOf (res) >= 0)
 				{
 				errorsCodeButton.Text = res;
@@ -1026,12 +990,9 @@ namespace RD_AAOW
 			// Запрос модели ККТ
 			List<string> list = kkmc.GetKKTTypeNames ();
 
-			/*string res = await kktCodesPage.DiplayActionSheet ("Выберите модель ККТ:", "Отмена", null, 
-				list.ToArray ());*/
-			string res = await AndroidSupport.ShowList ("Выберите модель ККТ:", "Отмена", list.ToArray ());
-
 			// Установка модели
 			int i;
+			string res = await AndroidSupport.ShowList ("Выберите модель ККТ:", "Отмена", list.ToArray ());
 			if ((i = list.IndexOf (res)) < 0)
 				return;
 
@@ -1080,7 +1041,6 @@ namespace RD_AAOW
 		// Получение из буфера
 		private async void CodesLineGet_Clicked (object sender, EventArgs e)
 			{
-			/*codesSourceText.Text = await GetFromClipboard ();*/
 			codesSourceText.Text = await RDGenerics.GetFromClipboard ();
 			}
 
@@ -1097,8 +1057,6 @@ namespace RD_AAOW
 			string res = list[0];
 			if (e != null)
 				res = await AndroidSupport.ShowList ("Выберите команду:", "Отмена", list.ToArray ());
-			/*res = await lowLevelPage.DiplayActionSheet ("Выберите команду:", "Отмена", null,
-			   list.ToArray ());*/
 
 			// Установка результата
 			int i = 0;
@@ -1121,11 +1079,9 @@ namespace RD_AAOW
 			List<string> list = ll.GetProtocolsNames ();
 			string res = list[0];
 
-			/*res = await lowLevelPage.DiplayActionSheet ("Выберите протокол:", "Отмена", null, list.ToArray ());*/
-			res = await AndroidSupport.ShowList ("Выберите протокол:", "Отмена", list.ToArray ());
-
 			// Установка результата
 			int i = 0;
+			res = await AndroidSupport.ShowList ("Выберите протокол:", "Отмена", list.ToArray ());
 			if ((i = list.IndexOf (res)) >= 0)
 				{
 				ca.LowLevelProtocol = (uint)i;
@@ -1274,7 +1230,6 @@ namespace RD_AAOW
 		private string fnLifeResultDate = "";
 		private void FNLifeResultCopy (object sender, EventArgs e)
 			{
-			/*SendToClipboard (fnLifeResultDate);*/
 			RDGenerics.SendToClipboard (fnLifeResultDate);
 			}
 
@@ -1333,7 +1288,7 @@ namespace RD_AAOW
 				rnmINNCheckLabel.TextColor = errorColor;
 				rnmINNCheckLabel.Text = "возможно, некорректный";
 				}
-			rnmINNCheckLabel.Text += (" (" + KKTSupport.GetRegionName (rnmINN.Text) + ")");
+			rnmINNCheckLabel.Text += (" (" + kkts.GetRegionName (rnmINN.Text) + ")");
 
 			// РН
 			if (rnmRNM.Text.Length < 10)
@@ -1414,15 +1369,13 @@ namespace RD_AAOW
 			// Запрос ОФД по имени
 			List<string> list = ofd.GetOFDNames ();
 
-			/*string res = await ofdPage.DiplayActionSheet ("Выберите название ОФД:", "Отмена", null,
-				list.ToArray ());*/
-			string res = await AndroidSupport.ShowList ("Выберите название ОФД:", "Отмена", list.ToArray ());
-
 			// Установка результата
+			string res = await AndroidSupport.ShowList ("Выберите название ОФД:", "Отмена", list.ToArray ());
 			if (list.IndexOf (res) >= 0)
 				{
 				ofdNameButton.Text = res;
 				RDGenerics.SendToClipboard (res.Replace ('«', '\"').Replace ('»', '\"'));
+
 				string s = ofd.GetOFDINNByName (ofdNameButton.Text);
 				if (s != "")
 					ofdINN.Text = s;
@@ -1526,9 +1479,7 @@ namespace RD_AAOW
 			{
 			string[] comm = RDGenerics.GetCommunitiesNames (false);
 
-			/*string res = await aboutPage.DiplayActionSheet ("Выберите сообщество", "Отмена", null, comm);*/
 			string res = await AndroidSupport.ShowList ("Выберите сообщество", "Отмена", comm);
-
 			res = RDGenerics.GetCommunityLink (res, false);
 			if (string.IsNullOrWhiteSpace (res))
 				return;
@@ -1594,8 +1545,6 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				// Запрос модели ККТ
-				/*res = await userManualsPage.DiplayActionSheet ("Выберите модель ККТ:", "Отмена", null,
-					um.GetKKTList ().ToArray ());*/
 				res = await AndroidSupport.ShowList ("Выберите модель ККТ:", "Отмена", um.GetKKTList ().ToArray ());
 
 				// Установка модели
@@ -1621,10 +1570,7 @@ namespace RD_AAOW
 				{
 				List<string> modes = new List<string> { "Для кассира", "Полная" };
 
-				/*string res = await userManualsPage.DiplayActionSheet ("Формат инструкции:", "Отмена",
-					null, modes.ToArray ());*/
 				string res = await AndroidSupport.ShowList ("Формат инструкции:", "Отмена", modes.ToArray ());
-
 				idx = modes.IndexOf (res);
 				if (idx < 0)
 					return;
@@ -1713,8 +1659,6 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				// Запрос модели ККТ
-				/*res = await connectorsPage.DiplayActionSheet ("Выберите тип кабеля:", "Отмена", null,
-					conn.GetCablesNames ().ToArray ());*/
 				res = await AndroidSupport.ShowList ("Выберите тип кабеля:", "Отмена",
 					conn.GetCablesNames ().ToArray ());
 
