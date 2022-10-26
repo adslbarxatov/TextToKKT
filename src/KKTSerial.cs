@@ -108,7 +108,7 @@ namespace RD_AAOW
 		public string GetRegionName (string INN)
 			{
 			// Контроль
-			const string ur = "(неизвестный регион)";
+			const string ur = "неизвестный регион";
 			if (INN.Length < 2)
 				return ur;
 
