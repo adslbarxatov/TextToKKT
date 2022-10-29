@@ -399,7 +399,8 @@ namespace RD_AAOW
 			if (!result)
 				{
 				MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
-					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении» (кнопка «?»)",
+					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
+					" (раздел «Прочее», кнопка «О программе»)",
 					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 				return;
@@ -410,7 +411,8 @@ namespace RD_AAOW
 				{
 				MessageBox.Show ("Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
 					"текущей версии программы.\n\n" +
-					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении» (кнопка «?»)",
+					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
+					" (раздел «Прочее», кнопка «О программе»)",
 					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
 				return;

@@ -220,14 +220,14 @@
 		COM = 0,
 
 		/// <summary>
-		/// Дамп ФН новой версии
+		/// Внутренний дамп ФН для приложения
 		/// </summary>
-		FSD_4_0 = 1,
+		FSD = 1,
 
 		/// <summary>
-		/// Дамп ФН из программы FNArc
+		/// Файл FNC
 		/// </summary>
-		FNC_1_2_0_1 = 2
+		FNC = 2
 		}
 
 	/// <summary>
@@ -285,5 +285,31 @@
 		/// Дополнительный для А4
 		/// </summary>
 		ManualA4 = 3,
+		}
+
+	/// <summary>
+	/// Доступные уровни детализации
+	/// </summary>
+	public enum DetailsLevels
+		{
+		/// <summary>
+		/// Уровень не задан
+		/// </summary>
+		NotDefined = 3,
+
+		/// <summary>
+		/// Только основные данные
+		/// </summary>
+		Minimum = 0,
+
+		/// <summary>
+		/// Все доступные данные (включая текстовые)
+		/// </summary>
+		AvailableTLV = 1,
+
+		/// <summary>
+		/// Все доступные данные + неизвестные теги в HEX-формате
+		/// </summary>
+		Maximum = 2,
 		}
 	}
